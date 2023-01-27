@@ -3,12 +3,17 @@
 CREATE OR REPLACE FUNCTION get_credit_limit(
   _entry_number VARCHAR(15),
   _year INTEGER,
-  _semester VARCHAR(2)
+  _semester INTEGER
 ) RETURNS INTEGER AS $$
   DECLARE
+    credit_grades VARCHAR[2] := ARRAY['A', 'A-', 'B', 'B-', 'C', 'C-', 'D', 'E', 'F'];
     credit_limit INTEGER;
+    previous_academic_session INTEGER[2] := get_previous_academic_session(_year, _semester);
   BEGIN
-    
+    SELECT SUM(credits) INTO credit_limit FROM course_offerings WHERE course_code IN (
+      SELECT course_code FROM student_course_registration WHERE entry_number = _entry_number AND year = previous_academic_session[1] AND semester = previous_acadmemic_session[2] AND grade IN (credit_grades) AND status = 'Enrolled'
+    );
+    RAISE NOTICE 'Credit Limit: %', credit_limit;
   END
 $$ LANGUAGE plpgsql;
 
@@ -23,7 +28,6 @@ CREATE OR REPLACE PROCEDURE check_credit_limit(
   DECLARE
     credit_limit INTEGER;
   BEGIN
-    RAISE NOTICE '%', LENGTH(convert_to_academic_session(_year, _semester));
   END
 $$ LANGUAGE plpgsql;
 

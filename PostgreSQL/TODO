@@ -3,3 +3,7 @@ Validation of L-T-P structure and academic session before inserting into databas
 Remove the first line of initialization.sql. It may cause your thing to crash if the user is not called postgres.
 
 Should the course catalog contain the department?
+
+Create trigger that inserts anyone inserted into faculty or student into the user details with a default password.
+
+Do we create one table for each student? Or do we store each and every thing in the same relation?

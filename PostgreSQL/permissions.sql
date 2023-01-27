@@ -12,4 +12,7 @@ CREATE ROLE student;
 -- Student Permissions
 GRANT SELECT ON course_catalog TO student;
 GRANT SELECT ON course_offerings TO student;
+
 GRANT EXECUTE ON FUNCTION enroll TO student;
+GRANT EXECUTE ON FUNCTION get_credit_limit TO student;
+GRANT EXECUTE ON PROCEDURE check_credit_limit TO student;

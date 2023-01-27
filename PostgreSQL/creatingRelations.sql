@@ -63,7 +63,7 @@ CREATE TABLE course_catalog(
 -- instructor refers only to the instructur in charge of the course, not all the instructors teaching the course
 CREATE TABLE course_offerings(
   course_code VARCHAR(6),
-  instructor VARCHAR(40) NOT NULL,
+  faculty_id VARCHAR(15) NOT NULL,
   year INTEGER NOT NULL,
   semester INTEGER NOT NULL,
   cgpa_criteria DECIMAL(4, 2) CHECK (
@@ -72,6 +72,7 @@ CREATE TABLE course_offerings(
     ) NOT NULL,
   CHECK (semester IN (1, 2, 3, 4)),
   FOREIGN KEY (course_code) REFERENCES course_catalog(course_code),
+  FOREIGN KEY (faculty_id) REFERENCES faculty(faculty_id),
   PRIMARY KEY (course_code, year, semester)
 );
 
