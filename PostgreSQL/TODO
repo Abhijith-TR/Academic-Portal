@@ -1,0 +1,3 @@
+Validation of L-T-P structure and academic session before inserting into database.
+
+Remove the first line of initialization.sql. It may cause your thing to crash if the user is not called postgres.
