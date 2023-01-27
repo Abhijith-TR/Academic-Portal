@@ -16,3 +16,6 @@ CREATE DATABASE mini_project;
 -- Start inserting the functions
 \i 'utilities.sql';
 \i 'studentMethods.sql';
+
+-- Creating roles and assigning permissions
+\i 'permissions.sql';

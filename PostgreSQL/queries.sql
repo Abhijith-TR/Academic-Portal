@@ -28,3 +28,10 @@ SELECT enroll(
   2021, 
   'II'
 );
+
+-- Testing login function
+SELECT login(
+  '2020CSB1062', 
+  'random',
+  'student'
+);    
