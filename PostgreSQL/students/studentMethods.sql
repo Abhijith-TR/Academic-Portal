@@ -4,30 +4,92 @@ CREATE OR REPLACE FUNCTION get_credit_limit(
   _entry_number VARCHAR(15),
   _year INTEGER,
   _semester INTEGER
-) RETURNS INTEGER AS $$
+) RETURNS DECIMAL(4, 2) AS $$
   DECLARE
-    credit_grades VARCHAR[2] := ARRAY['A', 'A-', 'B', 'B-', 'C', 'C-', 'D', 'E', 'F'];
+    previous_semester_credits INTEGER;
     credit_limit INTEGER;
     previous_academic_session INTEGER[2] := get_previous_academic_session(_year, _semester);
   BEGIN
-    SELECT SUM(credits) INTO credit_limit FROM course_offerings WHERE course_code IN (
-      SELECT course_code FROM student_course_registration WHERE entry_number = _entry_number AND year = previous_academic_session[1] AND semester = previous_acadmemic_session[2] AND grade IN (credit_grades) AND status = 'Enrolled'
+    EXECUTE FORMAT('
+    SELECT SUM(credits) FROM course_catalog WHERE course_code IN (
+      SELECT course_code FROM %I WHERE 
+      year = %s AND 
+      semester = %s AND 
+      grade IN (''A'', ''A-'', ''B'', ''B-'', ''C'', ''C-'', ''D'')
+    )', _entry_number || '_credit', previous_academic_session[1], previous_academic_session[2])
+    INTO previous_semester_credits;
+
+    previous_academic_session := get_previous_academic_session(
+      previous_academic_session[1],
+      previous_academic_session[2]
     );
-    RAISE NOTICE 'Credit Limit: %', credit_limit;
+    
+    EXECUTE FORMAT('
+    SELECT SUM(credits) FROM course_catalog WHERE course_code IN (
+      SELECT course_code FROM %I WHERE 
+      year = %s AND 
+      semester = %s AND 
+      grade IN (''A'', ''A-'', ''B'', ''B-'', ''C'', ''C-'', ''D'')
+    )', _entry_number || '_credit', previous_academic_session[1], previous_academic_session[2])
+    INTO credit_limit;
+
+    IF credit_limit IS NULL THEN
+      credit_limit = 0;
+    END IF;
+
+    IF previous_semester_credits IS NULL THEN
+      previous_semester_credits = 0;
+    END IF;
+
+    RETURN (credit_limit + previous_semester_credits)/2;
   END
 $$ LANGUAGE plpgsql;
 
 -- Function to check whether the student has exceeded the credit limit
 -- Uses the get_credit_limit function to get the credit limit and then validates with the current semester
-CREATE OR REPLACE PROCEDURE check_credit_limit(
+CREATE OR REPLACE FUNCTION check_credit_limit(
   _entry_number VARCHAR(15),
   _year INTEGER,
-  _semester VARCHAR(2),
+  _semester INTEGER,
   _course_code VARCHAR(6)
-) AS $$
+) RETURNS BOOLEAN AS $$
   DECLARE
-    credit_limit INTEGER;
+    credit_limit DECIMAL(4, 2) = get_credit_limit(_entry_number, _year, _semester);
+    credits_in_current_semester INTEGER;
+    subject_credits INTEGER;
   BEGIN
+    SELECT credits INTO subject_credits FROM course_catalog WHERE course_code = _course_code;
+
+    IF credit_limit * 1.25 < 18 THEN 
+      credit_limit := 18;
+    ELSIF credit_limit * 1.25 > 24 THEN
+      credit_limit := 24;
+    ELSE 
+      credit_limit := FLOOR(credit_limit * 1.25);
+    END IF;
+    
+    EXECUTE FORMAT('
+      SELECT SUM(credits)
+      FROM course_catalog WHERE course_code IN (
+        SELECT course_code
+        FROM %I 
+        WHERE year = %s
+        AND semester = %s
+      )
+    ', _entry_number || '_credit', _year, _semester) 
+    INTO credits_in_current_semester;
+
+    IF credits_in_current_semester IS NULL THEN 
+      credits_in_current_semester := 0;
+    END IF;
+
+    credits_in_current_semester := credits_in_current_semester + subject_credits;
+    
+    if credits_in_current_semester > credit_limit THEN 
+      RETURN FALSE;
+    END IF;
+
+    RETURN TRUE;
   END
 $$ LANGUAGE plpgsql;
 
@@ -41,11 +103,12 @@ CREATE OR REPLACE FUNCTION enroll(
   _entry_number VARCHAR(15),
   _course_code VARCHAR(6),
   _year INTEGER,
-  _semester VARCHAR(2)
+  _semester INTEGER
 ) RETURNS VARCHAR(20) AS $$
   DECLARE
-    -- _academic_session VARCHAR(7) := convert_to_academic_session(year, semester);
+    enrollment_allowed BOOLEAN;
   BEGIN
+
     EXECUTE FORMAT('
       CALL verify_enrollment_request(''%s'', ''%s'', %s, ''%s'');', 
       _entry_number, 
@@ -53,6 +116,19 @@ CREATE OR REPLACE FUNCTION enroll(
       _year, 
       _semester
     );
+
+    SELECT check_credit_limit(_entry_number, _year, _semester, _course_code) INTO enrollment_allowed;
+
+    RAISE NOTICE '%', enrollment_allowed;
+    
+    IF enrollment_allowed is TRUE THEN
+      EXECUTE FORMAT('
+        INSERT INTO %I VALUES(''%s'', %s, %s, ''EN'')
+      ', _entry_number || '_credit', _course_code, _year, _semester);
+      RETURN 'Inserted!';
+    ELSE 
+      RETURN 'Invalid Enrollment Request';
+    END IF;
 
   END
 $$ LANGUAGE plpgsql;

@@ -1,9 +1,7 @@
-Validation of L-T-P structure and academic session before inserting into database.
-
 Remove the first line of initialization.sql. It may cause your thing to crash if the user is not called postgres.
-
-Should the course catalog contain the department?
 
 Create trigger that inserts anyone inserted into faculty or student into the user details with a default password.
 
-Do we create one table for each student? Or do we store each and every thing in the same relation?
+Create a new role as soon as a new user is created and allow the user to inherit the roles that were set up for admin, faculty and student.
+
+If the credit limit is less than 18, set the credit limit to 18 and if the credit limit is greater than 24, set the credit limit to 24

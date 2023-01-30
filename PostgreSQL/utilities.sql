@@ -11,8 +11,9 @@ CREATE OR REPLACE PROCEDURE verify_enrollment_request(
   BEGIN
     IF NOT EXISTS (SELECT * FROM course_offerings WHERE course_code = _course_code AND year = _year and semester = _semester) THEN
       RAISE EXCEPTION 'Course Not Found';
-    ELSIF NOT EXISTS (SELECT * FROM list_of_students WHERE entry_number = _entry_number) THEN
-      RAISE EXCEPTION 'Student Not Found';
+    -- Requires permissions to access students table which should not be given to students
+    -- ELSIF NOT EXISTS (SELECT * FROM students WHERE entry_number = _entry_number) THEN
+    --   RAISE EXCEPTION 'Student Not Found';
     END IF;
   END
 $$ LANGUAGE plpgsql;
