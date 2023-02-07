@@ -33,8 +33,20 @@ RETURNS TRIGGER AS $$
       PRIMARY KEY (course_code, year, semester)
     );', NEW.entry_number || '_withdrawn');
 
+    -- Set the role to student
     EXECUTE FORMAT('
-      CREATE ROLE 
+      CREATE ROLE ''%s''
+      INHERITS
+    ', NEW.entry_number);
+
+    EXECUTE FORMAT('
+      GRANT student
+      TO ''%s''
+    ', NEW.entry_number);
+
+    EXECUTE FORMAT('
+      GRANT INSERT, SELECT, REFERENCES
+      ON 
     ')
 
     RETURN NEW;
