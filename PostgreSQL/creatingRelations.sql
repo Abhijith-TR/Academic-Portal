@@ -20,9 +20,7 @@ CREATE TABLE faculty(
   name VARCHAR(40) NOT NULL,
   department_id VARCHAR(15) NOT NULL,
   phone INTEGER,
-  password VARCHAR(40) NOT NULL,
-  FOREIGN KEY (department_id) REFERENCES department(department_id),
-  CHECK ( length(password) >= 8 )
+  FOREIGN KEY (department_id) REFERENCES department(department_id)
 );
 
 -- entry_number: Currently 11 characters. 15 to accommodate older entry numbers
@@ -31,9 +29,7 @@ CREATE TABLE student(
   entry_number VARCHAR(15) PRIMARY KEY,
   name VARCHAR(40) NOT NULL,
   phone INTEGER,
-  password VARCHAR(40) NOT NULL,
   department_id VARCHAR(15) NOT NULL,
-  CHECK ( length(password) >= 8 ),
   FOREIGN KEY (department_id) REFERENCES department(department_id)
 );
 
@@ -47,15 +43,16 @@ CREATE TABLE student(
 -- Note: The course_code is unique to each course offered at IIT Ropar
 -- The pre-requisites are allowed to be empty.
 CREATE TABLE course_catalog(
-  course_code VARCHAR(6) PRIMARY KEY, 
+  course_code VARCHAR(6),
   course_title VARCHAR(70) NOT NULL, 
-  lecture_hours INTEGER CHECK (lecture_hours >= 0 AND lecture_hours <= 24) NOT NULL,
-  tutorial_hours INTEGER CHECK (tutorial_hours >= 0 AND tutorial_hours <= 24) NOT NULL,
-  practical_hours INTEGER CHECK (practical_hours >= 0 AND practical_hours <= 24) NOT NULL,
-  self_study_hours INTEGER CHECK (self_study_hours >= 0 AND self_study_hours <= 24) NOT NULL,
-  credits INTEGER CHECK (credits > 0) NOT NULL,
+  lecture_hours DECIMAL(4, 2) CHECK (lecture_hours >= 0 AND lecture_hours <= 24) NOT NULL,
+  tutorial_hours DECIMAL(4, 2) CHECK (tutorial_hours >= 0 AND tutorial_hours <= 24) NOT NULL,
+  practical_hours DECIMAL(4, 2) CHECK (practical_hours >= 0 AND practical_hours <= 24) NOT NULL,
+  self_study_hours DECIMAL(4, 2) CHECK (self_study_hours >= 0 AND self_study_hours <= 24) NOT NULL,
+  credits DECIMAL(3, 1) CHECK (credits > 0) NOT NULL,
   pre_requisites VARCHAR[6][],
   department_id VARCHAR(15) NOT NULL,
+  PRIMARY KEY (course_code, department_id),
   FOREIGN KEY (department_id) REFERENCES department(department_id)
 );
 
@@ -72,12 +69,13 @@ CREATE TABLE course_offerings(
   faculty_id VARCHAR(15) NOT NULL,
   year INTEGER NOT NULL,
   semester INTEGER NOT NULL,
+  department_id VARCHAR(15) NOT NULL,
   cgpa_criteria DECIMAL(4, 2) CHECK (
     cgpa_criteria >= 0.0 
     AND cgpa_criteria <= 10.0
-    ) NOT NULL,
+    ) DEFAULT 0,
   CHECK (semester IN (1, 2, 3, 4)),
-  FOREIGN KEY (course_code) REFERENCES course_catalog(course_code),
+  FOREIGN KEY (course_code, department_id) REFERENCES course_catalog(course_code, department_id),
   FOREIGN KEY (faculty_id) REFERENCES faculty(faculty_id),
   PRIMARY KEY (course_code, year, semester)
 );

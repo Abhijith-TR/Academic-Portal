@@ -1,1 +1,5 @@
 Add the phone number feature to both database and the java application.
+
+You need to ensure that the pre requisite courses exist in the course catalog.
+
+Default CGPA criteria is going to be 0
