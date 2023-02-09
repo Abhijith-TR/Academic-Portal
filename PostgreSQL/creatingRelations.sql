@@ -1,10 +1,10 @@
 -- In order to log into the database, the faculty can use their faculty ID, the students can use their entry number
 -- The admin will have the username mentioned in the project specification
-CREATE TABLE user_details(
-  username VARCHAR(15) PRIMARY KEY,
-  password VARCHAR(40) NOT NULL,
-  role VARCHAR(7) NOT NULL,
-  CHECK (role IN ('student', 'faculty', 'admin'))
+CREATE TABLE admin(
+  admin_id VARCHAR(15) PRIMARY KEY,
+  name VARCHAR(40) NOT NULL,
+  phone INTEGER,
+  password VARCHAR(40) NOT NULL
 );
 
 -- department_id: Used to uniquely identify each department. Given based on number of departments
@@ -19,15 +19,21 @@ CREATE TABLE faculty(
   faculty_id VARCHAR(15) PRIMARY KEY,
   name VARCHAR(40) NOT NULL,
   department_id VARCHAR(15) NOT NULL,
-  FOREIGN KEY (department_id) REFERENCES department(department_id)
+  phone INTEGER,
+  password VARCHAR(40) NOT NULL,
+  FOREIGN KEY (department_id) REFERENCES department(department_id),
+  CHECK ( length(password) >= 8 )
 );
 
--- entry_number: Currently 11 characters. 15 to accomodate older entry numbers
+-- entry_number: Currently 11 characters. 15 to accommodate older entry numbers
 -- name: Longest name encountered: 40 characters
-CREATE TABLE students(
+CREATE TABLE student(
   entry_number VARCHAR(15) PRIMARY KEY,
   name VARCHAR(40) NOT NULL,
+  phone INTEGER,
+  password VARCHAR(40) NOT NULL,
   department_id VARCHAR(15) NOT NULL,
+  CHECK ( length(password) >= 8 ),
   FOREIGN KEY (department_id) REFERENCES department(department_id)
 );
 
@@ -60,7 +66,7 @@ CREATE TABLE course_catalog(
 --   ]
 -- 1 and 2 refer to the normal semesters. 3 refers to the summer semester and 4 refers to the winter semester
 -- The course_code is a foreign key, as only a course in the course_catalog can be offered
--- instructor refers only to the instructur in charge of the course, not all the instructors teaching the course
+-- instructor refers only to the instructor in charge of the course, not all the instructors teaching the course
 CREATE TABLE course_offerings(
   course_code VARCHAR(6),
   faculty_id VARCHAR(15) NOT NULL,
@@ -76,7 +82,7 @@ CREATE TABLE course_offerings(
   PRIMARY KEY (course_code, year, semester)
 );
 
--- entry_number: Currently 11 characters. 15 to accomodate older entry numbers
+-- entry_number: Currently 11 characters. 15 to accommodate older entry numbers
 -- status: One of the following:
 --   [ 
 --    Enrolled
@@ -104,7 +110,7 @@ CREATE TABLE student_course_registration(
   grade VARCHAR(2),
   PRIMARY KEY (entry_number, course_code, year, semester),
   FOREIGN KEY (course_code, year, semester) REFERENCES course_offerings(course_code, year, semester),
-  FOREIGN KEY (entry_number) REFERENCES students(entry_number),
+  FOREIGN KEY (entry_number) REFERENCES student(entry_number),
   CHECK (status in (
     'Enrolled', 
     'Dropped',
@@ -117,4 +123,12 @@ CREATE TABLE student_course_registration(
   CHECK (grade in (
     'A', 'A-', 'B', 'B-', 'C', 'C-', 'D', 'E', 'F', 'NP', 'W', 'I', 'NF', 'EN', '-'
   ))
+);
+
+CREATE TABLE user_login_details (
+    id VARCHAR(15) PRIMARY KEY,
+    password VARCHAR(40) NOT NULL,
+    role VARCHAR(7) NOT NULL,
+    CHECK ( role in ('admin', 'student', 'faculty')),
+    CHECK ( length(password) >= 8 )
 );
