@@ -1,12 +1,16 @@
 package org.example;
 
-import org.example.database.Database;
-import org.example.interfaces.Interface;
+import org.example.dal.Database;
+import org.example.interfaces.HomeInterface;
 
 public class Main {
     public static void main(String[] args) {
-        Database databaseConnection = new Database();
-        Interface homeInterface = new Interface();
-        homeInterface.mainInterface(databaseConnection);
+        Database databaseConnection = new Database(
+                "jdbc:postgresql://localhost:5432/mini_project",
+                "postgres",
+                "admin"
+                );
+        HomeInterface homeInterface = new HomeInterface();
+        homeInterface.mainInterface();
     }
 }

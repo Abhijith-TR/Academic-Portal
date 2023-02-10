@@ -29,13 +29,6 @@ SELECT enroll(
   'II'
 );
 
--- Testing login function
-SELECT login(
-  '2020CSB1062', 
-  'random',
-  'student'
-);    
-
 -- Complete set of queries for inserting dummy data
 insert into department values('DEPT01', 'Computer Science');
 

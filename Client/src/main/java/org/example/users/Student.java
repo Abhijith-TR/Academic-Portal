@@ -1,7 +1,7 @@
 package org.example.users;
 
-import org.example.database.Database;
-import org.example.users.User;
+import org.example.dal.Database;
+import org.example.dal.StudentDAO;
 
 public class Student extends User {
     public Student(String id) {
@@ -10,5 +10,10 @@ public class Student extends User {
 
     public boolean updateProfile(int newPhoneNumber, Database databaseConnection) {
         return databaseConnection.updatePhoneNumber("student", newPhoneNumber);
+    }
+
+    public boolean enroll(String courseCode, StudentDAO studentDAO) {
+//        studentDAO.enroll(courseCode);
+        return true;
     }
 }

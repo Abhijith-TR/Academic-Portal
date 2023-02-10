@@ -74,6 +74,7 @@ CREATE TABLE course_offerings(
     cgpa_criteria >= 0.0 
     AND cgpa_criteria <= 10.0
     ) DEFAULT 0,
+  instructor_prerequisites JSONB,
   CHECK (semester IN (1, 2, 3, 4)),
   FOREIGN KEY (course_code, department_id) REFERENCES course_catalog(course_code, department_id),
   FOREIGN KEY (faculty_id) REFERENCES faculty(faculty_id),
@@ -123,10 +124,20 @@ CREATE TABLE student_course_registration(
   ))
 );
 
+-- This table contains the login details for all admin, students and faculty
+-- The length of the password must be at least 8
+-- The default password is iitropar which can be changed by the user once they login
 CREATE TABLE user_login_details (
     id VARCHAR(15) PRIMARY KEY,
-    password VARCHAR(40) NOT NULL,
+    password VARCHAR(40) DEFAULT 'iitropar',
     role VARCHAR(7) NOT NULL,
     CHECK ( role in ('admin', 'student', 'faculty')),
     CHECK ( length(password) >= 8 )
+);
+
+-- A table that stores the current year and semester to ensure that students can only enroll in courses that have been offered in the current semester
+-- JAVA code ensures that this table always contains only one entry
+CREATE TABLE current_year_and_semester (
+    year INTEGER NOT NULL,
+    semester INTEGER NOT NULL
 );

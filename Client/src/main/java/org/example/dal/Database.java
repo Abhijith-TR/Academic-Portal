@@ -1,15 +1,15 @@
-package org.example.database;
+package org.example.dal;
 
 import java.sql.*;
 
 public class Database {
-    private Connection databaseConnection;
-    public Database() {
+    protected Connection databaseConnection;
+    public Database(String connectionURL, String username, String password) {
         try {
             databaseConnection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/mini_project",
-                    "postgres",
-                    "admin"
+                    connectionURL,
+                    username,
+                    password
             );
             System.out.println("Database connection established");
         } catch (Exception error) {
@@ -26,10 +26,9 @@ public class Database {
             ResultSet userDetails = authenticationQuery.executeQuery();
             if ( userDetails.next() ) {
                 String passwordInDatabase = userDetails.getString(1);
-//                System.out.println( password + " " + passwordInDatabase );
                 return password.equals(passwordInDatabase);
             }
-        } catch (SQLException e) {
+        } catch (SQLException error) {
             System.err.println("No response from database. Service shutting down");
             System.exit(0);
         }
@@ -39,8 +38,8 @@ public class Database {
     public boolean updatePhoneNumber(String role, int newPhoneNumber) {
         try {
             PreparedStatement updateQuery = databaseConnection.prepareStatement("UPDATE phone");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException error) {
+            System.out.println(error.getMessage());
         }
         return true;
     }

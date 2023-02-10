@@ -1,5 +1,11 @@
 Add the phone number feature to both database and the java application.
 
-You need to ensure that the pre requisite courses exist in the course catalog.
+You need to ensure that the pre-requisite courses exist in the course catalog.
 
 Default CGPA criteria is going to be 0
+
+JSON only works in postgres 9.4+
+select prereq::json->'CS301' as prereq from course_offerings where course_code = 'CS301';
+select arr.position, arr.item_object from test, jsonb_array_elements(val) with ordinality arr(item_object, position);
+
+Should the database object be separated to prevent student.java from accessing all of its functions?
