@@ -1,6 +1,5 @@
 package org.example.interfaces;
 
-import org.example.dal.Database;
 import org.example.users.Faculty;
 
 import java.util.Scanner;

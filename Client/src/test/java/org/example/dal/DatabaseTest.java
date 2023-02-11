@@ -28,6 +28,7 @@ class DatabaseTest {
 
     @AfterEach
     void tearDown() {
+
     }
 
     @Test
@@ -42,9 +43,12 @@ class DatabaseTest {
 
     @Test
     void checkCourseOffering() {
-        assertTrue(student.checkCourseOffering("CS101"));
-        assertFalse(student.checkCourseOffering("HS101"));
-        assertFalse(student.checkCourseOffering("CS888"));
+        // Course exists and is in the correct session
+        assertTrue(student.checkCourseOffering("CS101", 2020, 1));
+        // Course exists but is in the wrong session
+        assertFalse(student.checkCourseOffering("HS101", 2020, 1));
+        // Course does not exist
+        assertFalse(student.checkCourseOffering("CS888", 2022, 1));
     }
 
     @Test

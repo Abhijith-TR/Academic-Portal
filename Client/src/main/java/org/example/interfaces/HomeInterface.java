@@ -15,6 +15,7 @@ public class HomeInterface {
     public void mainInterface() {
         Scanner keyboardInput = new Scanner(System.in);
         while (true) {
+            System.out.println();
             System.out.println("Welcome to the Academic System");
             System.out.println("Select your role");
 

@@ -2,10 +2,15 @@ Add the phone number feature to both database and the java application.
 
 You need to ensure that the pre-requisite courses exist in the course catalog.
 
-Default CGPA criteria is going to be 0
-
-JSON only works in postgres 9.4+
-select prereq::json->'CS301' as prereq from course_offerings where course_code = 'CS301';
-select arr.position, arr.item_object from test, jsonb_array_elements(val) with ordinality arr(item_object, position);
+Default CGPA criteria is going to be 4
 
 Should the database object be separated to prevent student.java from accessing all of its functions?
+
+Get rid of status in student_course_registration
+
+Should a derived class interface consist of the methods of the parent class as well?
+
+Does System.err.println(error.message()) cause the screen to stop working?
+
+Refactoring idea - Make the database connection an object. Make every student have their own database access object
+You can also create a separate utils object for each instance instead of the static idea
