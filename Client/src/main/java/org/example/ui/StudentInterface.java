@@ -1,6 +1,6 @@
 package org.example.ui;
 
-import org.example.dal.StudentDAO;
+import org.example.dal.PostgresStudentDAO;
 import org.example.users.Student;
 
 import java.util.Scanner;
@@ -16,7 +16,7 @@ public class StudentInterface {
     };
 
     public StudentInterface(String connectionURL, String username, String password, String id) {
-        StudentDAO databaseConnection = new StudentDAO(
+        PostgresStudentDAO databaseConnection = new PostgresStudentDAO(
                 connectionURL,
                 username,
                 password
@@ -24,7 +24,7 @@ public class StudentInterface {
         StudentInterfaceHomeScreen(databaseConnection, id);
     }
 
-    public void StudentInterfaceHomeScreen(StudentDAO databaseConnection, String id) {
+    public void StudentInterfaceHomeScreen(PostgresStudentDAO databaseConnection, String id) {
         Scanner keyboardInput = new Scanner(System.in);
         Student student = new Student(id, databaseConnection);
         while (true) {

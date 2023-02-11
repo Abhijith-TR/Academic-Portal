@@ -1,23 +1,21 @@
 package org.example.users;
 
-import org.example.dal.StudentDAO;
+import org.example.dal.PostgresStudentDAO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class StudentTest {
-    Student student;
-    StudentDAO studentDAO;
+    Student            student;
+    PostgresStudentDAO postgresStudentDAO;
     @BeforeEach
     void setUp() {
-        studentDAO = new StudentDAO(
+        postgresStudentDAO = new PostgresStudentDAO(
                 "jdbc:postgresql://localhost:5432/mini_project",
                 "postgres",
                 "admin"
         );
-        student = new Student("2020csb1062", studentDAO);
+        student = new Student("2020csb1062", postgresStudentDAO);
     }
 
     @AfterEach

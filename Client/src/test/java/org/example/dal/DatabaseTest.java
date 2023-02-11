@@ -9,8 +9,8 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DatabaseTest {
-    Database database;
-    StudentDAO student;
+    Database           database;
+    PostgresStudentDAO student;
 
     @BeforeEach
     void setUp() {
@@ -19,7 +19,7 @@ class DatabaseTest {
                 "postgres",
                 "admin"
         );
-        student = new StudentDAO(
+        student = new PostgresStudentDAO(
                 "jdbc:postgresql://localhost:5432/mini_project",
                 "postgres",
                 "admin"

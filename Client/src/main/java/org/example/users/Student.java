@@ -1,11 +1,11 @@
 package org.example.users;
 
-import org.example.dal.Database;
 import org.example.dal.StudentDAO;
 import org.example.utils.Utils;
 
 public class Student extends User {
     StudentDAO studentDAO;
+
     public Student(String id, StudentDAO studentDAO) {
         super(id);
         this.studentDAO = studentDAO;
@@ -140,8 +140,8 @@ public class Student extends User {
         double     creditsEarned = 0;
 
         for (String[] record : records) {
-            double credits = Double.parseDouble(record[0]);
-            int gradeToCredits = Utils.getGradeValue(record[1]);
+            double credits        = Double.parseDouble(record[0]);
+            int    gradeToCredits = Utils.getGradeValue(record[1]);
             totalCredits += credits;
             creditsEarned += (gradeToCredits) / 10.0 * credits;
         }
