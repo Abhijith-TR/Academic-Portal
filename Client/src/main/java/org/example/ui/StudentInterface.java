@@ -1,4 +1,4 @@
-package org.example.interfaces;
+package org.example.ui;
 
 import org.example.dal.StudentDAO;
 import org.example.users.Student;
@@ -10,35 +10,23 @@ public class StudentInterface {
             "Update Profile",
             "Enroll",
             "Drop",
-            "View Grades",
+            "View Grades for Entire Course",
+            "View Grades for Particular Session",
             "Get CGPA"
     };
 
-    public StudentInterface() {
+    public StudentInterface(String connectionURL, String username, String password, String id) {
         StudentDAO databaseConnection = new StudentDAO(
-                "jdbc:postgresql://localhost:5432/mini_project",
-                "postgres",
-                "admin"
+                connectionURL,
+                username,
+                password
         );
-        StudentInterfaceHomeScreen(databaseConnection);
+        StudentInterfaceHomeScreen(databaseConnection, id);
     }
 
-    public void StudentInterfaceHomeScreen(StudentDAO databaseConnection) {
+    public void StudentInterfaceHomeScreen(StudentDAO databaseConnection, String id) {
         Scanner keyboardInput = new Scanner(System.in);
-        // Enter the id and password
-        System.out.print("Enter your id: ");
-        String id = keyboardInput.nextLine();
-
-        System.out.print("Enter your password: ");
-        String password = keyboardInput.nextLine();
-
-        boolean isUserValid = databaseConnection.authenticateUser(id, password, "student");
-        if (!isUserValid) {
-            System.out.println("Invalid username or password");
-            return;
-        }
-
-        Student student = new Student(id);
+        Student student = new Student(id, databaseConnection);
         while (true) {
             System.out.println();
             System.out.println("Select an option");
@@ -57,7 +45,7 @@ public class StudentInterface {
                 // Read the phone number and the newline that follows it
                 int newPhoneNumber = keyboardInput.nextInt();
                 keyboardInput.nextLine();
-                boolean status = student.updateProfile(newPhoneNumber, databaseConnection);
+                boolean status = student.updateProfile(newPhoneNumber);
 
                 if (!status) System.out.println("Profile Update Failed");
                 else System.out.println("Profile Updated Successfully");
@@ -68,7 +56,7 @@ public class StudentInterface {
                 // Read the course code
                 String courseCode = keyboardInput.nextLine();
                 // Print the response from the enroll function
-                System.out.println(student.enroll(courseCode, databaseConnection));
+                System.out.println(student.enroll(courseCode));
             }
             else if (studentChoice == 3) {
                 System.out.print("Enter the course code: ");
@@ -76,7 +64,24 @@ public class StudentInterface {
                 // Read the course code
                 String courseCode = keyboardInput.nextLine();
                 // Print the response from the drop function
-                System.out.println(student.drop(courseCode, databaseConnection));
+                System.out.println(student.drop(courseCode));
+            }
+            else if (studentChoice == 4) {
+                student.getGrades();
+            }
+            else if (studentChoice == 5) {
+                System.out.print("Enter the year: ");
+                int year = keyboardInput.nextInt();
+                keyboardInput.nextLine();
+
+                System.out.print("Enter the semester: ");
+                int semester = keyboardInput.nextInt();
+                keyboardInput.nextLine();
+
+                student.getGrades(year, semester);
+            }
+            else if (studentChoice == 6) {
+                System.out.printf("CGPA: %.2f", student.getCGPA());
             }
             else {
                 break;

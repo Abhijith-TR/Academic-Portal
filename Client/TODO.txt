@@ -14,3 +14,5 @@ Does System.err.println(error.message()) cause the screen to stop working?
 
 Refactoring idea - Make the database connection an object. Make every student have their own database access object
 You can also create a separate utils object for each instance instead of the static idea
+
+If student takes course multiple times, are all of those counted in the CG calculations?

@@ -5,16 +5,18 @@ import org.example.dal.StudentDAO;
 import org.example.utils.Utils;
 
 public class Student extends User {
-    public Student(String id) {
+    StudentDAO studentDAO;
+    public Student(String id, StudentDAO studentDAO) {
         super(id);
+        this.studentDAO = studentDAO;
     }
 
-    public boolean updateProfile(int newPhoneNumber, Database databaseConnection) {
-        return databaseConnection.updatePhoneNumber("student", newPhoneNumber);
+    public boolean updateProfile(int newPhoneNumber) {
+        return true;
     }
 
     // The default cutoff of 4 is implemented here.
-    private boolean checkCourseCatalogPrerequisites(String courseCode, StudentDAO studentDAO) {
+    private boolean checkCourseCatalogPrerequisites(String courseCode) {
         String[] prerequisites = studentDAO.getCourseCatalogPrerequisites(courseCode);
         if (prerequisites == null) return false;
 
@@ -28,7 +30,7 @@ public class Student extends User {
     }
 
     // A database error and no prerequisites will both return null. But student should not be allowed to enroll if there is a database error
-    private boolean checkInstructorPrerequisites(String courseCode, StudentDAO studentDAO, int[] currentSession) {
+    private boolean checkInstructorPrerequisites(String courseCode, int[] currentSession) {
         int        currentYear     = currentSession[0];
         int        currentSemester = currentSession[1];
         String[][] prerequisites   = studentDAO.getInstructorPrerequisites(courseCode, currentYear, currentSemester);
@@ -48,17 +50,17 @@ public class Student extends User {
         return true;
     }
 
-    private boolean checkStudentEligibility(String courseCode, StudentDAO studentDAO, int[] currentSession) {
-        boolean hasCompletedCourseCatalogPrerequisites = checkCourseCatalogPrerequisites(courseCode, studentDAO);
+    private boolean checkStudentEligibility(String courseCode, int[] currentSession) {
+        boolean hasCompletedCourseCatalogPrerequisites = checkCourseCatalogPrerequisites(courseCode);
         if (!hasCompletedCourseCatalogPrerequisites) {
             return false;
         }
-        return checkInstructorPrerequisites(courseCode, studentDAO, currentSession);
+        return checkInstructorPrerequisites(courseCode, currentSession);
     }
 
-    private boolean checkCreditLimit(String courseCode, int[] currentSession, StudentDAO studentDAO) {
-        int    currentYear        = currentSession[0];
-        int    currentSemester    = currentSession[1];
+    private boolean checkCreditLimit(String courseCode, int[] currentSession) {
+        int currentYear     = currentSession[0];
+        int currentSemester = currentSession[1];
 
         // We might want to store this in the database if necessary
         double minimumCreditLimit = 18;
@@ -83,7 +85,7 @@ public class Student extends User {
         return (creditsInCurrentSemester + creditsOfCourse) > creditLimit;
     }
 
-    public String enroll(String courseCode, StudentDAO studentDAO) {
+    public String enroll(String courseCode) {
         int[] currentSession  = studentDAO.getCurrentAcademicSession();
         int   currentYear     = currentSession[0];
         int   currentSemester = currentSession[1];
@@ -91,31 +93,58 @@ public class Student extends User {
         boolean doesCourseExist = studentDAO.checkCourseOffering(courseCode, currentYear, currentSemester);
         if (!doesCourseExist) return "Course Not Offered";
         // This checks if the course exists as well.
-        boolean isStudentEligible   = checkStudentEligibility(courseCode, studentDAO, currentSession);
+        boolean isStudentEligible = checkStudentEligibility(courseCode, currentSession);
         if (!isStudentEligible) return "Student Ineligible for Course";
-        boolean creditLimitExceeded = checkCreditLimit(courseCode, currentSession, studentDAO);
+        boolean creditLimitExceeded = checkCreditLimit(courseCode, currentSession);
         if (creditLimitExceeded) return "Credit Limit Exceeded";
 
         boolean enrollmentRequestStatus = studentDAO.enroll(courseCode, this.id, currentYear, currentSemester);
-        if (enrollmentRequestStatus == true) return "Enrolled Successfully";
+        if (enrollmentRequestStatus) return "Enrolled Successfully";
         else return "Course Enrollment Failed";
     }
 
-    public String drop(String courseCode, StudentDAO studentDAO) {
-        int[] currentSession = studentDAO.getCurrentAcademicSession();
-        int currentYear = currentSession[0];
-        int currentSemester = currentSession[1];
+    public String drop(String courseCode) {
+        int[]   currentSession   = studentDAO.getCurrentAcademicSession();
+        int     currentYear      = currentSession[0];
+        int     currentSemester  = currentSession[1];
         boolean courseDropStatus = studentDAO.dropCourse(courseCode, id, currentYear, currentSemester);
-        if (courseDropStatus == true) return "Enrollment Dropped Successfully";
+        if (courseDropStatus) return "Enrollment Dropped Successfully";
         else return "Could not find enrollment in current semester";
     }
 
     public void getGrades() {
-
+        int[] currentSession  = studentDAO.getCurrentAcademicSession();
+        int   currentYear     = currentSession[0];
+        int   currentSemester = currentSession[1];
+        int   studentBatch    = studentDAO.getBatch(this.id);
+        for (int year = studentBatch; year <= currentYear; year++) {
+            for (int semester = 1; semester <= 2; semester++) {
+                getGrades(year, semester);
+                if (year == currentYear && semester == currentSemester) break;
+            }
+        }
     }
 
-    public void getGrades(int year, int semester, StudentDAO studentDAO) {
+    public void getGrades(int year, int semester) {
         String[][] semesterGrades = studentDAO.getGradesForSemester(this.id, year, semester);
-        Utils.prettyPrint(semesterGrades);
+        if (semesterGrades.length == 0) {
+            System.out.printf("No records found for session %d-%d\n\n", year, semester);
+            return;
+        }
+        Utils.prettyPrintGrades(year, semester, semesterGrades);
+    }
+
+    public double getCGPA() {
+        String[][] records       = studentDAO.getAllRecords(this.id);
+        double     totalCredits  = 0;
+        double     creditsEarned = 0;
+
+        for (String[] record : records) {
+            double credits = Double.parseDouble(record[0]);
+            int gradeToCredits = Utils.getGradeValue(record[1]);
+            totalCredits += credits;
+            creditsEarned += (gradeToCredits) / 10.0 * credits;
+        }
+        return creditsEarned / totalCredits * 10;
     }
 }

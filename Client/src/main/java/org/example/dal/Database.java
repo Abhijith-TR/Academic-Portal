@@ -11,7 +11,6 @@ public class Database {
                     username,
                     password
             );
-            System.out.println("Database connection established");
         } catch (Exception error) {
             System.err.println("Could not connect to database. Shutting down.");
             System.exit(0);

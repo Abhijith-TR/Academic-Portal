@@ -1,6 +1,5 @@
-package org.example.interfaces;
+package org.example.ui;
 
-import org.example.dal.Database;
 import org.example.users.Admin;
 
 import java.util.Scanner;

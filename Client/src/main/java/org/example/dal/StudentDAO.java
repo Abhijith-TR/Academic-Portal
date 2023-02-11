@@ -2,15 +2,22 @@ package org.example.dal;
 
 import org.example.utils.Utils;
 
-import java.sql.Array;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
-public class StudentDAO extends Database {
+public class StudentDAO {
+    Connection databaseConnection;
     public StudentDAO(String connectionURL, String username, String password) {
-        super(connectionURL, username, password);
+        try {
+            databaseConnection = DriverManager.getConnection(
+                    connectionURL,
+                    username,
+                    password
+            );
+        } catch (Exception error) {
+            System.out.println("Database error. Please try again later");
+            System.exit(0);
+        }
     }
 
     // Returns the current year and semester if successful
@@ -184,11 +191,40 @@ public class StudentDAO extends Database {
                 String grade       = gradeQueryResult.getString(3);
                 records.add(new String[]{courseCode, courseTitle, grade});
             }
-            String[][] record = records.toArray(new String[records.size()][]);
-            for (String[] x : record) {
-                System.out.println(x[0] + " " + x[1] + " " + x[2]);
+            return records.toArray(new String[records.size()][]);
+        } catch (Exception error) {
+            System.out.println("Database Error. Try again later");
+            return new String[][]{};
+        }
+    }
+
+    public int getBatch(String id) {
+        try {
+            PreparedStatement batchQuery = databaseConnection.prepareStatement("SELECT batch FROM student WHERE entry_number = ?");
+            batchQuery.setString(1, id);
+            ResultSet batchQueryResult = batchQuery.executeQuery();
+            batchQueryResult.next();
+            int batch = batchQueryResult.getInt(1);
+            return batch;
+        } catch (Exception error) {
+            System.out.println("Database Error. Try again later");
+            return -1;
+        }
+    }
+
+    public String[][] getAllRecords(String id) {
+        try {
+            PreparedStatement recordsQuery = databaseConnection.prepareStatement("SELECT credits, grade FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ?");
+            recordsQuery.setString(1, id);
+            ResultSet recordsQueryResult = recordsQuery.executeQuery();
+
+            ArrayList<String[]> records = new ArrayList<>();
+            while (recordsQueryResult.next()) {
+                String credits = recordsQueryResult.getString(1);
+                String grade   = recordsQueryResult.getString(2);
+                records.add(new String[]{credits, grade});
             }
-            return record;
+            return records.toArray(new String[records.size()][]);
         } catch (Exception error) {
             System.out.println("Database Error. Try again later");
             return new String[][]{};

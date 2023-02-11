@@ -1,4 +1,4 @@
-package org.example.interfaces;
+package org.example.ui;
 
 import org.example.users.Faculty;
 
