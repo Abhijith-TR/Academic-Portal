@@ -28,4 +28,6 @@ public interface StudentDAO {
     int getBatch(String id);
 
     String[][] getAllRecords(String id);
+
+    String[][] getOfferedCourses(int currentYear, int currentSemester);
 }

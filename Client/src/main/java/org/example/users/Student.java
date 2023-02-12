@@ -147,4 +147,16 @@ public class Student extends User {
         }
         return creditsEarned / totalCredits * 10;
     }
+
+    public void getAvailableCourses() {
+        int[]      currentSession  = studentDAO.getCurrentAcademicSession();
+        int        currentYear     = currentSession[0];
+        int        currentSemester = currentSession[1];
+        String[][] coursesOffered  = studentDAO.getOfferedCourses(currentYear, currentSemester);
+        if (coursesOffered.length == 0) {
+            System.out.println("No courses offered this session");
+            return;
+        }
+        Utils.prettyPrint(new String[]{"Course Code", "Course Title", "Instructor", "Prerequisites"}, coursesOffered);
+    }
 }

@@ -71,6 +71,7 @@ public class HomeInterface {
             } else if (roleIndex == 3) {
                 new AdminInterface();
             }
+            while (!passwordAuthConnection.logLogoutEntry(id, Role.values()[roleIndex-1].name().toLowerCase())) {}
         }
     }
 

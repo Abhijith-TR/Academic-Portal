@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.example.dal.PostgresStudentDAOTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-02-12T06:33:03" hostname="ADMIN" time="0.183">
+  <properties/>
+  <testcase name="getOfferedCourses()" classname="org.example.dal.PostgresStudentDAOTest" time="0.183"/>
+  <system-out><![CDATA[CS302
+CS303
+NS102
+CS522
+HS104
+GE111
+BM101
+CS301
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

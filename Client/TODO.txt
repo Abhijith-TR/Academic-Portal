@@ -6,11 +6,9 @@ Default CGPA criteria is going to be 4
 
 Should the database object be separated to prevent student.java from accessing all of its functions?
 
-Get rid of status in student_course_registration
-
 Should a derived class interface consist of the methods of the parent class as well?
 
-Does System.err.println(error.message()) cause the screen to stop working?
+Make the log functionality complete.
 
 Refactoring idea - Make the database connection an object. Make every student have their own database access object
 You can also create a separate utils object for each instance instead of the static idea

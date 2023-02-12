@@ -142,3 +142,12 @@ CREATE TABLE current_year_and_semester
     year     INTEGER NOT NULL,
     semester INTEGER NOT NULL
 );
+
+CREATE TABLE log(
+    id VARCHAR(15) NOT NULL,
+    role VARCHAR(7) NOT NULL,
+    log_time TIMESTAMP NOT NULL,
+    in_or_out VARCHAR(4) NOT NULL,
+    CHECK ( role in ('admin', 'student', 'faculty')),
+    CHECK (in_or_out IN ('in', 'out'))
+);

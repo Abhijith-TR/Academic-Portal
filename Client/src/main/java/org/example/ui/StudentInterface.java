@@ -12,7 +12,8 @@ public class StudentInterface {
             "Drop",
             "View Grades for Entire Course",
             "View Grades for Particular Session",
-            "Get CGPA"
+            "Get CGPA",
+            "View Available Courses"
     };
 
     public StudentInterface(String connectionURL, String username, String password, String id) {
@@ -82,6 +83,9 @@ public class StudentInterface {
             }
             else if (studentChoice == 6) {
                 System.out.printf("CGPA: %.2f", student.getCGPA());
+            }
+            else if (studentChoice == 7) {
+                student.getAvailableCourses();
             }
             else {
                 break;

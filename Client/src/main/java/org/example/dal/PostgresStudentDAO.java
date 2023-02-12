@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class PostgresStudentDAO implements StudentDAO {
     Connection databaseConnection;
+
     public PostgresStudentDAO(String connectionURL, String username, String password) {
         try {
             databaseConnection = DriverManager.getConnection(
@@ -235,6 +236,29 @@ public class PostgresStudentDAO implements StudentDAO {
                 String credits = recordsQueryResult.getString(1);
                 String grade   = recordsQueryResult.getString(2);
                 records.add(new String[]{credits, grade});
+            }
+            return records.toArray(new String[records.size()][]);
+        } catch (Exception error) {
+            System.out.println("Database Error. Try again later");
+            return new String[][]{};
+        }
+    }
+
+    @Override
+    public String[][] getOfferedCourses(int currentYear, int currentSemester) {
+        try {
+            PreparedStatement getCoursesQuery = databaseConnection.prepareStatement("SELECT course_code, course_title, name, pre_requisites FROM course_offerings NATURAL JOIN course_catalog NATURAL JOIN faculty WHERE year = ? AND semester = ?");
+            getCoursesQuery.setInt(1, currentYear);
+            getCoursesQuery.setInt(2, currentSemester);
+            ResultSet getCoursesQueryResult = getCoursesQuery.executeQuery();
+
+            ArrayList<String[]> records = new ArrayList<>();
+            while (getCoursesQueryResult.next()) {
+                String course_code    = getCoursesQueryResult.getString(1);
+                String course_title   = getCoursesQueryResult.getString(2);
+                String faculty_name   = getCoursesQueryResult.getString(3);
+                String pre_requisites = getCoursesQueryResult.getString(4);
+                records.add(new String[]{course_code, course_title, faculty_name, pre_requisites});
             }
             return records.toArray(new String[records.size()][]);
         } catch (Exception error) {
