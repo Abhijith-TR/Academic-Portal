@@ -14,4 +14,8 @@ public interface AdminDAO extends CommonDAO {
     boolean createBatch(int batchYear);
 
     boolean createCurriculum(int batchYear, double[] creditRequirements);
+
+    boolean createBatchCourseTable( int batch );
+
+    boolean insertCoreCourse( int batch, String courseCode, String courseCategory, String[] departmentCodes );
 }

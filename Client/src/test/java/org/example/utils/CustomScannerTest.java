@@ -4,12 +4,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class CustomScannerTest {
-
+    CustomScanner keyboardInput;
     @BeforeEach
     void setUp() {
+        keyboardInput = new CustomScanner();
     }
 
     @AfterEach
@@ -30,5 +29,6 @@ class CustomScannerTest {
 
     @Test
     void fileInput() {
+        keyboardInput.CSVFileInput( "CSV File" );
     }
 }

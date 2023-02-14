@@ -48,4 +48,9 @@ class PostgresAdminDAOTest {
     void insertCourse() {
         assertTrue(admin.insertCourse("CS403", "ADVANCED OS", new double[]{4, 1, 0, 5, 3}, new String[]{"CS550"}, "CS"));
     }
+
+    @Test
+    void createBatchCourseTable() {
+        assertTrue(admin.createBatchCourseTable( 2020 ));
+    }
 }

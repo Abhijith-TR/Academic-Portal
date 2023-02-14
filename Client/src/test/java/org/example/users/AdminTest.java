@@ -6,6 +6,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AdminTest {
@@ -39,5 +43,42 @@ class AdminTest {
     @Test
     void insertCourse() {
 //        admin.insertCourse("CS111", "")
+    }
+
+    @Test
+    void testGetGradesOfOffering() {
+    }
+
+    @Test
+    void testInsertStudent() {
+    }
+
+    @Test
+    void testInsertFaculty() {
+    }
+
+    @Test
+    void insertCourseIntoCatalog() {
+    }
+
+    @Test
+    void dropCourseFromCatalog() {
+    }
+
+    @Test
+    void getGradesOfStudent() {
+    }
+
+    @Test
+    void createBatch() {
+    }
+
+    @Test
+    void insertCoreCourses() {
+        try {
+            assertTrue(admin.insertCoreCourses( 2020, new BufferedReader( new FileReader( "C:\\Users\\abhij\\Downloads\\Book1.csv" ) ) ));
+        } catch ( FileNotFoundException e ) {
+            throw new RuntimeException( e );
+        }
     }
 }

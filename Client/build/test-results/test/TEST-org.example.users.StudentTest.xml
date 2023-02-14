@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.example.users.StudentTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-02-13T17:40:40" hostname="ADMIN" time="0.172">
-  <properties/>
-  <testcase name="testGetGrades()" classname="org.example.users.StudentTest" time="0.172"/>
-  <system-out><![CDATA[[[Ljava.lang.String;@13ad5cd3
-[[Ljava.lang.String;@6581dc0a
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

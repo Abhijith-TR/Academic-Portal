@@ -192,4 +192,3 @@ CREATE TABLE ug_curriculum
     oe   NUMERIC(4, 2) NOT NULL,
     FOREIGN KEY (year) REFERENCES batch (year)
 );
-

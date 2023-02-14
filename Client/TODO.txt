@@ -24,3 +24,5 @@ Test that the delete course function deletes all offerings and records
 Ensure that none of the user classes have any void functions
 
 Handle the MNC department that will be there in core courses
+
+IMPORTANT - Handle how to decide whether a course is program core or program elective or something else

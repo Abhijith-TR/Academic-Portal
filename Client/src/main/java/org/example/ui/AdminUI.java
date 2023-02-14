@@ -136,8 +136,9 @@ public class AdminUI {
 
             else if ( adminChoice == 8 ) {
                 int batch = keyboardInput.integerInput( "Enter the batch" );
-                BufferedReader CSVFile = keyboardInput.fileInput( "Enter the CSV file path" );
-
+                BufferedReader courseCSVFile = keyboardInput.CSVFileInput( "Enter the CSV file path" );
+                if (admin.insertCoreCourses(batch, courseCSVFile)) System.out.println("Courses inserted successfully");
+                else System.out.println("Insertion failed. Please verify that the file is in the right format");
             }
             System.out.println();
         }

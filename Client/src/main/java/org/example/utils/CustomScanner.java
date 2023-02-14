@@ -52,20 +52,19 @@ public class CustomScanner {
         }
     }
 
-    public BufferedReader fileInput( String message ) {
+    public BufferedReader CSVFileInput( String message ) {
         while ( true ) {
             try {
-                FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
-                dialog.setMode(FileDialog.LOAD);
-                dialog.setVisible(true);
-                String file = dialog.getFile();
+                FileDialog dialog = new FileDialog( (Frame) null, "Select File to Open" );
+                dialog.setMode( FileDialog.LOAD );
+                dialog.setVisible( true );
+                String fileName = dialog.getDirectory() + dialog.getFile();
                 dialog.dispose();
-                System.out.println(file + " chosen.");
-                String fileName = keyboardInput.nextLine();
-                BufferedReader CSVFile = new BufferedReader( new FileReader( fileName ) );
+                BufferedReader CSVFile  = new BufferedReader( new FileReader( fileName ) );
                 return CSVFile;
             } catch ( Exception error ) {
-                System.out.println("Enter a valid file");
+                System.err.println( error.getMessage() );
+                System.out.println( "Enter a valid file" );
                 keyboardInput = new Scanner( System.in );
             }
         }
