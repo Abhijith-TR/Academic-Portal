@@ -24,9 +24,23 @@ public class Utils {
         }
     }
 
-    public static void prettyPrintGrades(int year, int semester, String[][] records) {
+    public static void prettyPrintAdminGrades(int year, int semester, String[][] records) {
+        if (records == null || records.length == 0) {
+            System.out.printf("No records found for session %d-%d\n\n", year, semester);
+            return;
+        }
         System.out.printf("Records - Year: %d Semester: %d\n", year, semester);
-        prettyPrint(new String[]{"Course Code", "Course Title", "Grade"}, records);
+        prettyPrint(new String[]{"Course Code", "Course Title", "Grade", "Credits"}, records);
+    }
+
+    // The records will contain {Course Code, Course Title, Grade, Credits}
+    public static void prettyPrintGrades(int year, int semester, double SGPA, String[][] records) {
+        if (records == null || records.length == 0) {
+            System.out.printf("No records found for session %d-%d\n\n", year, semester);
+            return;
+        }
+        System.out.printf("Records - Year: %d Semester: %d SGPA: %.2f\n", year, semester, SGPA);
+        prettyPrint(new String[]{"Course Code", "Course Title", "Grade", "Credits"}, records);
     }
 
     // Pretty printing matrices of strings (not jagged multidimensional arrays)

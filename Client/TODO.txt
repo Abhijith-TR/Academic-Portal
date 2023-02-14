@@ -4,13 +4,23 @@ You need to ensure that the pre-requisite courses exist in the course catalog.
 
 Default CGPA criteria is going to be 4
 
-Should the database object be separated to prevent student.java from accessing all of its functions?
+Make the log functionality complete - Check if there exists a previous logged in user
 
-Should a derived class interface consist of the methods of the parent class as well?
+Test what happens if the database fails after the user has logged in
 
-Make the log functionality complete.
+Add stuff in the all the DAOs that will do the case conversion
 
-Refactoring idea - Make the database connection an object. Make every student have their own database access object
+You should not be doing the case lower thingy in the frontend. The frontend should not care what the backend is
+
 You can also create a separate utils object for each instance instead of the static idea
 
-If student takes course multiple times, are all of those counted in the CG calculations?
+The student records will be found until the current year and semester. You may think of ways to prevent that
+Add the SGPA when printing the records of a student
+
+Auto calculate the ltpsc structure from l and p
+
+Test that the delete course function deletes all offerings and records
+
+Ensure that none of the user classes have any void functions
+
+Handle the MNC department that will be there in core courses

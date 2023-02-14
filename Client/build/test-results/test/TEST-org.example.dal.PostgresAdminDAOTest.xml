@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.example.dal.PostgresAdminDAOTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-02-12T10:07:20" hostname="ADMIN" time="0.162">
-  <properties/>
-  <testcase name="testGetGradesOfCourse()" classname="org.example.dal.PostgresAdminDAOTest" time="0.162"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

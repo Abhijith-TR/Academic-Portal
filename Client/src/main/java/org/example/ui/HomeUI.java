@@ -1,9 +1,9 @@
 package org.example.ui;
 
 import org.example.dal.Database;
-import org.example.utils.CustomInputStream;
+import org.example.utils.CustomScanner;
 
-public class HomeInterface {
+public class HomeUI {
     Database passwordAuthConnection;
     String   centralConnectionURl = "jdbc:postgresql://localhost:5432/mini_project";
     String   studentUsername      = "postgres";
@@ -20,12 +20,12 @@ public class HomeInterface {
         ADMIN
     }
 
-    public HomeInterface(String connectionURL, String username, String password) {
+    public HomeUI(String connectionURL, String username, String password) {
         passwordAuthConnection = new Database(connectionURL, username, password);
     }
 
     public void mainInterface() {
-        CustomInputStream keyboardInput = new CustomInputStream();
+        CustomScanner keyboardInput = new CustomScanner();
         while (true) {
             System.out.println();
             System.out.println("Welcome to the Academic System");
@@ -58,11 +58,11 @@ public class HomeInterface {
 
             // If the id and password entered do not match OR the id does not exist
             if (roleIndex == 1) {
-                new StudentInterface(centralConnectionURl, studentUsername, studentPassword, id);
+                new StudentUI(centralConnectionURl, studentUsername, studentPassword, id);
             } else if (roleIndex == 2) {
-                new FacultyInterface();
+                new FacultyUI();
             } else if (roleIndex == 3) {
-                new AdminInterface(centralConnectionURl, adminUsername, adminPassword, id);
+                new AdminUI(centralConnectionURl, adminUsername, adminPassword, id);
             }
             while (true) {
                 if (passwordAuthConnection.logLogoutEntry(id, Role.values()[roleIndex - 1].name().toLowerCase())) break;

@@ -81,7 +81,7 @@ class PostgresStudentDAOTest {
 
     @Test
     void getGradesForSemester() {
-        assertArrayEquals(new String[]{}, student.getGradesForSemester("2020csb1062", 2020, 1));
+        assertArrayEquals(new String[]{}, student.getStudentGradesForSemester("2020csb1062", 2020, 1));
     }
 
     @Test

@@ -3,10 +3,10 @@ package org.example.ui;
 import org.example.dal.PostgresStudentDAO;
 import org.example.daoInterfaces.StudentDAO;
 import org.example.users.Student;
-import org.example.utils.CustomInputStream;
+import org.example.utils.CustomScanner;
 import org.example.utils.Utils;
 
-public class StudentInterface {
+public class StudentUI {
     final String[] studentChoices = {
             "Update Profile",
             "Enroll",
@@ -17,7 +17,7 @@ public class StudentInterface {
             "View Available Courses"
     };
 
-    public StudentInterface(String connectionURL, String username, String password, String id) {
+    public StudentUI(String connectionURL, String username, String password, String id) {
         StudentDAO databaseConnection = new PostgresStudentDAO(
                 connectionURL,
                 username,
@@ -27,8 +27,8 @@ public class StudentInterface {
     }
 
     public void StudentInterfaceHomeScreen(StudentDAO databaseConnection, String id) {
-        CustomInputStream keyboardInput = new CustomInputStream();
-        Student           student       = new Student(id, databaseConnection);
+        CustomScanner keyboardInput = new CustomScanner();
+        Student       student       = new Student(id, databaseConnection);
         while (true) {
             System.out.println();
             System.out.println("Select an option");
@@ -56,11 +56,25 @@ public class StudentInterface {
                 // Print the response from the drop function
                 System.out.println(student.drop(courseCode));
             } else if (studentChoice == 4) {
-                student.getGradesForCourse();
+                String[][][] completeStudentRecords = student.getGradesForCourse();
+                int          year                   = student.getBatch();
+                int          semester               = 1;
+                int          i                      = 0;
+                for (String[][] records : completeStudentRecords) {
+                    i = 1-i;
+                    if (i == 1) year++;
+                    Utils.prettyPrintGrades(year, semester, student.computeSGPA(records), records);
+                }
             } else if (studentChoice == 5) {
-                int year     = keyboardInput.integerInput("Enter the year");
-                int semester = keyboardInput.integerInput("Enter the semester");
-                student.getGrades(year, semester);
+                int        year           = keyboardInput.integerInput("Enter the year");
+                int        semester       = keyboardInput.integerInput("Enter the semester");
+                String[][] semesterGrades = student.getGrades(year, semester);
+                if (semesterGrades.length == 0) {
+                    System.out.printf("No records found for session %d-%d\n\n", year, semester);
+                    continue;
+                }
+                // computeSGPA access the database again to compute the SGPA. Try and avoid this later on
+                Utils.prettyPrintGrades(year, semester, student.computeSGPA(semesterGrades), semesterGrades);
             } else if (studentChoice == 6) {
                 System.out.printf("CGPA: %.2f", student.getCGPA());
             } else if (studentChoice == 7) {

@@ -15,7 +15,7 @@ class StudentTest {
                 "postgres",
                 "admin"
         );
-        student = new Student("2020csb1062", postgresStudentDAO);
+        student = new Student("2020CSB1062", postgresStudentDAO);
     }
 
     @AfterEach
@@ -36,12 +36,45 @@ class StudentTest {
 
     @Test
     void getGrades() {
-        student.getGrades();
+        student.getGradesForCourse();
     }
 
     @Test
     void testGetGrades() {
         student.getGrades(2023, 1);
         student.getGrades(2020, 1);
+    }
+
+    @Test
+    void testUpdateProfile() {
+    }
+
+    @Test
+    void testEnroll() {
+    }
+
+    @Test
+    void testDrop() {
+    }
+
+    @Test
+    void getGradesForCourse() {
+        student.getGradesForCourse();
+    }
+
+    @Test
+    void getBatch() {
+    }
+
+    @Test
+    void computeSGPA() {
+    }
+
+    @Test
+    void getCGPA() {
+    }
+
+    @Test
+    void getAvailableCourses() {
     }
 }

@@ -4,7 +4,7 @@ import org.example.users.Faculty;
 
 import java.util.Scanner;
 
-public class FacultyInterface {
+public class FacultyUI {
     String[] facultyChoices = {
             "Register Course",
             "Deregister Course",
@@ -13,7 +13,7 @@ public class FacultyInterface {
             "Update Course Grades"
     };
 
-    public FacultyInterface() {
+    public FacultyUI() {
         Scanner keyboardInput = new Scanner(System.in);
         // Enter the id and password
         System.out.print("Enter your id: ");

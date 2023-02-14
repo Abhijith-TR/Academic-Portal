@@ -36,7 +36,8 @@ CREATE TABLE student
     phone         INTEGER,
     department_id VARCHAR(15) NOT NULL,
     batch         INTEGER     NOT NULL,
-    FOREIGN KEY (department_id) REFERENCES department (department_id)
+    FOREIGN KEY (department_id) REFERENCES department (department_id),
+    FOREIGN KEY (batch) REFERENCES batch (year)
 );
 
 
@@ -84,7 +85,7 @@ CREATE TABLE course_offerings
         ) DEFAULT 0,
     instructor_prerequisites TEXT[][],
     CHECK (semester IN (1, 2, 3, 4)),
-    FOREIGN KEY (course_code, department_id) REFERENCES course_catalog (course_code, department_id),
+    FOREIGN KEY (course_code, department_id) REFERENCES course_catalog (course_code, department_id) ON DELETE CASCADE,
     FOREIGN KEY (faculty_id) REFERENCES faculty (faculty_id),
     PRIMARY KEY (course_code, year, semester)
 );
@@ -112,15 +113,17 @@ CREATE TABLE student_course_registration
 (
     entry_number VARCHAR(15),
     course_code  VARCHAR(6),
-    year         INTEGER NOT NULL,
-    semester     INTEGER NOT NULL,
+    year         INTEGER    NOT NULL,
+    semester     INTEGER    NOT NULL,
     grade        VARCHAR(2) DEFAULT '-',
+    category     VARCHAR(2) NOT NULL,
     PRIMARY KEY (entry_number, course_code, year, semester),
-    FOREIGN KEY (course_code, year, semester) REFERENCES course_offerings (course_code, year, semester),
+    FOREIGN KEY (course_code, year, semester) REFERENCES course_offerings (course_code, year, semester) ON DELETE CASCADE,
     FOREIGN KEY (entry_number) REFERENCES student (entry_number),
     CHECK (grade in (
                      'A', 'A-', 'B', 'B-', 'C', 'C-', 'D', 'E', 'F', 'NP', 'W', 'I', 'NF', 'EN', '-'
-        ))
+        )),
+    CHECK (category IN ('SR', 'SE', 'GR', 'PC', 'PE', 'HC', 'HE', 'CP', 'II', 'NN', 'OE'))
 );
 
 -- This table contains the login details for all admin, students and faculty
@@ -139,15 +142,54 @@ CREATE TABLE user_login_details
 -- JAVA code ensures that this table always contains only one entry
 CREATE TABLE current_year_and_semester
 (
-    year     INTEGER NOT NULL,
-    semester INTEGER NOT NULL
+    year          INTEGER NOT NULL,
+    semester      INTEGER NOT NULL,
+    current_event TEXT DEFAULT 'NONE',
+    PRIMARY KEY (year, semester),
+    CHECK ( current_event IN ('ENROLLING', 'WITHDRAW', 'GRADE SUBMISSION', 'COMPLETED', 'NONE'))
 );
 
-CREATE TABLE log(
-    id VARCHAR(15) NOT NULL,
-    role VARCHAR(7) NOT NULL,
-    log_time TIMESTAMP NOT NULL,
-    in_or_out VARCHAR(4) NOT NULL,
+CREATE TABLE log
+(
+    id        VARCHAR(15) NOT NULL,
+    role      VARCHAR(7)  NOT NULL,
+    log_time  TIMESTAMP   NOT NULL,
+    in_or_out VARCHAR(4)  NOT NULL,
     CHECK ( role in ('admin', 'student', 'faculty')),
     CHECK (in_or_out IN ('in', 'out'))
 );
+
+CREATE TABLE batch
+(
+    year INTEGER PRIMARY KEY
+);
+
+-- This table holds the pass criteria for every batch
+-- sc - Science Core
+-- se - Science Elective
+-- gr - General Engineering
+-- pc - Program Core
+-- pe - Program Elective
+-- hc - Humanities Core
+-- he - Humanities Elective
+-- cp - Capstone
+-- ii - Industrial Internship
+-- nn - NSS / NCC / NSO
+-- oe - Open Elective
+CREATE TABLE ug_curriculum
+(
+    year INTEGER       NOT NULL PRIMARY KEY,
+    sc   NUMERIC(4, 2) NOT NULL,
+    se   NUMERIC(4, 2) NOT NULL,
+    gr   NUMERIC(4, 2) NOT NULL,
+    pc   NUMERIC(4, 2) NOT NULL,
+    pe   NUMERIC(4, 2) NOT NULL,
+    hc   NUMERIC(4, 2) NOT NULL,
+    he   NUMERIC(4, 2) NOT NULL,
+    cp   NUMERIC(4, 2) NOT NULL,
+    ii   NUMERIC(4, 2) NOT NULL,
+    nn   NUMERIC(4, 2) NOT NULL,
+    oe   NUMERIC(4, 2) NOT NULL,
+    FOREIGN KEY (year) REFERENCES batch (year)
+);
+
