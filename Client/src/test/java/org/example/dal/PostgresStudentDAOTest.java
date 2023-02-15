@@ -88,4 +88,10 @@ class PostgresStudentDAOTest {
     void getOfferedCourses() {
         student.getOfferedCourses(2022, 1);
     }
+
+    @Test
+    void checkIfCore() {
+        assertTrue(student.checkIfCore( "CS", 2020, "CS201" ));
+        assertFalse(student.checkIfCore( "CS", 2020, "CE111" ));
+    }
 }

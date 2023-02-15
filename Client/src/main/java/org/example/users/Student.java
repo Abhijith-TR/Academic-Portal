@@ -88,24 +88,30 @@ public class Student extends User {
         return ( creditsInCurrentSemester + creditsOfCourse ) > creditLimit;
     }
 
-    public String enroll( String courseCode ) {
+    public boolean enroll( String courseCode ) {
         int[] currentSession  = studentDAO.getCurrentAcademicSession();
         int   currentYear     = currentSession[0];
         int   currentSemester = currentSession[1];
 
-        boolean doesCourseExist = studentDAO.checkCourseOffering( courseCode, currentYear, currentSemester );
-        if ( !doesCourseExist ) return "Course Not Offered";
-        // This checks if the course exists as well.
-        String courseGrade = studentDAO.getCourseGrade( this.id, courseCode );
-        if (Utils.getGradeValue( courseGrade ) >= 4) return "Student has already done the course";
-        boolean isStudentEligible          = checkStudentEligibility( courseCode, currentSession );
-        if ( !isStudentEligible ) return "Student Ineligible for Course";
+        boolean doesCourseExist     = studentDAO.checkCourseOffering( courseCode, currentYear, currentSemester );
+        String  courseGrade         = studentDAO.getCourseGrade( this.id, courseCode );
+        boolean isStudentEligible   = checkStudentEligibility( courseCode, currentSession );
         boolean creditLimitExceeded = checkCreditLimit( courseCode, currentSession );
-        if ( creditLimitExceeded ) return "Credit Limit Exceeded";
+        if ( !doesCourseExist || Utils.getGradeValue( courseGrade ) >= 4 || !isStudentEligible || creditLimitExceeded )
+            return false;
 
-        boolean enrollmentRequestStatus = studentDAO.enroll( courseCode, this.id, currentYear, currentSemester );
-        if ( enrollmentRequestStatus ) return "Enrolled Successfully";
-        else return "Course Enrollment Failed";
+        String[] studentAndCourseDepartments = studentDAO.getStudentAndCourseDepartment( this.id, courseCode );
+        String   studentDepartment           = studentAndCourseDepartments[0];
+        String   courseDepartment            = studentAndCourseDepartments[1];
+        boolean  isCore                      = studentDAO.checkIfCore( studentDepartment, studentDAO.getBatch( this.id ), courseCode );
+        String   courseCategory              = getCourseCategory( studentDepartment, courseDepartment, isCore );
+        boolean  enrollmentRequestStatus     = studentDAO.enroll( courseCode, this.id, currentYear, currentSemester );
+        return enrollmentRequestStatus;
+    }
+
+    private String getCourseCategory( String studentDepartment, String courseDepartment, boolean isCore ) {
+        if (studentDepartment == courseDepartment && isCore) return "PC";
+        else if (studentDepartment == courseDepartment) return "PE";
     }
 
     public String drop( String courseCode ) {

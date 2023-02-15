@@ -1,15 +1,17 @@
 -- Creating all the departments in the institute
-INSERT INTO department VALUES ('CS', 'Computer Science and Engineering');
-INSERT INTO department VALUES ('BM', 'Biomedical Engineering');
-INSERT INTO department VALUES ('CH', 'Chemical Engineering');
-INSERT INTO department VALUES ('CE', 'Civil Engineering');
-INSERT INTO department VALUES ('EE', 'Electrical Engineering');
-INSERT INTO department VALUES ('ME', 'Mechanical Engineering');
-INSERT INTO department VALUES ('MME', 'Metallurgical and Materials Engineering');
-INSERT INTO department VALUES ('CY', 'Chemistry');
-INSERT INTO department VALUES ('PY', 'Physics');
-INSERT INTO department VALUES ('MA', 'Mathematics');
-INSERT INTO department VALUES ('HS', 'Humanities and Social Sciences');
+INSERT INTO department VALUES ('CS', 'COMPUTER SCIENCE AND ENGINEERING');
+INSERT INTO department VALUES ('BM', 'BIOMEDICAL ENGINEERING');
+INSERT INTO department VALUES ('CH', 'CHEMICAL ENGINEERING');
+INSERT INTO department VALUES ('CE', 'CIVIL ENGINEERING');
+INSERT INTO department VALUES ('EE', 'ELECTRICAL ENGINEERING');
+INSERT INTO department VALUES ('ME', 'MECHANICAL ENGINEERING');
+INSERT INTO department VALUES ('MME', 'METALLURGICAL AND MATERIALS ENGINEERING');
+INSERT INTO department VALUES ('CY', 'CHEMISTRY');
+INSERT INTO department VALUES ('PY', 'PHYSICS');
+INSERT INTO department VALUES ('MA', 'MATHEMATICS');
+INSERT INTO department VALUES ('HS', 'HUMANITIES AND SOCIAL SCIENCES');
+-- And one additional department for Mathematics and Computing which comes under both maths and computer science
+INSERT INTO department VALUES ('MNC', 'MATHEMATICS AND COMPUTING');
 
 -- Creating the course catalog
 INSERT INTO course_catalog VALUES ('GE103', 'INTRODUCTION TO COMPUTING AND DATA STRUCTURES', 3, 0, 3, 7, 4.5, '{}', 'CS');
@@ -205,3 +207,14 @@ INSERT INTO course_offerings VALUES ('HS507', 'FAC38', 2023, 2, 'HS', 0);
 
 INSERT INTO course_catalog VALUES ('CS539', 'INTERNET OF THINGS', 3, 0, 0, 6, 3, '{}', 'CS');
 INSERT INTO course_offerings VALUES ('CS539', 'FAC32', 2023, 2, 'CS', 0);
+
+-- Inserting a batch and a curriculum corresponding to that batch
+INSERT INTO batch VALUES (2020);
+INSERT INTO ug_curriculum VALUES(2020, 24, 6, 23.5, 36, 12, 15, 6, 9, 3.5, 4, 6);
+
+-- Inserting students
+INSERT INTO student(entry_number, name, department_id, batch) VALUES ('2020CSB1062', 'ABHIJITH T R', 'CS', 2020);
+INSERT INTO admin(admin_id, name) VALUES ('ADMIN1', 'Dean Office');
+
+-- Inserting core courses can be done using the CSV file
+INSERT INTO current_year_and_semester VALUES (2020, 1, 'ENROLLING');

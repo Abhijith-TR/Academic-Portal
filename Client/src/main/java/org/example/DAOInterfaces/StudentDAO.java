@@ -25,4 +25,8 @@ public interface StudentDAO extends CommonDAO {
     String[][] getOfferedCourses( int currentYear, int currentSemester );
 
     String getCourseGrade( String entryNumber, String courseCode );
+
+    String[] getStudentAndCourseDepartment( String id, String courseCode );
+
+    boolean checkIfCore( String studentDepartment, int batch, String courseCode );
 }

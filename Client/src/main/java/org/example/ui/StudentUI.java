@@ -49,7 +49,9 @@ public class StudentUI {
                 // Read the course code
                 String courseCode = keyboardInput.stringInput("Enter the course code");
                 // Print the response from the enroll function
-                System.out.println(student.enroll(courseCode));
+                boolean enrollStatus = student.enroll(courseCode);
+                if (enrollStatus == true) System.out.println("Enrolled Successfully");
+                else System.out.println("Enrollment Failed. Please check if you are eligible to enroll");
             } else if (studentChoice == 3) {
                 // Read the course code
                 String courseCode = keyboardInput.stringInput("Enter the course code");

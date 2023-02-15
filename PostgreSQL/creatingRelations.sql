@@ -4,8 +4,7 @@ CREATE TABLE admin
 (
     admin_id VARCHAR(15) PRIMARY KEY,
     name     VARCHAR(40) NOT NULL,
-    phone    INTEGER,
-    password VARCHAR(40) NOT NULL
+    phone    TEXT,
 );
 
 -- department_id: Used to uniquely identify each department. Given based on number of departments
@@ -22,7 +21,7 @@ CREATE TABLE faculty
     faculty_id    VARCHAR(15) PRIMARY KEY,
     name          VARCHAR(40) NOT NULL,
     department_id VARCHAR(15) NOT NULL,
-    phone         INTEGER,
+    phone         TEXT,
     FOREIGN KEY (department_id) REFERENCES department (department_id)
 );
 
@@ -33,7 +32,7 @@ CREATE TABLE student
 (
     entry_number  VARCHAR(15) PRIMARY KEY,
     name          VARCHAR(40) NOT NULL,
-    phone         INTEGER,
+    phone         TEXT,
     department_id VARCHAR(15) NOT NULL,
     batch         INTEGER     NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department (department_id),

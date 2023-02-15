@@ -3,7 +3,11 @@ package org.example.dal;
 import org.example.daoInterfaces.StudentDAO;
 import org.example.utils.Utils;
 
-import java.sql.*;
+import javax.xml.transform.Result;
+import java.sql.Array;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO {
@@ -206,12 +210,49 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             getGradeQuery.setString( 1, entryNumber );
             getGradeQuery.setString( 2, courseCode );
             ResultSet getGradeQueryResult = getGradeQuery.executeQuery();
-            boolean doesRecordExist = getGradeQueryResult.next();
-            if (doesRecordExist == false) return "-";
+            boolean   doesRecordExist     = getGradeQueryResult.next();
+            if ( doesRecordExist == false ) return "-";
             return getGradeQueryResult.getString( 1 );
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return "A";
+        }
+    }
+
+    @Override
+    public String[] getStudentAndCourseDepartment( String entryNumber, String courseCode ) {
+        try {
+            PreparedStatement studentBranchQuery = databaseConnection.prepareStatement( "SELECT department.name FROM department NATURAL JOIN student WHERE entry_number = ?" );
+            studentBranchQuery.setString( 1, entryNumber );
+            ResultSet studentBranchQueryResult = studentBranchQuery.executeQuery();
+            studentBranchQueryResult.next();
+            String studentBranch = studentBranchQueryResult.getString( 1 );
+
+            PreparedStatement courseBranchQuery = databaseConnection.prepareStatement( "SELECT department.name FROM department NATURAL JOIN course_catalog WHERE course_code = ?" );
+            courseBranchQuery.setString( 1, courseCode );
+            ResultSet courseBranchQueryResult = courseBranchQuery.executeQuery();
+            courseBranchQueryResult.next();
+            String courseBranch = courseBranchQueryResult.getString( 1 );
+
+            return new String[]{ studentBranch, courseBranch };
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return new String[]{};
+        }
+    }
+
+    @Override
+    public boolean checkIfCore( String studentDepartment, int batch, String courseCode ) {
+        try {
+            String tableName = "core_courses_" + batch;
+            PreparedStatement checkCoreQuery = databaseConnection.prepareStatement("SELECT category FROM " + tableName + " WHERE department_id = ? AND course_code = ?");
+            checkCoreQuery.setString( 1, studentDepartment );
+            checkCoreQuery.setString( 2, courseCode );
+            ResultSet checkCoreQueryResult = checkCoreQuery.executeQuery();
+            return checkCoreQueryResult.next();
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return false;
         }
     }
 }
