@@ -4,9 +4,10 @@ import org.example.daoInterfaces.StudentDAO;
 import org.example.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Student extends User {
-    StudentDAO studentDAO;
+    final private StudentDAO studentDAO;
 
     public Student( String id, StudentDAO studentDAO ) {
         super( id );
@@ -89,29 +90,64 @@ public class Student extends User {
     }
 
     public boolean enroll( String courseCode ) {
+        // Gets the current year and semester
         int[] currentSession  = studentDAO.getCurrentAcademicSession();
         int   currentYear     = currentSession[0];
         int   currentSemester = currentSession[1];
 
-        boolean doesCourseExist     = studentDAO.checkCourseOffering( courseCode, currentYear, currentSemester );
-        String  courseGrade         = studentDAO.getCourseGrade( this.id, courseCode );
-        boolean isStudentEligible   = checkStudentEligibility( courseCode, currentSession );
+        // Checks whether this particular course has been offered in the current session
+        boolean doesCourseExist = studentDAO.checkCourseOffering( courseCode, currentYear, currentSemester );
+
+        // Checks whether the student has got any grade in this course before
+        String courseGrade = studentDAO.getCourseGrade( this.id, courseCode );
+        // U is used to denote an error in the database
+        if ( courseGrade.equals( "U" )) return false;
+
+        // Checks whether the student has completed all the prerequisites i.e., instructor prerequisites and course catalog prerequisites
+        boolean isStudentEligible = checkStudentEligibility( courseCode, currentSession );
+
+        // Checks whether enrolling in this course would exceed the credit limit
         boolean creditLimitExceeded = checkCreditLimit( courseCode, currentSession );
+
+        // If any of the above four conditions prevents the student from enrolling in the course, his request to enroll is rejected
         if ( !doesCourseExist || Utils.getGradeValue( courseGrade ) >= 4 || !isStudentEligible || creditLimitExceeded )
             return false;
 
-        String[] studentAndCourseDepartments = studentDAO.getStudentAndCourseDepartment( this.id, courseCode );
-        String   studentDepartment           = studentAndCourseDepartments[0];
-        String   courseDepartment            = studentAndCourseDepartments[1];
-        boolean  isCore                      = studentDAO.checkIfCore( studentDepartment, studentDAO.getBatch( this.id ), courseCode );
-        String   courseCategory              = getCourseCategory( studentDepartment, courseDepartment, isCore );
-        boolean  enrollmentRequestStatus     = studentDAO.enroll( courseCode, this.id, currentYear, currentSemester );
-        return enrollmentRequestStatus;
+        // Getting the department of the student and the department of the course
+        String studentDepartment = studentDAO.getStudentDepartment( this.id );
+        if ( studentDepartment == "" ) return false;
+
+        // Getting the batch of the student
+        int batch = studentDAO.getBatch( this.id );
+
+        // Getting the course category. If the batch and department combination does not exist, the student is not eligible for the offering
+        String courseCategory = getCourseCategory( courseCode, currentYear, currentSemester, studentDepartment, batch );
+        if ( courseCategory.equals( "" ) ) return false;
+
+        // Once all of the above conditions are fulfilled, the student is eligible to enroll in the course
+        // The request to enroll is sent to the database
+        return studentDAO.enroll( courseCode, this.id, currentYear, currentSemester );
     }
 
-    private String getCourseCategory( String studentDepartment, String courseDepartment, boolean isCore ) {
-        if (studentDepartment == courseDepartment && isCore) return "PC";
-        else if (studentDepartment == courseDepartment) return "PE";
+    private String getCourseCategory( String courseCode, int year, int semester, String studentDepartment, int batch ) {
+        // Contains all the categories and the corresponding departments and batches for which the course is offered
+        HashMap<String, String[]> offerings = studentDAO.getAllOfferings( courseCode, year, semester );
+
+        // Go through all the categories
+        for ( String category : offerings.keySet() ) {
+            // Go through all the departments and batches for which it was offered
+            String[] offeredDepartments = offerings.get( category );
+            for ( String batchDepartment : offeredDepartments ) {
+                String[] temp       = batchDepartment.split( "-" );
+                int      batchFound = Integer.parseInt( temp[0] );
+                String   department = temp[1];
+                // If the department is the students department and the batch is the students batch, return the corresponding category
+                if ( batchFound == batch && department.equals( studentDepartment ) ) return department;
+            }
+        }
+
+        // If the course has not been offered for this batch, return an empty string to denote that student is not eligible
+        return "";
     }
 
     public String drop( String courseCode ) {
@@ -185,5 +221,45 @@ public class Student extends User {
         int        currentSemester = currentSession[1];
         String[][] coursesOffered  = studentDAO.getOfferedCourses( currentYear, currentSemester );
         return coursesOffered;
+    }
+
+    public HashMap<String, Double> getRemainingCreditRequirements() {
+        // Get the batch of the student and retrieve the UG curriculum of the corresponding batch
+        int                     batch        = studentDAO.getBatch( this.id );
+        HashMap<String, Double> ugCurriculum = studentDAO.getUGCurriculum( batch );
+
+        // Now we have to fetch the course categories and the corresponding credits done by the student
+        HashMap<String, Double> categoryCreditsCompleted = studentDAO.getCreditsInAllCategories( this.id );
+        HashMap<String, Double> categoryCreditsLeft      = new HashMap<>();
+
+        // Additional credits in any category will count towards the open electives section
+        double additionalCredits = 0;
+        for ( String category : ugCurriculum.keySet() ) {
+            if ( categoryCreditsCompleted.containsKey( category ) ) {
+                double creditsNeeded    = ugCurriculum.get( category );
+                double creditsCompleted = categoryCreditsCompleted.get( category );
+
+                // If student has done fewer credits than necessary, return false
+                if ( creditsNeeded > creditsCompleted ) {
+                    categoryCreditsLeft.put( category, creditsNeeded - creditsCompleted );
+                }
+                // If student has done more credits than necessary, those can be used for open electives
+                else {
+                    categoryCreditsLeft.put( category, 0.0 );
+                    additionalCredits += creditsCompleted - creditsNeeded;
+                }
+            }
+            else {
+                categoryCreditsLeft.put( category, ugCurriculum.get( category ) );
+            }
+        }
+
+        // Now we have to get open elective requirements to 0 if required
+        if ( categoryCreditsLeft.containsKey( "OE" ) ) {
+            double creditsLeft = categoryCreditsLeft.get( "OE" );
+            categoryCreditsLeft.put( "OE", Math.max( creditsLeft - additionalCredits, 0.0 ) );
+        }
+
+        return categoryCreditsLeft;
     }
 }

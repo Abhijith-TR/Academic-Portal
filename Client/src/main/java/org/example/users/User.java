@@ -6,4 +6,7 @@ public class User {
         this.id = id;
     }
 
+    public String getID() {
+        return this.id;
+    }
 }

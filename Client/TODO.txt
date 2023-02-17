@@ -1,10 +1,8 @@
 Add the phone number feature to both database and the java application.
 
-You need to ensure that the pre-requisite courses exist in the course catalog.
-
 Default CGPA criteria is going to be 4
 
-Make the log functionality complete - Check if there exists a previous logged in user
+Make the log functionality complete - Check if there exists a previous logged-in user
 
 Test what happens if the database fails after the user has logged in
 
@@ -17,10 +15,10 @@ You can also create a separate utils object for each instance instead of the sta
 The student records will be found until the current year and semester. You may think of ways to prevent that
 Add the SGPA when printing the records of a student
 
-Auto calculate the ltpsc structure from l and p
-
 Test that the delete course function deletes all offerings and records
 
-Ensure that none of the user classes have any void functions
+Should the ltpsc be auto generated using l and p?
 
-Handle the MNC department that will be there in core courses
+You can think of turning off auto commit and then turning it on in functions that require it
+
+When the instructor is adding the branches and departments for which he is offering, we must ensure that he does not offer anything for the same batch and department twice

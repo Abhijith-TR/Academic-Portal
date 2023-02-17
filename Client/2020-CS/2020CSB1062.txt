@@ -1,0 +1,19 @@
+INDIAN INSTITUTE OF TECHNOLOGY, ROPAR
+STUDENT GRADE TRANSCRIPT
+
+Entry Number: 2020CSB1062
+
+Year: 2020    Semester: 1     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+GE103          INTRODUCTION TO COMPUTING AND DATA STRUCTURES               A         4.5       
+
+Year: 2021    Semester: 1     SGPA: 9.0
+Course Code    Course Title                                                Grade     Credits Earned
+CS201          DATA STRUCTURES                                             A-        4.0       
+CS203          DIGITAL LOGIC DESIGN                                        A-        4.0       
+
+Year: 2022    Semester: 1     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+CS301          DATABASES                                                   A         4.0       
+CS303          OPERATING SYSTEMS                                           A         4.0       
+

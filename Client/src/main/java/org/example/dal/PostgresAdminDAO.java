@@ -2,6 +2,7 @@ package org.example.dal;
 
 import org.example.daoInterfaces.AdminDAO;
 
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -159,38 +160,101 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     }
 
     @Override
-    public boolean createBatchCourseTable( int batch ) {
+    public boolean insertCoreCourse( String courseCode, String[] departmentCodes, int batch, String courseCategory ) {
         try {
-            String            tableName = "core_courses_" + batch;
-            PreparedStatement dropQuery = databaseConnection.prepareStatement( "DROP TABLE IF EXISTS " + tableName );
-            dropQuery.executeUpdate();
-
-            PreparedStatement createTableQuery = databaseConnection.prepareStatement( "CREATE TABLE " + tableName + "(course_code VARCHAR(6), category VARCHAR(2), department_id VARCHAR(2), FOREIGN KEY (department_id) REFERENCES department(department_id), CHECK (category IN ('SC', 'GR', 'PC', 'HC', 'CP', 'II', 'NN')))" );
-            // There seems to be no way to verify whether this works. Apparently the create table does not return anything as it does not affect any row of the table
-            createTableQuery.executeUpdate();
-            return true;
-        } catch ( Exception error ) {
-            System.out.println( "Database Error. Something went wrong" );
-            return false;
-        }
-    }
-
-    @Override
-    public boolean insertCoreCourse( int batch, String courseCode, String courseCategory, String[] departmentCodes ) {
-        try {
-            String tableName = "core_courses_" + batch;
-            int insertCourseQueryResult = 1;
-            PreparedStatement insertCourseQuery = databaseConnection.prepareStatement("INSERT INTO " + tableName + " VALUES (?, ?, ?)");
+            int               insertCourseQueryResult = 1;
+            PreparedStatement insertCourseQuery       = databaseConnection.prepareStatement( "INSERT INTO core_courses VALUES (?, ?, ?, ?)" );
             insertCourseQuery.setString( 1, courseCode );
-            insertCourseQuery.setString( 2, courseCategory );
-            for ( String department : departmentCodes) {
-                insertCourseQuery.setString( 3, department );
+            insertCourseQuery.setInt( 3, batch );
+            insertCourseQuery.setString( 4, courseCategory );
+            for ( String department : departmentCodes ) {
+                insertCourseQuery.setString( 2, department );
                 insertCourseQueryResult &= insertCourseQuery.executeUpdate();
             }
             return insertCourseQueryResult == 1;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please check that all courses exist in the course catalog" );
             return false;
+        }
+    }
+
+    @Override
+    public boolean resetCoreCoursesList( int batch ) {
+        try {
+            // Delete all the core courses of the particular batch from the core_courses table
+            PreparedStatement resetCoreCoursesQuery = databaseConnection.prepareStatement( "DELETE FROM core_courses WHERE batch = ?" );
+            resetCoreCoursesQuery.setInt( 1, batch );
+            resetCoreCoursesQuery.executeUpdate();
+            // If the query executes successfully return true i.e., the table is ready to be inserted into again
+            return true;
+        } catch ( Exception error ) {
+            // If the table is not found, or the database connection has failed
+            System.out.println( "Database Error. Please try again later" );
+            // Return the fact that the database operation was not executed
+            return false;
+        }
+    }
+
+    @Override
+    public boolean findEntryNumber( String entryNumber ) {
+        try {
+            // Generate the SQL query that will check if the student exists
+            PreparedStatement findEntryNumberQuery = databaseConnection.prepareStatement("SELECT name FROM student WHERE entry_number = ?");
+            findEntryNumberQuery.setString( 1, entryNumber );
+            ResultSet findEntryNumberQueryResult = findEntryNumberQuery.executeQuery();
+
+            // True if the query has found anything, false otherwise
+            return findEntryNumberQueryResult.next();
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return false;
+        }
+    }
+
+    @Override
+    public String[] getCoreCourses( int batch, String studentDepartment ) {
+        try {
+            // Execute the SQL statement that will get all the core courses of a particular department in a particular year
+            PreparedStatement getCoreCoursesQuery = databaseConnection.prepareStatement("SELECT course_code FROM core_courses WHERE batch = ? AND department_id = ?");
+            getCoreCoursesQuery.setInt( 1, batch );
+            getCoreCoursesQuery.setString( 2, studentDepartment );
+            ResultSet getCoreCoursesQueryResult = getCoreCoursesQuery.executeQuery();
+
+            // Now we have to fetch all the course codes into an arraylist that will be converted into a string array
+            ArrayList<String> coreCourses = new ArrayList<>();
+            while ( getCoreCoursesQueryResult.next() ) {
+                String courseCode = getCoreCoursesQueryResult.getString( 1 );
+                coreCourses.add( courseCode );
+            }
+            // Return the array list converted to a string array
+            return coreCourses.toArray(new String[coreCourses.size()]);
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return null;
+        }
+    }
+
+    @Override
+    public String[] getListOfStudentsInBatch( int batch, String department ) {
+        try {
+            // Execute the SQL query to fetch all the students of this department from this batch
+            PreparedStatement getStudentsQuery = databaseConnection.prepareStatement("SELECT entry_number FROM student WHERE batch = ? AND department_id = ?");
+            getStudentsQuery.setInt( 1, batch );
+            getStudentsQuery.setString( 2, department );
+            ResultSet getStudentsQueryResult = getStudentsQuery.executeQuery();
+
+            // Now get the list of students returned by the query into a string array
+            ArrayList<String> studentsList = new ArrayList<>();
+            // Get all the entry numbers from the result set
+            while ( getStudentsQueryResult.next() ) {
+                String entryNumber = getStudentsQueryResult.getString( 1 );
+                studentsList.add( entryNumber );
+            }
+            // Return the array list converted into a string array
+            return studentsList.toArray( new String[studentsList.size()] );
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return new String[]{};
         }
     }
 }

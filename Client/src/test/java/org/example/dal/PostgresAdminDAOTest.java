@@ -50,7 +50,6 @@ class PostgresAdminDAOTest {
     }
 
     @Test
-    void createBatchCourseTable() {
-        assertTrue(admin.createBatchCourseTable( 2020 ));
+    void insertCoreCourse() {
     }
 }

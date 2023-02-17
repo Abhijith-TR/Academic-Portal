@@ -60,7 +60,7 @@ public class HomeUI {
             if (roleIndex == 1) {
                 new StudentUI(centralConnectionURl, studentUsername, studentPassword, id);
             } else if (roleIndex == 2) {
-                new FacultyUI();
+                new FacultyUI(centralConnectionURl, facultyUsername, facultyPassword, id);
             } else if (roleIndex == 3) {
                 new AdminUI(centralConnectionURl, adminUsername, adminPassword, id);
             }

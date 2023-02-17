@@ -22,7 +22,7 @@ CREATE TABLE faculty
     name          VARCHAR(40) NOT NULL,
     department_id VARCHAR(15) NOT NULL,
     phone         TEXT,
-    FOREIGN KEY (department_id) REFERENCES department (department_id)
+    FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE
 );
 
 -- entry_number: Currently 11 characters. 15 to accommodate older entry numbers
@@ -35,8 +35,8 @@ CREATE TABLE student
     phone         TEXT,
     department_id VARCHAR(15) NOT NULL,
     batch         INTEGER     NOT NULL,
-    FOREIGN KEY (department_id) REFERENCES department (department_id),
-    FOREIGN KEY (batch) REFERENCES batch (year)
+    FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE,
+    FOREIGN KEY (batch) REFERENCES batch (year) ON DELETE CASCADE
 );
 
 
@@ -60,7 +60,7 @@ CREATE TABLE course_catalog
     pre_requisites   VARCHAR[6][],
     department_id    VARCHAR(15)                                                            NOT NULL,
     PRIMARY KEY (course_code, department_id),
-    FOREIGN KEY (department_id) REFERENCES department (department_id)
+    FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE
 );
 
 -- course_code: Same considerations as above
@@ -83,9 +83,20 @@ CREATE TABLE course_offerings
             AND cgpa_criteria <= 10.0
         ) DEFAULT 0,
     instructor_prerequisites TEXT[][],
+    pc                       TEXT[] DEFAULT '{}',
+    pe                       TEXT[] DEFAULT '{}',
+    gr                       TEXT[] DEFAULT '{}',
+    sc                       TEXT[] DEFAULT '{}',
+    se                       TEXT[] DEFAULT '{}',
+    hc                       TEXT[] DEFAULT '{}',
+    he                       TEXT[] DEFAULT '{}',
+    cp                       TEXT[] DEFAULT '{}',
+    nn                       TEXT[] DEFAULT '{}',
+    ii                       TEXT[] DEFAULT '{}',
+    oe                       TEXT[] DEFAULT '{}',
     CHECK (semester IN (1, 2, 3, 4)),
     FOREIGN KEY (course_code, department_id) REFERENCES course_catalog (course_code, department_id) ON DELETE CASCADE,
-    FOREIGN KEY (faculty_id) REFERENCES faculty (faculty_id),
+    FOREIGN KEY (faculty_id) REFERENCES faculty (faculty_id) ON DELETE CASCADE,
     PRIMARY KEY (course_code, year, semester)
 );
 
@@ -112,13 +123,13 @@ CREATE TABLE student_course_registration
 (
     entry_number VARCHAR(15),
     course_code  VARCHAR(6),
-    year         INTEGER    NOT NULL,
-    semester     INTEGER    NOT NULL,
+    year         INTEGER NOT NULL,
+    semester     INTEGER NOT NULL,
     grade        VARCHAR(2) DEFAULT '-',
-    category     VARCHAR(2) NOT NULL,
+    category     TEXT    NOT NULL,
     PRIMARY KEY (entry_number, course_code, year, semester),
     FOREIGN KEY (course_code, year, semester) REFERENCES course_offerings (course_code, year, semester) ON DELETE CASCADE,
-    FOREIGN KEY (entry_number) REFERENCES student (entry_number),
+    FOREIGN KEY (entry_number) REFERENCES student (entry_number) ON DELETE CASCADE,
     CHECK (grade in (
                      'A', 'A-', 'B', 'B-', 'C', 'C-', 'D', 'E', 'F', 'NP', 'W', 'I', 'NF', 'EN', '-'
         )),
@@ -133,7 +144,7 @@ CREATE TABLE user_login_details
     id       VARCHAR(15) PRIMARY KEY,
     password VARCHAR(40) DEFAULT 'iitropar',
     role     VARCHAR(7) NOT NULL,
-    CHECK ( role in ('admin', 'student', 'faculty')),
+    CHECK ( role in ('ADMIN', 'STUDENT', 'FACULTY')),
     CHECK ( length(password) >= 8 )
 );
 
@@ -148,16 +159,21 @@ CREATE TABLE current_year_and_semester
     CHECK ( current_event IN ('ENROLLING', 'WITHDRAW', 'GRADE SUBMISSION', 'COMPLETED', 'NONE'))
 );
 
+
+-- Table that stores who has logged into and out of the database along with their roles
+-- Used to figure out who is responsible in case of database anomalies
 CREATE TABLE log
 (
     id        VARCHAR(15) NOT NULL,
     role      VARCHAR(7)  NOT NULL,
     log_time  TIMESTAMP   NOT NULL,
     in_or_out VARCHAR(4)  NOT NULL,
-    CHECK ( role in ('admin', 'student', 'faculty')),
-    CHECK (in_or_out IN ('in', 'out'))
+    CHECK ( role in ('ADMIN', 'STUDENT', 'FACULTY')),
+    CHECK (in_or_out IN ('IN', 'OUT'))
 );
 
+-- Table that stores all the batches that are there in the student table
+-- Links the student with the core courses and the UG curriculum corresponding to his batch
 CREATE TABLE batch
 (
     year INTEGER PRIMARY KEY
@@ -189,5 +205,18 @@ CREATE TABLE ug_curriculum
     ii   NUMERIC(4, 2) NOT NULL,
     nn   NUMERIC(4, 2) NOT NULL,
     oe   NUMERIC(4, 2) NOT NULL,
-    FOREIGN KEY (year) REFERENCES batch (year)
+    FOREIGN KEY (year) REFERENCES batch (year) ON DELETE CASCADE
+);
+
+-- Table that stores the core courses of all batches
+CREATE TABLE core_courses
+(
+    course_code     VARCHAR(6) NOT NULL,
+    department_id   VARCHAR(15),
+    batch           INTEGER,
+    course_category TEXT       NOT NULL,
+    CHECK (course_category IN ('SC', 'SE', 'GR', 'PC', 'PE', 'HC', 'HE', 'CP', 'II', 'NN', 'OE')),
+    PRIMARY KEY (course_code, department_id, batch),
+    FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE,
+    FOREIGN KEY (batch) REFERENCES batch (year) ON DELETE CASCADE
 );

@@ -20,7 +20,9 @@ public class AdminUI {
             // When you are inserting a student, check whether the batch exists or not. Add this feature later
             "Add New Batch",
             "Add Core Courses List",
-            "Generate Transcript"
+            "Check Pass Status",
+            "Generate Transcript",
+            "Any other number to log out"
     };
 
     public AdminUI( String connectionURL, String username, String password, String id ) {
@@ -96,9 +98,9 @@ public class AdminUI {
                 String[][][] records     = admin.getGradesOfStudent( entryNumber );
                 int          semester    = 1;
                 for ( String[][] record : records ) {
+                    Utils.prettyPrintGrades( year, semester, record );
                     semester = ( semester == 1 ) ? 2 : 1;
                     if ( semester == 2 ) year++;
-                    Utils.prettyPrintAdminGrades( year, semester, record );
                 }
             }
 
@@ -135,12 +137,37 @@ public class AdminUI {
             }
 
             else if ( adminChoice == 8 ) {
-                int batch = keyboardInput.integerInput( "Enter the batch" );
-                BufferedReader courseCSVFile = keyboardInput.CSVFileInput( "Enter the CSV file path" );
-                if (admin.insertCoreCourses(batch, courseCSVFile)) System.out.println("Courses inserted successfully");
-                else System.out.println("Insertion failed. Please verify that the file is in the right format");
+                try {
+                    int            batch         = keyboardInput.integerInput( "Enter the batch" );
+                    BufferedReader courseCSVFile = keyboardInput.CSVFileInput( "Enter the CSV file path" );
+                    if ( courseCSVFile == null ) {
+                        continue;
+                    }
+                    if ( admin.insertCoreCourses( batch, courseCSVFile ) )
+                        System.out.println( "Courses inserted successfully" );
+                    else System.out.println( "Insertion failed. Please verify that the file is in the right format" );
+                    courseCSVFile.close();
+                } catch ( Exception error ) {
+                    System.out.println( "Something went wrong while closing the file" );
+                }
             }
-            System.out.println();
+
+            else if ( adminChoice == 9 ) {
+                String  entryNumber      = keyboardInput.stringInput( "Enter the entry number" );
+                boolean hasStudentPassed = admin.checkStudentPassStatus( entryNumber );
+                if ( hasStudentPassed ) System.out.println( "Student eligible for graduation" );
+                else System.out.println( "Student ineligible for graduation" );
+            }
+
+            else if ( adminChoice == 10 ) {
+                int     batch                 = keyboardInput.integerInput( "Enter the batch" );
+                String  department            = keyboardInput.stringInput( "Enter the department" );
+                boolean isTranscriptGenerated = admin.generateTranscripts( batch, department );
+                if ( isTranscriptGenerated ) System.out.println( "Transcripts Generated Successfully");
+                else System.out.println( "Please try again later" );
+            }
+
+            else break;
         }
     }
 }

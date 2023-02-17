@@ -1,5 +1,7 @@
 package org.example.daoInterfaces;
 
+import java.util.HashMap;
+
 public interface CommonDAO {
     String[][] getStudentGradesForSemester( String entryNumber, int year, int semester );
 
@@ -9,5 +11,15 @@ public interface CommonDAO {
 
     int getBatch( String entryNumber );
 
+    String getCurrentEvent();
+
     boolean checkCourseCatalog( String courseCode );
+
+    String getStudentDepartment( String entryNumber );
+
+    HashMap<String, Double> getUGCurriculum( int batch );
+
+    String getCourseGrade( String entryNumber, String courseCode );
+
+    HashMap<String, Double> getCreditsInAllCategories( String entryNumber );
 }

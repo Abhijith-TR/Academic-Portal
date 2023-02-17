@@ -5,6 +5,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class StudentTest {
     Student            student;
     PostgresStudentDAO postgresStudentDAO;
@@ -51,6 +54,8 @@ class StudentTest {
 
     @Test
     void testEnroll() {
+        assertFalse( student.enroll( "CS301" ) );
+        assertTrue( student.enroll( "CS101" ) );
     }
 
     @Test
@@ -76,5 +81,10 @@ class StudentTest {
 
     @Test
     void getAvailableCourses() {
+    }
+
+    @Test
+    void getRemainingCreditRequirements() {
+        student.getRemainingCreditRequirements();
     }
 }

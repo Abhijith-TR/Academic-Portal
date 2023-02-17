@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.example.users.FacultyTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-02-15T16:09:02" hostname="ADMIN" time="0.2">
-  <properties/>
-  <testcase name="testSetCourseCategory()" classname="org.example.users.FacultyTest" time="0.2"/>
-  <system-out><![CDATA[Database error. Please try again later
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

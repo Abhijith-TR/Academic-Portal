@@ -1,9 +1,11 @@
 package org.example.dal;
 
 import org.example.daoInterfaces.CommonDAO;
+import org.example.utils.Utils;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PostgresCommonDAO implements CommonDAO {
     protected Connection databaseConnection;
@@ -89,6 +91,109 @@ public class PostgresCommonDAO implements CommonDAO {
         } catch ( Exception error ) {
             System.out.println( "Database Error. Try again later" );
             return false;
+        }
+    }
+
+    @Override
+    public String getCurrentEvent() {
+        try {
+            return "";
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return "NONE";
+        }
+    }
+
+    @Override
+    public HashMap<String, Double> getUGCurriculum( int batch ) {
+        try {
+            // Execute the SQL statement that will fetch the corresponding columns from the UG curriculum table
+            PreparedStatement getCurriculumQuery = databaseConnection.prepareStatement( "SELECT sc, se, gr, pc, pe, hc, he, cp, ii, nn, oe FROM ug_curriculum WHERE year = ?" );
+            getCurriculumQuery.setInt( 1, batch );
+            ResultSet getCurriculumQueryResult = getCurriculumQuery.executeQuery();
+            getCurriculumQueryResult.next();
+
+            // Now insert the categories into the hashmap along with the corresponding credit requirements
+            String[]                categories         = new String[]{ "SC", "SE", "GR", "PC", "PE", "HC", "HE", "CP", "II", "NN", "OE" };
+            HashMap<String, Double> creditRequirements = new HashMap<>();
+
+            // Just read the values from the returned set of columns and insert them into the hashmap
+            for ( int i = 0; i < categories.length; i++ ) {
+                Double categoryRequirement = getCurriculumQueryResult.getDouble( i + 1 );
+                creditRequirements.put( categories[i], categoryRequirement );
+            }
+            return creditRequirements;
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return new HashMap<>();
+        }
+    }
+
+    @Override
+    public HashMap<String, Double> getCreditsInAllCategories( String entryNumber ) {
+        try {
+            // SQL query to get the categories and the corresponding credits completed in all of them
+            // Note that the SQL query contains the grades that will allow the course to be marked as passed
+            PreparedStatement getCreditsQuery = databaseConnection.prepareStatement( "SELECT category, sum(credits) FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ? AND grade IN ('A', 'A-', 'B', 'B-', 'C', 'C-', 'D') GROUP BY category" );
+            getCreditsQuery.setString( 1, entryNumber );
+            ResultSet getCreditsQueryResult = getCreditsQuery.executeQuery();
+
+            // Now you just have to insert all the records that were returned into the hashmap and return it
+            HashMap<String, Double> categoryCredits = new HashMap<>();
+            while ( getCreditsQueryResult.next() ) {
+                String category = getCreditsQueryResult.getString( 1 );
+                Double creditsObtained = getCreditsQueryResult.getDouble( 2 );
+                categoryCredits.put( category, creditsObtained );
+            }
+            return categoryCredits;
+        } catch ( Exception error ) {
+            System.out.println( error.getMessage() );
+            System.out.println( "Database Error. Please try again later ");
+            return new HashMap<>();
+        }
+    }
+
+    @Override
+    public String getCourseGrade( String entryNumber, String courseCode ) {
+        try {
+            // Setting up the SQL statement
+            PreparedStatement getGradeQuery = databaseConnection.prepareStatement( "SELECT grade FROM student_course_registration WHERE entry_number = ? AND course_code = ?" );
+            getGradeQuery.setString( 1, entryNumber );
+            getGradeQuery.setString( 2, courseCode );
+            ResultSet getGradeQueryResult = getGradeQuery.executeQuery();
+
+            // If the student has done the course before, he may have done it multiple times. Get the highest possible grade
+            // In the worst case, the student has not done the course before and his grade is "-" which is the not applicable symbol
+            String maximumGrade      = "-";
+            int    maximumGradeValue = 0;
+            while ( getGradeQueryResult.next() ) {
+                // Convert the grade to a number to determine what the highest grade was
+                String grade = getGradeQueryResult.getString( 1 );
+                if ( Utils.getGradeValue( grade ) > maximumGradeValue ) {
+                    maximumGrade = grade;
+                    maximumGradeValue = Utils.getGradeValue( grade );
+                }
+            }
+            // Return the maximum grade that was found
+            return maximumGrade;
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return "U";
+        }
+    }
+
+    @Override
+    public String getStudentDepartment( String entryNumber ) {
+        try {
+            PreparedStatement studentBranchQuery = databaseConnection.prepareStatement( "SELECT department_id FROM student WHERE entry_number = ?" );
+            studentBranchQuery.setString( 1, entryNumber );
+            ResultSet studentBranchQueryResult = studentBranchQuery.executeQuery();
+            studentBranchQueryResult.next();
+            return studentBranchQueryResult.getString( 1 );
+        } catch ( Exception error ) {
+            System.out.println( error.getMessage() );
+            System.out.println( "Database Error. Please try again later" );
+            return "";
         }
     }
 }

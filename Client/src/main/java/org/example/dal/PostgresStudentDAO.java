@@ -3,12 +3,12 @@ package org.example.dal;
 import org.example.daoInterfaces.StudentDAO;
 import org.example.utils.Utils;
 
-import javax.xml.transform.Result;
 import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO {
     public PostgresStudentDAO( String connectionURL, String username, String password ) {
@@ -204,55 +204,38 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     }
 
     @Override
-    public String getCourseGrade( String entryNumber, String courseCode ) {
+    public HashMap<String, String[]> getAllOfferings( String courseCode, int year, int semester ) {
         try {
-            PreparedStatement getGradeQuery = databaseConnection.prepareStatement( "SELECT grade FROM student_course_registration WHERE entry_number = ? AND course_code = ?" );
-            getGradeQuery.setString( 1, entryNumber );
-            getGradeQuery.setString( 2, courseCode );
-            ResultSet getGradeQueryResult = getGradeQuery.executeQuery();
-            boolean   doesRecordExist     = getGradeQueryResult.next();
-            if ( doesRecordExist == false ) return "-";
-            return getGradeQueryResult.getString( 1 );
+            // Create the SQL query that will fetch all the departments and batches for which the course was offered
+            PreparedStatement getOfferingsQuery = databaseConnection.prepareStatement( "SELECT sc, se, gr, pc, pe, hc, he, cp, ii, nn, oe FROM course_offerings WHERE course_code = ? AND year = ? AND semester = ? " );
+            getOfferingsQuery.setString( 1, courseCode );
+            getOfferingsQuery.setInt( 2, year );
+            getOfferingsQuery.setInt( 3, semester );
+            ResultSet getOfferingsQueryResult = getOfferingsQuery.executeQuery();
+
+            // Now you have to copy the contents of the result set into a hashmap
+            // Whatever categories are allowed in the database must be returned to the client side application
+            // The order in the array must be the same as in the query
+            String[]                  categories = new String[]{ "SC", "SE", "GR", "PC", "PE", "HC", "HE", "CP", "II", "NN", "OE" };
+            HashMap<String, String[]> offerings  = new HashMap<>();
+
+            // Get the records corresponding to the categories and put them into the hashmap
+            while ( getOfferingsQueryResult.next() ) {
+                for ( int i = 0; i < categories.length; i++ ) {
+                    Array    sqlColumn       = getOfferingsQueryResult.getArray( i + 1 );
+                    String[] batchDepartment = (String[]) sqlColumn.getArray();
+                    offerings.put( categories[i], batchDepartment );
+                }
+            }
+
+            // You need as many results as there are categories, otherwise something has gone wrong
+            if ( offerings.size() != categories.length ) throw new RuntimeException( "Exception" );
+
+            // If all conditions have been fulfilled, return the hashmap
+            return offerings;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
-            return "A";
-        }
-    }
-
-    @Override
-    public String[] getStudentAndCourseDepartment( String entryNumber, String courseCode ) {
-        try {
-            PreparedStatement studentBranchQuery = databaseConnection.prepareStatement( "SELECT department.name FROM department NATURAL JOIN student WHERE entry_number = ?" );
-            studentBranchQuery.setString( 1, entryNumber );
-            ResultSet studentBranchQueryResult = studentBranchQuery.executeQuery();
-            studentBranchQueryResult.next();
-            String studentBranch = studentBranchQueryResult.getString( 1 );
-
-            PreparedStatement courseBranchQuery = databaseConnection.prepareStatement( "SELECT department.name FROM department NATURAL JOIN course_catalog WHERE course_code = ?" );
-            courseBranchQuery.setString( 1, courseCode );
-            ResultSet courseBranchQueryResult = courseBranchQuery.executeQuery();
-            courseBranchQueryResult.next();
-            String courseBranch = courseBranchQueryResult.getString( 1 );
-
-            return new String[]{ studentBranch, courseBranch };
-        } catch ( Exception error ) {
-            System.out.println( "Database Error. Please try again later" );
-            return new String[]{};
-        }
-    }
-
-    @Override
-    public boolean checkIfCore( String studentDepartment, int batch, String courseCode ) {
-        try {
-            String tableName = "core_courses_" + batch;
-            PreparedStatement checkCoreQuery = databaseConnection.prepareStatement("SELECT category FROM " + tableName + " WHERE department_id = ? AND course_code = ?");
-            checkCoreQuery.setString( 1, studentDepartment );
-            checkCoreQuery.setString( 2, courseCode );
-            ResultSet checkCoreQueryResult = checkCoreQuery.executeQuery();
-            return checkCoreQueryResult.next();
-        } catch ( Exception error ) {
-            System.out.println( "Database Error. Please try again later" );
-            return false;
+            return new HashMap<>();
         }
     }
 }

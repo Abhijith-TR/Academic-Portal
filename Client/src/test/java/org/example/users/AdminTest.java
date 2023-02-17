@@ -81,4 +81,9 @@ class AdminTest {
             throw new RuntimeException( e );
         }
     }
+
+    @Test
+    void generateTranscripts() {
+        assertTrue( admin.generateTranscripts( 2020, "CS" ));
+    }
 }
