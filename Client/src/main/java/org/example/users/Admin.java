@@ -1,5 +1,6 @@
 package org.example.users;
 
+import org.example.dal.PostgresAdminDAO;
 import org.example.daoInterfaces.AdminDAO;
 import org.example.utils.Utils;
 
@@ -13,9 +14,14 @@ import java.util.HashMap;
 public class Admin extends User {
     AdminDAO adminDAO;
 
-    public Admin( String name, AdminDAO adminDAO ) {
-        super( name, adminDAO );
-        this.adminDAO = adminDAO;
+    public Admin( String name ) {
+        super( name );
+        this.adminDAO = new PostgresAdminDAO(
+                "jdbc:postgresql://localhost:5432/mini_project",
+                "postgres",
+                "admin"
+        );
+        super.setCommonDAO( adminDAO );
     }
 
     public String[][] getGradesOfOffering( String courseCode, int year, int semester ) {

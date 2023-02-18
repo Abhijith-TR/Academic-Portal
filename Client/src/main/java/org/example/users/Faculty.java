@@ -1,5 +1,6 @@
 package org.example.users;
 
+import org.example.dal.PostgresFacultyDAO;
 import org.example.daoInterfaces.FacultyDAO;
 
 import java.io.BufferedReader;
@@ -12,9 +13,14 @@ import java.util.Collections;
 public class Faculty extends User {
     FacultyDAO facultyDAO;
 
-    public Faculty( String id, FacultyDAO facultyDAO ) {
-        super( id, facultyDAO );
-        this.facultyDAO = facultyDAO;
+    public Faculty( String id ) {
+        super( id );
+        this.facultyDAO = new PostgresFacultyDAO(
+                "jdbc:postgresql://localhost:5432/mini_project",
+                "postgres",
+                "admin"
+        );
+        super.setCommonDAO( facultyDAO );
     }
 
     public boolean offerCourse( String courseCode ) {

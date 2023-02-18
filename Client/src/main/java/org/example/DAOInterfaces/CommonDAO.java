@@ -11,8 +11,6 @@ public interface CommonDAO {
 
     int getBatch( String entryNumber );
 
-    String getCurrentEvent();
-
     boolean checkCourseCatalog( String courseCode );
 
     String getStudentDepartment( String entryNumber );

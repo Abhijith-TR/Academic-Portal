@@ -1,7 +1,5 @@
 package org.example.ui;
 
-import org.example.dal.PostgresAdminDAO;
-import org.example.daoInterfaces.AdminDAO;
 import org.example.users.Admin;
 import org.example.utils.CustomScanner;
 import org.example.utils.Utils;
@@ -30,18 +28,13 @@ public class AdminUI {
             "Any other number to log out"
     };
 
-    public AdminUI( String connectionURL, String username, String password, String id ) {
-        AdminDAO adminDAO = new PostgresAdminDAO(
-                connectionURL,
-                username,
-                password
-        );
-        adminInterfaceHomeScreen( id, adminDAO );
+    public AdminUI(  String id ) {
+        adminInterfaceHomeScreen( id );
     }
 
-    public void adminInterfaceHomeScreen( String id, AdminDAO adminDAO ) {
+    public void adminInterfaceHomeScreen( String id ) {
         CustomScanner keyboardInput = new CustomScanner();
-        Admin         admin         = new Admin( id, adminDAO );
+        Admin         admin         = new Admin( id );
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );

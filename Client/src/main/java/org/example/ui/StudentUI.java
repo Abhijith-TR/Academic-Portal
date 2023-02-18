@@ -1,7 +1,5 @@
 package org.example.ui;
 
-import org.example.dal.PostgresStudentDAO;
-import org.example.daoInterfaces.StudentDAO;
 import org.example.users.Student;
 import org.example.utils.CustomScanner;
 import org.example.utils.Utils;
@@ -24,18 +22,13 @@ public class StudentUI {
             "Any other number to log out"
     };
 
-    public StudentUI( String connectionURL, String username, String password, String id ) {
-        StudentDAO databaseConnection = new PostgresStudentDAO(
-                connectionURL,
-                username,
-                password
-        );
-        StudentInterfaceHomeScreen( databaseConnection, id );
+    public StudentUI( String id ) {
+        StudentInterfaceHomeScreen( id );
     }
 
-    public void StudentInterfaceHomeScreen( StudentDAO databaseConnection, String id ) {
+    public void StudentInterfaceHomeScreen( String id ) {
         CustomScanner keyboardInput = new CustomScanner();
-        Student       student       = new Student( id, databaseConnection );
+        Student       student       = new Student( id );
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );

@@ -4,9 +4,12 @@ import org.example.daoInterfaces.CommonDAO;
 
 public class User {
     protected final String id;
-    private final CommonDAO commonDAO;
-    public User(String id, CommonDAO commonDAO) {
+    private CommonDAO commonDAO;
+    public User(String id) {
         this.id = id;
+    }
+
+    public void setCommonDAO( CommonDAO commonDAO ) {
         this.commonDAO = commonDAO;
     }
 

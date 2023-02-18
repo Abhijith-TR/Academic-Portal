@@ -3,7 +3,6 @@ package org.example.dal;
 import org.example.daoInterfaces.CommonDAO;
 import org.example.utils.Utils;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,16 +91,6 @@ public class PostgresCommonDAO implements CommonDAO {
         } catch ( Exception error ) {
             System.out.println( "Database Error. Try again later" );
             return false;
-        }
-    }
-
-    @Override
-    public String getCurrentEvent() {
-        try {
-            return "";
-        } catch ( Exception error ) {
-            System.out.println( "Database Error. Please try again later" );
-            return "NONE";
         }
     }
 

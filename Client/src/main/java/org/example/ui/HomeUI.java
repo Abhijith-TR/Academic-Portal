@@ -66,13 +66,13 @@ public class HomeUI {
 
             // Once the username and password have been verified, pass control over to the corresponding user interface
             if ( roleIndex == 1 ) {
-                new StudentUI( centralConnectionURl, studentUsername, studentPassword, id );
+                new StudentUI( id );
             }
             else if ( roleIndex == 2 ) {
-                new FacultyUI( centralConnectionURl, facultyUsername, facultyPassword, id );
+                new FacultyUI( id );
             }
             else if ( roleIndex == 3 ) {
-                new AdminUI( centralConnectionURl, adminUsername, adminPassword, id );
+                new AdminUI( id );
             }
 
             // Trying to log the logout of the user into the database. Logout is not successful until the log recognizes it

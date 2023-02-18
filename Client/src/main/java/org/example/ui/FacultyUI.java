@@ -1,7 +1,5 @@
 package org.example.ui;
 
-import org.example.dal.PostgresFacultyDAO;
-import org.example.daoInterfaces.FacultyDAO;
 import org.example.users.Faculty;
 import org.example.utils.CustomScanner;
 import org.example.utils.Utils;
@@ -26,14 +24,13 @@ public class FacultyUI {
             "Any other number to logout"
     };
 
-    public FacultyUI( String connectionURL, String username, String password, String id ) {
-        FacultyDAO facultyDAO = new PostgresFacultyDAO( connectionURL, username, password );
-        FacultyUI( id, facultyDAO );
+    public FacultyUI( String id ) {
+        FacultyUI( id );
     }
 
-    public void FacultyUI( String id, FacultyDAO facultyDAO ) {
+    public void FacultyUI( String id ) {
         CustomScanner keyboardInput = new CustomScanner();
-        Faculty       faculty       = new Faculty( id, facultyDAO );
+        Faculty       faculty       = new Faculty( id );
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );

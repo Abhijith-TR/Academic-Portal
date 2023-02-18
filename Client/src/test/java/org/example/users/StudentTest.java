@@ -20,11 +20,6 @@ class StudentTest {
 
     @BeforeEach
     void setUp() {
-        StudentDAO studentDAO = new PostgresStudentDAO(
-                "jdbc:postgresql://localhost:5432/mini_project",
-                "postgres",
-                "admin"
-        );
         adminDAO = new PostgresAdminDAO(
                 "jdbc:postgresql://localhost:5432/mini_project",
                 "postgres",
@@ -35,7 +30,7 @@ class StudentTest {
                 "postgres",
                 "admin"
         );
-        student = new Student( "2021CSB1062", studentDAO );
+        student = new Student( "2021CSB1062" );
     }
 
     @AfterEach

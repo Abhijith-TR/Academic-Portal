@@ -1,18 +1,23 @@
 package org.example.users;
 
+import org.example.dal.PostgresStudentDAO;
 import org.example.daoInterfaces.StudentDAO;
 import org.example.utils.Utils;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Student extends User {
     final private StudentDAO studentDAO;
 
-    public Student( String id, StudentDAO studentDAO ) {
-        super( id, studentDAO );
-        this.studentDAO = studentDAO;
+    public Student( String id  ) {
+        super( id );
+        this.studentDAO = new PostgresStudentDAO(
+                "jdbc:postgresql://localhost:5432/mini_project",
+                "postgres",
+                "admin"
+        );
+        super.setCommonDAO( studentDAO );
     }
 
     // The default cutoff of 4 is implemented here.

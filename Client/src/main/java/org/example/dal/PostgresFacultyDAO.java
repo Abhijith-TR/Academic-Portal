@@ -2,7 +2,6 @@ package org.example.dal;
 
 import org.example.daoInterfaces.FacultyDAO;
 
-import javax.xml.transform.Result;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;

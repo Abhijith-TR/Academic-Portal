@@ -21,7 +21,7 @@ class AdminTest {
                 "postgres",
                 "admin"
         );
-        admin = new Admin("ADMIN1", adminDAO);
+        admin = new Admin("ADMIN1");
     }
 
     @AfterEach
