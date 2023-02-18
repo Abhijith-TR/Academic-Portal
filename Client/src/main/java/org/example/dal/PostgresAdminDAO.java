@@ -44,7 +44,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             insertStudentQuery.setInt( 4, batch );
             int successStatus = insertStudentQuery.executeUpdate();
 
-            PreparedStatement insertPasswordQuery = databaseConnection.prepareStatement( "INSERT INTO user_login_details VALUES (?, ?, ?)" );
+            PreparedStatement insertPasswordQuery = databaseConnection.prepareStatement( "INSERT INTO common_user_details VALUES (?, ?, ?)" );
             insertPasswordQuery.setString( 1, entryNumber );
             // the default password is set here
             insertPasswordQuery.setString( 2, "iitropar" );
@@ -66,7 +66,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             insertFacultyQuery.setString( 3, departmentID );
             int successStatus = insertFacultyQuery.executeUpdate();
 
-            PreparedStatement insertPasswordQuery = databaseConnection.prepareStatement( "INSERT INTO user_login_details VALUES (?, ?, ?)" );
+            PreparedStatement insertPasswordQuery = databaseConnection.prepareStatement( "INSERT INTO common_user_details VALUES (?, ?, ?)" );
             insertPasswordQuery.setString( 1, facultyID );
             // the default password is set here
             insertPasswordQuery.setString( 2, "iitropar" );

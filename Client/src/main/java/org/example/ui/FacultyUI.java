@@ -19,6 +19,10 @@ public class FacultyUI {
             "View Grades of Specific Course Offering",
             "Generate Grade Upload Sheet",
             "Upload Course Grades",
+            "Change Phone Number",
+            "Change Contact Email",
+            "View Contact Details",
+            "Change Password",
             "Any other number to logout"
     };
 
@@ -141,6 +145,46 @@ public class FacultyUI {
                 } catch ( Exception error ) {
                     System.out.println( "Please enter valid course code, year and semester");
                 }
+            }
+
+            else if ( facultyChoice == 9 ) {
+                String newPhoneNumber = keyboardInput.stringInput( "Enter the new phone number" );
+                if ( faculty.setPhoneNumber( newPhoneNumber ) ) System.out.println( "Phone Number Updated Successfully" );
+                else System.out.println( "Phone Number Update Failed" );
+            }
+
+            else if ( facultyChoice == 10 ) {
+                String email = keyboardInput.stringInput("Enter the email");
+                if ( faculty.setEmail( email ) ) System.out.println("Contact Email Updated Successfully");
+                else System.out.println("Contact Email Not Updated");
+            }
+
+            else if ( facultyChoice == 11 ) {
+                String   userID        = keyboardInput.stringInput( "Enter the id of the user" );
+                String[] emailAndPhone = faculty.getContactDetails( userID );
+
+                if ( emailAndPhone.length == 2 ) {
+                    String   email         = emailAndPhone[0];
+                    String   phoneNumber   = emailAndPhone[1];
+                    if ( email != null ) System.out.println( "Email: " + email );
+                    if ( phoneNumber != null ) System.out.println( "Phone: " + phoneNumber );
+                    if ( email == null && phoneNumber == null )
+                        System.out.println( "User has not provided contact details" );
+                }
+                else System.out.println( "Could not retrieve details of user" );
+            }
+
+            else if ( facultyChoice == 12 ) {
+                String password = keyboardInput.stringInput( "Enter your new password" );
+                String verifyPassword = keyboardInput.stringInput( "Reenter your password" );
+
+                if ( !password.equals( verifyPassword )) {
+                    System.out.println( "Please reenter the same password" );
+                    continue;
+                }
+
+                if ( faculty.setPassword( password )) System.out.println( "Password updated successfully" );
+                else System.out.println( "Password Update Failed" );
             }
 
             else break;

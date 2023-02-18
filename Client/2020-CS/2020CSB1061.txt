@@ -7,3 +7,4 @@ Year: 2020    Semester: 1     SGPA: 9.0
 Course Code    Course Title                                                Grade     Credits Earned
 GE103          INTRODUCTION TO COMPUTING AND DATA STRUCTURES               A-        4.5       
 
+CGPA: 9.00

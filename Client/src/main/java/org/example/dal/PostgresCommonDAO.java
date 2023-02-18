@@ -3,6 +3,7 @@ package org.example.dal;
 import org.example.daoInterfaces.CommonDAO;
 import org.example.utils.Utils;
 
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,7 +85,7 @@ public class PostgresCommonDAO implements CommonDAO {
     @Override
     public boolean checkCourseCatalog( String courseCode ) {
         try {
-            PreparedStatement checkCourseCatalogQuery = databaseConnection.prepareStatement("SELECT course_code FROM course_catalog WHERE course_code = ?");
+            PreparedStatement checkCourseCatalogQuery = databaseConnection.prepareStatement( "SELECT course_code FROM course_catalog WHERE course_code = ?" );
             checkCourseCatalogQuery.setString( 1, courseCode );
             ResultSet checkCourseCatalogQueryResult = checkCourseCatalogQuery.executeQuery();
             return checkCourseCatalogQueryResult.next();
@@ -141,15 +142,88 @@ public class PostgresCommonDAO implements CommonDAO {
             // Now you just have to insert all the records that were returned into the hashmap and return it
             HashMap<String, Double> categoryCredits = new HashMap<>();
             while ( getCreditsQueryResult.next() ) {
-                String category = getCreditsQueryResult.getString( 1 );
+                String category        = getCreditsQueryResult.getString( 1 );
                 Double creditsObtained = getCreditsQueryResult.getDouble( 2 );
                 categoryCredits.put( category, creditsObtained );
             }
             return categoryCredits;
         } catch ( Exception error ) {
             System.out.println( error.getMessage() );
-            System.out.println( "Database Error. Please try again later ");
+            System.out.println( "Database Error. Please try again later " );
             return new HashMap<>();
+        }
+    }
+
+    @Override
+    public boolean setPhoneNumber( String id, String phoneNumber ) {
+        try {
+            // SQL query to update this particular id with the phone number that is provided
+            PreparedStatement setPhoneNumberQuery = databaseConnection.prepareStatement( "UPDATE common_user_details SET phone = ? WHERE id = ?" );
+            setPhoneNumberQuery.setString( 1, phoneNumber );
+            setPhoneNumberQuery.setString( 2, id );
+            setPhoneNumberQuery.executeUpdate();
+
+            // If the query was successfully executed return true ( the only case where the update would affect 0 rows would be when the same phone number is there in the database, which is fine )
+            return true;
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return false;
+        }
+    }
+
+    @Override
+    public boolean setEmail( String id, String email ) {
+        try {
+            // Create an SQL query to set the email of the specified user
+            PreparedStatement setEmailQuery = databaseConnection.prepareStatement( "UPDATE common_user_details SET email = ? WHERE id = ?" );
+            setEmailQuery.setString( 1, email );
+            setEmailQuery.setString( 2, id );
+            setEmailQuery.executeUpdate();
+
+            // If the query is successful, return true
+            return true;
+        } catch ( Exception error ) {
+            System.out.println( "Database error. Please try again later" );
+            return false;
+        }
+    }
+
+    @Override
+    public String[] getContactDetails( String userID ) {
+        try {
+            // SQL query to fetch the contact details of the specified ID from the database
+            PreparedStatement getContactDetailsQuery = databaseConnection.prepareStatement( "SELECT email, phone FROM common_user_details WHERE id = ?" );
+            getContactDetailsQuery.setString( 1, userID );
+            ResultSet getContactDetailsQueryResult = getContactDetailsQuery.executeQuery();
+
+            // Check if the user ID is actually valid and any records were returned
+            boolean isIDValid = getContactDetailsQueryResult.next();
+            if ( isIDValid == false ) return new String[]{};
+
+            // If the user id that was entered is valid, get the email and phone number and return it
+            String  email     = getContactDetailsQueryResult.getString( 1 );
+            String  phone     = getContactDetailsQueryResult.getString( 2 );
+            return new String[]{ email, phone };
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return new String[]{};
+        }
+    }
+
+    @Override
+    public boolean setPassword( String id, String password ) {
+        try {
+            // SQL statement to update the password in the database
+            PreparedStatement setPasswordQuery = databaseConnection.prepareStatement("UPDATE common_user_details SET password = ? WHERE id = ?");
+            setPasswordQuery.setString( 1, password );
+            setPasswordQuery.setString( 2, id );
+            setPasswordQuery.executeUpdate();
+
+            // If the query executes successfully, simply return true
+            return true;
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return false;
         }
     }
 

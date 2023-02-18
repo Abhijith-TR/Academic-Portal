@@ -22,6 +22,10 @@ public class AdminUI {
             "Add Core Courses List",
             "Check Pass Status",
             "Generate Transcript",
+            "Change Phone Number",
+            "Change Contact Email",
+            "View Contact Details",
+            "Change Password",
             "Any other number to log out"
     };
 
@@ -163,8 +167,48 @@ public class AdminUI {
                 int     batch                 = keyboardInput.integerInput( "Enter the batch" );
                 String  department            = keyboardInput.stringInput( "Enter the department" );
                 boolean isTranscriptGenerated = admin.generateTranscripts( batch, department );
-                if ( isTranscriptGenerated ) System.out.println( "Transcripts Generated Successfully");
+                if ( isTranscriptGenerated ) System.out.println( "Transcripts Generated Successfully" );
                 else System.out.println( "Please try again later" );
+            }
+
+            else if ( adminChoice == 11 ) {
+                String newPhoneNumber = keyboardInput.stringInput( "Enter the new phone number" );
+                if ( admin.setPhoneNumber( newPhoneNumber ) ) System.out.println( "Phone Number Updated Successfully" );
+                else System.out.println( "Phone Number Update Failed" );
+            }
+
+            else if ( adminChoice == 12 ) {
+                String email = keyboardInput.stringInput( "Enter the email" );
+                if ( admin.setEmail( email ) ) System.out.println( "Contact Email Updated Successfully" );
+                else System.out.println( "Contact Email Not Updated" );
+            }
+
+            else if ( adminChoice == 13 ) {
+                String   userID        = keyboardInput.stringInput( "Enter the id of the user" );
+                String[] emailAndPhone = admin.getContactDetails( userID );
+
+                if ( emailAndPhone.length == 2 ) {
+                    String   email         = emailAndPhone[0];
+                    String   phoneNumber   = emailAndPhone[1];
+                    if ( email != null ) System.out.println( "Email: " + email );
+                    if ( phoneNumber != null ) System.out.println( "Phone: " + phoneNumber );
+                    if ( email == null && phoneNumber == null )
+                        System.out.println( "User has not provided contact details" );
+                }
+                else System.out.println( "Could not retrieve details of user" );
+            }
+
+            else if ( adminChoice == 14 ) {
+                String password = keyboardInput.stringInput( "Enter your new password" );
+                String verifyPassword = keyboardInput.stringInput( "Reenter your password" );
+
+                if ( !password.equals( verifyPassword )) {
+                    System.out.println( "Please reenter the same password" );
+                    continue;
+                }
+
+                if ( admin.setPassword( password )) System.out.println( "Password updated successfully" );
+                else System.out.println( "Password Update Failed" );
             }
 
             else break;

@@ -1,24 +1,28 @@
-Add the phone number feature to both database and the java application.
-
 Default CGPA criteria is going to be 4
 
-Make the log functionality complete - Check if there exists a previous logged-in user
-
-Test what happens if the database fails after the user has logged in
-
 Add stuff in the all the DAOs that will do the case conversion
-
-You should not be doing the case lower thingy in the frontend. The frontend should not care what the backend is
 
 You can also create a separate utils object for each instance instead of the static idea
 
 The student records will be found until the current year and semester. You may think of ways to prevent that
-Add the SGPA when printing the records of a student
-
-Test that the delete course function deletes all offerings and records
 
 Should the ltpsc be auto generated using l and p?
 
-You can think of turning off auto commit and then turning it on in functions that require it
+> You can think of turning off auto commit and then turning it on in functions that require it
 
 When the instructor is adding the branches and departments for which he is offering, we must ensure that he does not offer anything for the same batch and department twice
+
+Events
+
+Faculty
+- offerCourse
+- setCGAndPrerequisites
+- dropCourseOffering
+- setCourseCategory
+- generateGradeCSV
+- uploadGrades
+
+Student
+ - enroll
+ - drop
+ - getAvailableCourses

@@ -17,3 +17,4 @@ Course Code    Course Title                                                Grade
 CS301          DATABASES                                                   A         4.0       
 CS303          OPERATING SYSTEMS                                           A         4.0       
 
+CGPA: 9.61

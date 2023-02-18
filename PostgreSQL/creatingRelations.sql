@@ -4,7 +4,6 @@ CREATE TABLE admin
 (
     admin_id VARCHAR(15) PRIMARY KEY,
     name     VARCHAR(40) NOT NULL,
-    phone    TEXT,
 );
 
 -- department_id: Used to uniquely identify each department. Given based on number of departments
@@ -21,7 +20,6 @@ CREATE TABLE faculty
     faculty_id    VARCHAR(15) PRIMARY KEY,
     name          VARCHAR(40) NOT NULL,
     department_id VARCHAR(15) NOT NULL,
-    phone         TEXT,
     FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE
 );
 
@@ -32,7 +30,6 @@ CREATE TABLE student
 (
     entry_number  VARCHAR(15) PRIMARY KEY,
     name          VARCHAR(40) NOT NULL,
-    phone         TEXT,
     department_id VARCHAR(15) NOT NULL,
     batch         INTEGER     NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE,
@@ -136,14 +133,17 @@ CREATE TABLE student_course_registration
     CHECK (category IN ('SR', 'SE', 'GR', 'PC', 'PE', 'HC', 'HE', 'CP', 'II', 'NN', 'OE'))
 );
 
--- This table contains the login details for all admin, students and faculty
+-- This table contains the common details for all admin, students and faculty
+-- The phone number and the email are not compulsory and can be changed by the users themselves
 -- The length of the password must be at least 8
 -- The default password is iitropar which can be changed by the user once they login
-CREATE TABLE user_login_details
+CREATE TABLE common_user_details
 (
     id       VARCHAR(15) PRIMARY KEY,
     password VARCHAR(40) DEFAULT 'iitropar',
     role     VARCHAR(7) NOT NULL,
+    phone    TEXT,
+    email    TEXT,
     CHECK ( role in ('ADMIN', 'STUDENT', 'FACULTY')),
     CHECK ( length(password) >= 8 )
 );

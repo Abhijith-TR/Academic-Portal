@@ -10,7 +10,7 @@ public class Student extends User {
     final private StudentDAO studentDAO;
 
     public Student( String id, StudentDAO studentDAO ) {
-        super( id );
+        super( id, studentDAO );
         this.studentDAO = studentDAO;
     }
 

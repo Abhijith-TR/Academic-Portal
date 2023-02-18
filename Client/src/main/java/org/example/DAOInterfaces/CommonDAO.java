@@ -22,4 +22,12 @@ public interface CommonDAO {
     String getCourseGrade( String entryNumber, String courseCode );
 
     HashMap<String, Double> getCreditsInAllCategories( String entryNumber );
+
+    boolean setPhoneNumber( String id, String phoneNumber );
+
+    boolean setEmail( String id, String email );
+
+    String[] getContactDetails( String userID );
+
+    boolean setPassword( String id, String password );
 }

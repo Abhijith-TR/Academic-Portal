@@ -35,6 +35,7 @@ public class CustomScanner {
                 return input;
             } catch ( Exception error ) {
                 System.out.println( "Please Enter Valid Input" );
+                keyboardInput.close();
                 keyboardInput = new Scanner( System.in );
             }
         }

@@ -8,13 +8,13 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DatabaseTest {
-    Database           database;
+class PasswordDatabaseTest {
+    PasswordDatabase   passwordDatabase;
     PostgresStudentDAO student;
 
     @BeforeEach
     void setUp() {
-        database = new Database(
+        passwordDatabase = new PasswordDatabase(
                 "jdbc:postgresql://localhost:5432/mini_project",
                 "postgres",
                 "admin"

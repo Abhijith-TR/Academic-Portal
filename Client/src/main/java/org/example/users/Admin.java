@@ -14,7 +14,7 @@ public class Admin extends User {
     AdminDAO adminDAO;
 
     public Admin( String name, AdminDAO adminDAO ) {
-        super( name );
+        super( name, adminDAO );
         this.adminDAO = adminDAO;
     }
 
@@ -99,7 +99,7 @@ public class Admin extends User {
         // Iterate through all the courses and verify that the student has passed all the courses
         for ( String courseCode : listOfCoreCourses ) {
             String grade = adminDAO.getCourseGrade( entryNumber, courseCode );
-            if ( Utils.getGradeValue( grade ) <= 4 ) {
+            if ( Utils.getGradeValue( grade ) < 4 ) {
                 return false;
             }
         }
@@ -197,7 +197,8 @@ public class Admin extends User {
                 }
 
                 // The CGPA of the student will be mentioned at the end
-
+                fileWriter.printf( "CGPA: %.2f", getCGPA( records ));
+                // Should we be printing the eligibility for graduation?
 
                 // Close the fileWriter object after use to prevent locking issues
                 fileWriter.close();
@@ -260,9 +261,9 @@ public class Admin extends User {
         double totalCredits  = 0;
         double creditsEarned = 0;
         for ( String[][] record : records ) {
-            for ( String[] record : records ) {
-                double credits             = Double.parseDouble( record[0] );
-                int    numericalGradeValue = Utils.getGradeValue( record[1] );
+            for ( String[] subjectRecord : record ) {
+                double credits             = Double.parseDouble( subjectRecord[3] );
+                int    numericalGradeValue = Utils.getGradeValue( subjectRecord[2] );
                 // E and F grades are not considered in the computation of CGPA
                 if ( numericalGradeValue < 4 ) continue;
                 totalCredits += credits;

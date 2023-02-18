@@ -13,7 +13,7 @@ public class Faculty extends User {
     FacultyDAO facultyDAO;
 
     public Faculty( String id, FacultyDAO facultyDAO ) {
-        super( id );
+        super( id, facultyDAO );
         this.facultyDAO = facultyDAO;
     }
 
