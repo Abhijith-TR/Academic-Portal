@@ -1,0 +1,296 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > FacultyUI</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.ui</a>
+</div>
+
+<h1>Coverage Summary for Class: FacultyUI (org.example.ui)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FacultyUI</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/128)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.ui;
+&nbsp;
+&nbsp;import org.example.dal.PostgresFacultyDAO;
+&nbsp;import org.example.daoInterfaces.FacultyDAO;
+&nbsp;import org.example.users.Faculty;
+&nbsp;import org.example.utils.CustomScanner;
+&nbsp;import org.example.utils.Utils;
+&nbsp;
+&nbsp;import java.io.BufferedReader;
+&nbsp;import java.util.ArrayList;
+&nbsp;
+&nbsp;public class FacultyUI {
+<b class="nc">&nbsp;    String[] facultyChoices = {</b>
+&nbsp;            &quot;Register Course&quot;,
+&nbsp;            &quot;Update CG and Prerequisites&quot;,
+&nbsp;            &quot;Set course category for offering&quot;,
+&nbsp;            &quot;Deregister Course&quot;,
+&nbsp;            &quot;View Grades of Specific Student&quot;,
+&nbsp;            &quot;View Grades of Specific Course Offering&quot;,
+&nbsp;            &quot;Generate Grade Upload Sheet&quot;,
+&nbsp;            &quot;Upload Course Grades&quot;,
+&nbsp;            &quot;Change Phone Number&quot;,
+&nbsp;            &quot;Change Contact Email&quot;,
+&nbsp;            &quot;View Contact Details&quot;,
+&nbsp;            &quot;Change Password&quot;,
+&nbsp;            &quot;Any other number to logout&quot;
+&nbsp;    };
+&nbsp;
+<b class="nc">&nbsp;    public FacultyUI( String connectionURL, String username, String password, String id ) {</b>
+<b class="nc">&nbsp;        FacultyDAO facultyDAO = new PostgresFacultyDAO( connectionURL, username, password );</b>
+<b class="nc">&nbsp;        FacultyUI( id, facultyDAO );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void FacultyUI( String id, FacultyDAO facultyDAO ) {
+<b class="nc">&nbsp;        CustomScanner keyboardInput = new CustomScanner();</b>
+<b class="nc">&nbsp;        Faculty       faculty       = new Faculty( id, facultyDAO );</b>
+&nbsp;        while ( true ) {
+<b class="nc">&nbsp;            System.out.println();</b>
+<b class="nc">&nbsp;            System.out.println( &quot;Select an option&quot; );</b>
+<b class="nc">&nbsp;            for ( int i = 1; i &lt;= facultyChoices.length; i++ ) {</b>
+<b class="nc">&nbsp;                System.out.println( i + &quot;. &quot; + facultyChoices[i - 1] );</b>
+&nbsp;            }
+<b class="nc">&nbsp;            int facultyChoice = keyboardInput.integerInput( &quot;Enter your choice&quot; );</b>
+<b class="nc">&nbsp;            if ( facultyChoice == 1 ) {</b>
+<b class="nc">&nbsp;                String  courseCode = keyboardInput.stringInput( &quot;Enter the course code&quot; );</b>
+<b class="nc">&nbsp;                boolean status     = faculty.offerCourse( courseCode );</b>
+<b class="nc">&nbsp;                if ( status == true )</b>
+<b class="nc">&nbsp;                    System.out.println( &quot;Course offered. Please update prerequisites and CG criteria manually&quot; );</b>
+&nbsp;                else
+<b class="nc">&nbsp;                    System.out.println( &quot;Course not offered. Please verify that the course exists in the course catalog&quot; );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 2 ) {</b>
+<b class="nc">&nbsp;                String courseCode  = keyboardInput.stringInput( &quot;Enter the course code&quot; );</b>
+<b class="nc">&nbsp;                double minimumCGPA = 0;</b>
+<b class="nc">&nbsp;                minimumCGPA = keyboardInput.doubleInput( &quot;Enter the minimum CGPA criteria&quot; );</b>
+<b class="nc">&nbsp;                ArrayList&lt;String[]&gt; prerequisites         = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;                int                 numberOfPrerequisites = keyboardInput.integerInput( &quot;Enter the number of prerequisites&quot; );</b>
+<b class="nc">&nbsp;                for ( int i = 1; i &lt;= numberOfPrerequisites; i++ ) {</b>
+<b class="nc">&nbsp;                    int               numberOfCourses = keyboardInput.integerInput( &quot;Enter the number of courses of type&quot; + i );</b>
+<b class="nc">&nbsp;                    ArrayList&lt;String&gt; courses         = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;                    for ( int j = 0; j &lt; numberOfCourses; j++ ) {</b>
+<b class="nc">&nbsp;                        String course = keyboardInput.stringInput( &quot;Enter the course code&quot; );</b>
+&nbsp;                        // Should the grade cutoff be in numbers or should it be a grade as a string?
+<b class="nc">&nbsp;                        int prerequisite = keyboardInput.integerInput( &quot;Enter the grade cutoff (as a number)&quot; );</b>
+<b class="nc">&nbsp;                        if ( prerequisite &gt; 10 || prerequisite &lt; 0 ) {</b>
+<b class="nc">&nbsp;                            System.out.println( &quot;Invalid grade requirement&quot; );</b>
+<b class="nc">&nbsp;                            continue;</b>
+&nbsp;                        }
+<b class="nc">&nbsp;                        courses.add( course );</b>
+<b class="nc">&nbsp;                        courses.add( Integer.toString( prerequisite ) );</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    if ( prerequisites.add( courses.toArray( new String[courses.size()] ) ) )</b>
+<b class="nc">&nbsp;                        System.out.println( &quot;Offering Updated Successfully&quot; );</b>
+&nbsp;                    else
+<b class="nc">&nbsp;                        System.out.println( &quot;Offering update failed. Only update courses that are offered by yourself and verify that all courses exist&quot; );</b>
+&nbsp;                }
+<b class="nc">&nbsp;                faculty.setCGAndPrerequisites( courseCode, minimumCGPA, prerequisites.toArray( new String[prerequisites.size()][] ) );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 3 ) {</b>
+<b class="nc">&nbsp;                String courseCode     = keyboardInput.stringInput( &quot;Enter the course code&quot; );</b>
+<b class="nc">&nbsp;                String courseCategory = keyboardInput.stringInput( &quot;Enter the course category&quot; );</b>
+<b class="nc">&nbsp;                String department     = keyboardInput.stringInput( &quot;Enter the department for which you wish to offer the course&quot; );</b>
+<b class="nc">&nbsp;                int    numberOfYears  = keyboardInput.integerInput( &quot;Enter the number of years&quot; );</b>
+<b class="nc">&nbsp;                int[]  years          = new int[numberOfYears];</b>
+<b class="nc">&nbsp;                for ( int i = 1; i &lt;= numberOfYears; i++ ) {</b>
+<b class="nc">&nbsp;                    years[i - 1] = keyboardInput.integerInput( &quot;Enter year &quot; + i );</b>
+&nbsp;                }
+<b class="nc">&nbsp;                faculty.setCourseCategory( courseCode, courseCategory, department, years );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 4 ) {</b>
+<b class="nc">&nbsp;                String courseCode = keyboardInput.stringInput( &quot;Enter the course code&quot; );</b>
+<b class="nc">&nbsp;                if ( faculty.dropCourseOffering( courseCode ) )</b>
+<b class="nc">&nbsp;                    System.out.println( &quot;Course offering dropped successfully&quot; );</b>
+<b class="nc">&nbsp;                else System.out.println( &quot;Course offering not dropped. Please verify the course code&quot; );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 5 ) {</b>
+<b class="nc">&nbsp;                String       entryNumber = keyboardInput.stringInput( &quot;Enter the entry number&quot; );</b>
+<b class="nc">&nbsp;                int          year        = keyboardInput.integerInput( &quot;Enter the batch (year)&quot; );</b>
+<b class="nc">&nbsp;                String[][][] records     = faculty.getGradesOfStudent( entryNumber );</b>
+<b class="nc">&nbsp;                int          semester    = 1;</b>
+<b class="nc">&nbsp;                for ( String[][] record : records ) {</b>
+<b class="nc">&nbsp;                    Utils.prettyPrintGrades( year, semester, record );</b>
+<b class="nc">&nbsp;                    semester = ( semester == 1 ) ? 2 : 1;</b>
+<b class="nc">&nbsp;                    if ( semester == 2 ) year++;</b>
+&nbsp;                }
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 6 ) {</b>
+<b class="nc">&nbsp;                String     courseCode = keyboardInput.stringInput( &quot;Enter the course code&quot; );</b>
+<b class="nc">&nbsp;                int        year       = keyboardInput.integerInput( &quot;Enter the year&quot; );</b>
+<b class="nc">&nbsp;                int        semester   = keyboardInput.integerInput( &quot;Enter the semester&quot; );</b>
+<b class="nc">&nbsp;                String[][] records    = faculty.getGradesOfOffering( courseCode, year, semester );</b>
+<b class="nc">&nbsp;                if ( records.length == 0 ) {</b>
+<b class="nc">&nbsp;                    System.out.println( &quot;No course found with given specifications&quot; );</b>
+<b class="nc">&nbsp;                    continue;</b>
+&nbsp;                }
+&nbsp;                // You can add a sort function later to sort the entries by the entry number before printing to the screen
+<b class="nc">&nbsp;                Utils.prettyPrint( new String[]{ &quot;Entry Number&quot;, &quot;Grade&quot; }, records );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 7 ) {</b>
+<b class="nc">&nbsp;                String courseCode = keyboardInput.stringInput( &quot;Enter the course code&quot; );</b>
+<b class="nc">&nbsp;                int    year       = keyboardInput.integerInput( &quot;Enter the year&quot; );</b>
+<b class="nc">&nbsp;                int    semester   = keyboardInput.integerInput( &quot;Enter the semester&quot; );</b>
+<b class="nc">&nbsp;                faculty.generateGradeCSV( courseCode, year, semester );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 8 ) {</b>
+<b class="nc">&nbsp;                String courseCode = keyboardInput.stringInput( &quot;Enter the course code&quot; );</b>
+<b class="nc">&nbsp;                int    year       = keyboardInput.integerInput( &quot;Enter the year&quot; );</b>
+<b class="nc">&nbsp;                int    semester   = keyboardInput.integerInput( &quot;Enter the semester&quot; );</b>
+&nbsp;                // You need to perform faculty authentication even here
+&nbsp;                try {
+<b class="nc">&nbsp;                    BufferedReader gradeCSVFile = keyboardInput.openCourseCSVFile( courseCode, year, semester );</b>
+<b class="nc">&nbsp;                    if ( gradeCSVFile == null ) {</b>
+<b class="nc">&nbsp;                        continue;</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    if ( faculty.uploadGrades( courseCode, year, semester, gradeCSVFile ) ) System.out.println( &quot;Grades inserted successfully&quot; );</b>
+<b class="nc">&nbsp;                    else System.out.println( &quot;Please verify that all students exist and the course is offered by this id&quot; );</b>
+<b class="nc">&nbsp;                    gradeCSVFile.close();</b>
+<b class="nc">&nbsp;                } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;                    System.out.println( &quot;Please enter valid course code, year and semester&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 9 ) {</b>
+<b class="nc">&nbsp;                String newPhoneNumber = keyboardInput.stringInput( &quot;Enter the new phone number&quot; );</b>
+<b class="nc">&nbsp;                if ( faculty.setPhoneNumber( newPhoneNumber ) ) System.out.println( &quot;Phone Number Updated Successfully&quot; );</b>
+<b class="nc">&nbsp;                else System.out.println( &quot;Phone Number Update Failed&quot; );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 10 ) {</b>
+<b class="nc">&nbsp;                String email = keyboardInput.stringInput(&quot;Enter the email&quot;);</b>
+<b class="nc">&nbsp;                if ( faculty.setEmail( email ) ) System.out.println(&quot;Contact Email Updated Successfully&quot;);</b>
+<b class="nc">&nbsp;                else System.out.println(&quot;Contact Email Not Updated&quot;);</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 11 ) {</b>
+<b class="nc">&nbsp;                String   userID        = keyboardInput.stringInput( &quot;Enter the id of the user&quot; );</b>
+<b class="nc">&nbsp;                String[] emailAndPhone = faculty.getContactDetails( userID );</b>
+&nbsp;
+<b class="nc">&nbsp;                if ( emailAndPhone.length == 2 ) {</b>
+<b class="nc">&nbsp;                    String   email         = emailAndPhone[0];</b>
+<b class="nc">&nbsp;                    String   phoneNumber   = emailAndPhone[1];</b>
+<b class="nc">&nbsp;                    if ( email != null ) System.out.println( &quot;Email: &quot; + email );</b>
+<b class="nc">&nbsp;                    if ( phoneNumber != null ) System.out.println( &quot;Phone: &quot; + phoneNumber );</b>
+<b class="nc">&nbsp;                    if ( email == null &amp;&amp; phoneNumber == null )</b>
+<b class="nc">&nbsp;                        System.out.println( &quot;User has not provided contact details&quot; );</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;                else System.out.println( &quot;Could not retrieve details of user&quot; );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            else if ( facultyChoice == 12 ) {</b>
+<b class="nc">&nbsp;                String password = keyboardInput.stringInput( &quot;Enter your new password&quot; );</b>
+<b class="nc">&nbsp;                String verifyPassword = keyboardInput.stringInput( &quot;Reenter your password&quot; );</b>
+&nbsp;
+<b class="nc">&nbsp;                if ( !password.equals( verifyPassword )) {</b>
+<b class="nc">&nbsp;                    System.out.println( &quot;Please reenter the same password&quot; );</b>
+<b class="nc">&nbsp;                    continue;</b>
+&nbsp;                }
+&nbsp;
+<b class="nc">&nbsp;                if ( faculty.setPassword( password )) System.out.println( &quot;Password updated successfully&quot; );</b>
+<b class="nc">&nbsp;                else System.out.println( &quot;Password Update Failed&quot; );</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            else break;
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-18 19:12</div>
+</div>
+</body>
+</html>

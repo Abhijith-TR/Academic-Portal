@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 public class StudentUI {
     final String[] studentChoices = {
-            "Update Profile",
             "Enroll",
             "Drop",
             "View Grades for Entire Course",
@@ -46,16 +45,7 @@ public class StudentUI {
             // Read the user choice and remove the newline that comes after the integer
             int studentChoice = keyboardInput.integerInput( "Enter your choice" );
 
-            if ( studentChoice == 1 ) {
-                // Read the phone number and the newline that follows it
-                int     newPhoneNumber = keyboardInput.integerInput( "Enter the new phone number" );
-                boolean status         = student.updateProfile( newPhoneNumber );
-
-                if ( !status ) System.out.println( "Profile Update Failed" );
-                else System.out.println( "Profile Updated Successfully" );
-            }
-
-            else if ( studentChoice == 2 ) {
+           if ( studentChoice == 1 ) {
                 // Read the course code
                 String courseCode = keyboardInput.stringInput( "Enter the course code" );
 
@@ -68,14 +58,14 @@ public class StudentUI {
                 else System.out.println( "Enrollment Failed. Please check if you are eligible to enroll" );
             }
 
-            else if ( studentChoice == 3 ) {
+            else if ( studentChoice == 2 ) {
                 // Read the course code
                 String courseCode = keyboardInput.stringInput( "Enter the course code" );
                 // Print the response from the drop function
                 System.out.println( student.drop( courseCode ) );
             }
 
-            else if ( studentChoice == 4 ) {
+            else if ( studentChoice == 3 ) {
                 String[][][] completeStudentRecords = student.getGradesForCourse();
                 int          year                   = student.getBatch();
                 int          semester               = 1;
@@ -87,8 +77,8 @@ public class StudentUI {
                 }
             }
 
-            else if ( studentChoice == 5 ) {
-                int        year           = keyboardInput.integerInput( "Enter the year" );
+           else if ( studentChoice == 4 ) {
+               int        year           = keyboardInput.integerInput( "Enter the year" );
                 int        semester       = keyboardInput.integerInput( "Enter the semester" );
                 String[][] semesterGrades = student.getGrades( year, semester );
                 if ( semesterGrades.length == 0 ) {
@@ -99,11 +89,11 @@ public class StudentUI {
                 Utils.prettyPrintGrades( year, semester, student.computeSGPA( semesterGrades ), semesterGrades );
             }
 
-            else if ( studentChoice == 6 ) {
+            else if ( studentChoice == 5 ) {
                 System.out.printf( "CGPA: %.2f", student.getCGPA() );
             }
 
-            else if ( studentChoice == 7 ) {
+            else if ( studentChoice == 6 ) {
                 String[][] coursesOffered = student.getAvailableCourses();
                 if ( coursesOffered.length == 0 ) {
                     System.out.println( "No courses offered this session" );
@@ -112,24 +102,24 @@ public class StudentUI {
                 Utils.prettyPrint( new String[]{ "Course Code", "Course Title", "Instructor", "Prerequisites", "Department" }, coursesOffered );
             }
 
-            else if ( studentChoice == 8 ) {
+            else if ( studentChoice == 7 ) {
                 HashMap<String, Double> creditRequirementsLeft = student.getRemainingCreditRequirements();
                 Utils.prettyPrintCreditRequirements( creditRequirementsLeft );
             }
 
-            else if ( studentChoice == 9 ) {
+            else if ( studentChoice == 8 ) {
                 String newPhoneNumber = keyboardInput.stringInput( "Enter the new phone number" );
                 if ( student.setPhoneNumber( newPhoneNumber ) ) System.out.println( "Phone Number Updated Successfully" );
                 else System.out.println( "Phone Number Update Failed" );
             }
 
-            else if ( studentChoice == 10 ) {
+            else if ( studentChoice == 9 ) {
                 String email = keyboardInput.stringInput("Enter the email");
                 if ( student.setEmail( email ) ) System.out.println("Contact Email Updated Successfully");
                 else System.out.println("Contact Email Not Updated");
             }
 
-            else if ( studentChoice == 11 ) {
+            else if ( studentChoice == 10 ) {
                 String   userID        = keyboardInput.stringInput( "Enter the id of the user" );
                 String[] emailAndPhone = student.getContactDetails( userID );
 
@@ -144,7 +134,7 @@ public class StudentUI {
                 else System.out.println( "Could not retrieve details of user" );
             }
 
-            else if ( studentChoice == 14 ) {
+            else if ( studentChoice == 11 ) {
                 String password = keyboardInput.stringInput( "Enter your new password" );
                 String verifyPassword = keyboardInput.stringInput( "Reenter your password" );
 

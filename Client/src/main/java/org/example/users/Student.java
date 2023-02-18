@@ -3,6 +3,7 @@ package org.example.users;
 import org.example.daoInterfaces.StudentDAO;
 import org.example.utils.Utils;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,10 +13,6 @@ public class Student extends User {
     public Student( String id, StudentDAO studentDAO ) {
         super( id, studentDAO );
         this.studentDAO = studentDAO;
-    }
-
-    public boolean updateProfile( int newPhoneNumber ) {
-        return true;
     }
 
     // The default cutoff of 4 is implemented here.
@@ -86,6 +83,7 @@ public class Student extends User {
         creditLimit = Math.min( creditLimit, maximumCreditLimit );
 
         double creditsOfCourse = studentDAO.getCreditsOfCourse( courseCode );
+
         return ( creditsInCurrentSemester + creditsOfCourse ) > creditLimit;
     }
 
@@ -104,20 +102,22 @@ public class Student extends User {
 
         // Checks whether the student has got any grade in this course before
         String courseGrade = studentDAO.getCourseGrade( this.id, courseCode );
-        // U is used to denote an error in the database
-        if ( courseGrade.equals( "U" ) ) return false;
+        if ( Utils.getGradeValue( courseGrade ) >= 4 || courseGrade.equals( "-" ) ) {
+            return false;
+        }
 
         // Checks whether the student has completed all the prerequisites i.e., instructor prerequisites and course catalog prerequisites
         boolean isStudentEligible = checkStudentEligibility( courseCode, currentSession, courseDepartment );
         if ( !isStudentEligible ) return false;
 
+        // Check the CGPA criteria
+        double CGPA         = getCGPA();
+        double CGPACriteria = studentDAO.getCGPACriteria( courseCode, currentYear, currentSemester, courseDepartment );
+        if ( CGPA < CGPACriteria) return false;
+
         // Checks whether enrolling in this course would exceed the credit limit
         boolean creditLimitExceeded = checkCreditLimit( courseCode, currentSession );
-        if ( !creditLimitExceeded ) return false;
-
-        // If any of the above four conditions prevents the student from enrolling in the course, his request to enroll is rejected
-        if ( Utils.getGradeValue( courseGrade ) >= 4 )
-            return false;
+        if ( creditLimitExceeded ) return false;
 
         // Getting the department of the student and the department of the course
         String studentDepartment = studentDAO.getStudentDepartment( this.id );
@@ -130,9 +130,10 @@ public class Student extends User {
         String courseCategory = getCourseCategory( courseCode, currentYear, currentSemester, studentDepartment, batch, courseDepartment );
         if ( courseCategory.equals( "" ) ) return false;
 
+        System.out.println(courseCode);
         // Once all of the above conditions are fulfilled, the student is eligible to enroll in the course
         // The request to enroll is sent to the database
-        return studentDAO.enroll( courseCode, this.id, currentYear, currentSemester );
+        return studentDAO.enroll( courseCode, this.id, currentYear, currentSemester, courseDepartment, courseCategory );
     }
 
     private String getCourseCategory( String courseCode, int year, int semester, String studentDepartment, int batch, String courseDepartment ) {
@@ -143,12 +144,15 @@ public class Student extends User {
         for ( String category : offerings.keySet() ) {
             // Go through all the departments and batches for which it was offered
             String[] offeredDepartments = offerings.get( category );
+            System.out.println( offeredDepartments.length );
             for ( String batchDepartment : offeredDepartments ) {
                 String[] temp       = batchDepartment.split( "-" );
                 int      batchFound = Integer.parseInt( temp[0] );
                 String   department = temp[1];
+                System.out.println( batchFound + " " + department);
+                System.out.println( batch + " " + studentDepartment );
                 // If the department is the students department and the batch is the students batch, return the corresponding category
-                if ( batchFound == batch && department.equals( studentDepartment ) ) return department;
+                if ( batchFound == batch && department.equals( studentDepartment ) ) return category;
             }
         }
 
@@ -158,12 +162,13 @@ public class Student extends User {
 
     public String drop( String courseCode ) {
         // Get the current year and semester
-        int[]   currentSession   = studentDAO.getCurrentAcademicSession();
-        int     currentYear      = currentSession[0];
-        int     currentSemester  = currentSession[1];
+        int[] currentSession  = studentDAO.getCurrentAcademicSession();
+        int   currentYear     = currentSession[0];
+        int   currentSemester = currentSession[1];
 
         // Check if it is currently the enrolling event
-        if ( !studentDAO.isCurrentEventEnrolling( currentYear, currentSemester ) ) return "Drop is only allowed during ENROLLING event";
+        if ( !studentDAO.isCurrentEventEnrolling( currentYear, currentSemester ) )
+            return "Drop is only allowed during ENROLLING event";
 
         boolean courseDropStatus = studentDAO.dropCourse( courseCode, id, currentYear, currentSemester );
         if ( courseDropStatus ) return "Enrollment Dropped Successfully";

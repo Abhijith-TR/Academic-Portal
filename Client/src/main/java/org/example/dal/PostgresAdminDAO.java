@@ -301,7 +301,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     public boolean setSessionEvent( String event, int currentYear, int currentSemester ) {
         try {
             // These are the only statuses that are allowed. If the user has entered a completely different status, it must be rejected
-            String[] availableEvents = new String[]{ "NONE", "ENROLLING", "OFFERING", "GRADE SUBMISSION", "COMPLETED" };
+            String[] availableEvents = new String[]{ "RUNNING", "ENROLLING", "OFFERING", "GRADE SUBMISSION", "COMPLETED" };
 
             // Go through all the valid events and check if this particular event is found in the list
             boolean stringFound = false;

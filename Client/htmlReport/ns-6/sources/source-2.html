@@ -1,0 +1,101 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > StudentDAO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.example.daoInterfaces</a>
+</div>
+
+<h1>Coverage Summary for Class: StudentDAO (org.example.daoInterfaces)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">StudentDAO</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.example.daoInterfaces;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;
+&nbsp;public interface StudentDAO extends CommonDAO {
+&nbsp;
+&nbsp;    boolean checkCourseOffering( String courseCode, int currentYear, int currentSemester, String courseDepartment );
+&nbsp;
+&nbsp;    boolean checkStudentPassStatus( String courseCode, int gradeCutoff, String entryNumber );
+&nbsp;
+&nbsp;    String[] getCourseCatalogPrerequisites( String courseCode );
+&nbsp;
+&nbsp;    String[][] getInstructorPrerequisites( String courseCode, int year, int semester, String courseDepartment );
+&nbsp;
+&nbsp;    // The 24 is being returned to prevent you from enrolling in the course due to the exception that occurred
+&nbsp;    double getCreditsOfCourse( String courseCode );
+&nbsp;
+&nbsp;    // The minimum credit limit is set to 18 and the maximum is set to 24
+&nbsp;    double getCreditsInSession( String entryNumber, int currentYear, int currentSemester );
+&nbsp;
+&nbsp;    boolean enroll( String courseCode, String entryNumber, int currentYear, int currentSemester, String departmentID, String courseCategory );
+&nbsp;
+&nbsp;    boolean dropCourse( String courseCode, String entryNumber, int currentYear, int currentSemester );
+&nbsp;
+&nbsp;    String[][] getAllRecords( String entryNumber );
+&nbsp;
+&nbsp;    String[][] getOfferedCourses( int currentYear, int currentSemester );
+&nbsp;
+&nbsp;    HashMap&lt;String, String[]&gt; getAllOfferings( String courseCode, int year, int semester, String courseDepartment );
+&nbsp;
+&nbsp;    boolean isCurrentEventEnrolling( int currentYear, int currentSemester );
+&nbsp;
+&nbsp;    double getCGPACriteria( String courseCode, int currentYear, int currentSemester, String courseDepartment );
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-18 19:12</div>
+</div>
+</body>
+</html>

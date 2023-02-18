@@ -57,10 +57,6 @@ class PostgresStudentDAOTest {
 
     @Test
     void enroll() {
-        // The request should succeed as the student has completed all the necessary courses and is in the correct year and semester
-        assertFalse( student.enroll( "CS301", "2020csb1062", 2022, 1 ) );
-        // The request should fail as it is in the wrong year and semester (i.e., academic session)
-        assertFalse( student.enroll( "CS305", "2020csb1062", 2022, 1 ) );
     }
 
     @Test

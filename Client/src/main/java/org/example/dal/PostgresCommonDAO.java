@@ -29,7 +29,7 @@ public class PostgresCommonDAO implements CommonDAO {
     // Otherwise returns default year and session i.e., 2020-1
     public int[] getCurrentAcademicSession() {
         try {
-            PreparedStatement getSessionQuery = databaseConnection.prepareStatement( "SELECT * FROM current_year_and_semester ORDER BY year, semester DESC LIMIT 1" );
+            PreparedStatement getSessionQuery = databaseConnection.prepareStatement( "SELECT * FROM current_year_and_semester ORDER BY year DESC, semester DESC LIMIT 1" );
             ResultSet         currentSession  = getSessionQuery.executeQuery();
 
             currentSession.next();
@@ -252,7 +252,8 @@ public class PostgresCommonDAO implements CommonDAO {
             return maximumGrade;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
-            return "U";
+            // Returning an A will prevent the student from enrolling in the course
+            return "A";
         }
     }
 

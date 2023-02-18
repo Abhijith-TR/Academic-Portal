@@ -137,7 +137,7 @@ CREATE TABLE student_course_registration
     CHECK (grade in (
                      'A', 'A-', 'B', 'B-', 'C', 'C-', 'D', 'E', 'F', 'W', 'I', '-'
         )),
-    CHECK (category IN ('SR', 'SE', 'GR', 'PC', 'PE', 'HC', 'HE', 'CP', 'II', 'NN', 'OE'))
+    CHECK (category IN ('SC', 'SE', 'GR', 'PC', 'PE', 'HC', 'HE', 'CP', 'II', 'NN', 'OE'))
 );
 
 -- This table contains the common details for all admin, students and faculty

@@ -208,13 +208,76 @@ INSERT INTO course_offerings VALUES ('HS507', 'FAC38', 2023, 2, 'HS', 0);
 INSERT INTO course_catalog VALUES ('CS539', 'INTERNET OF THINGS', 3, 0, 0, 6, 3, '{}');
 INSERT INTO course_offerings VALUES ('CS539', 'FAC32', 2023, 2, 'CS', 0);
 
+INSERT INTO course_catalog VALUES ('CS999', 'TEST COURSE', 3, 0, 0, 6, 25, '{}');
+INSERT INTO faculty VALUES('FAC39', 'TEST FACULTY', 'CS');
+INSERT into course_offerings VALUES ('CS999', 'FAC39', 2023, 2, 'CS', 0);
+
 -- Inserting a batch and a curriculum corresponding to that batch
 INSERT INTO batch VALUES (2020);
+INSERT INTO batch VALUES (2021);
 INSERT INTO ug_curriculum VALUES(2020, 24, 6, 23.5, 36, 12, 15, 6, 9, 3.5, 4, 6);
+INSERT INTO ug_curriculum VALUES(2021, 24, 6, 23.5, 36, 12, 15, 6, 9, 3.5, 4, 6);
 
 -- Inserting students
 INSERT INTO student(entry_number, name, department_id, batch) VALUES ('2020CSB1062', 'ABHIJITH T R', 'CS', 2020);
+INSERT INTO student(entry_number, name, department_id, batch) VALUES ('2021CSB1062', 'TEST STUDENT', 'CS', 2021);
 INSERT INTO admin(admin_id, name) VALUES ('ADMIN1', 'Dean Office');
 
 -- Inserting core courses can be done using the CSV file
-INSERT INTO current_year_and_semester VALUES (2020, 1, 'ENROLLING');
+INSERT INTO current_year_and_semester VALUES (2023, 2, 'RUNNING');
+
+-- Inserting all the entries of the student into the database
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'GE103', 2020, 1, 'A', 'CS', 'GR');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'MA101', 2020, 1, 'A', 'MA', 'SC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'HS103', 2020, 1, 'A', 'HS', 'HC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'PH101', 2020, 1, 'A', 'PY', 'SC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'GE105', 2020, 1, 'A', 'ME', 'GR');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS101', 2020, 1, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'MA102', 2020, 2, 'A', 'MA', 'SC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'HS101', 2020, 2, 'A', 'HS', 'HC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'GE104', 2020, 2, 'A', 'EE', 'GR');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'GE101', 2020, 2, 'A', 'HS', 'GR');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'GE102', 2020, 2, 'A', 'ME', 'GR');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CY101', 2020, 2, 'A', 'CY', 'SC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'PH102', 2020, 2, 'A', 'PY', 'SC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS201', 2021, 1, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'MA201', 2021, 1, 'A', 'MA', 'SC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS203', 2021, 1, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'GE107', 2021, 1, 'A', 'CS', 'GR');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'HS201', 2021, 1, 'A', 'HS', 'HC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'EE201', 2021, 1, 'A', 'EE', 'GR');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'HS202', 2021, 2, 'A', 'HS', 'HC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'MA202', 2021, 2, 'A', 'MA', 'SC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'GE108', 2021, 2, 'A', 'EE', 'GR');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'GE109', 2021, 2, 'A', 'CE', 'GR');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS202', 2021, 2, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS204', 2021, 2, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'NS101', 2021, 2, 'A', 'MA', 'NN');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS522', 2022, 1, 'A', 'CS', 'PE');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'HS104', 2022, 1, 'A', 'HS', 'HC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'GE111', 2022, 1, 'A', 'CH', 'GR');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'BM101', 2022, 1, 'A', 'BM', 'SC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS301', 2022, 1, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS302', 2022, 1, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS303', 2022, 1, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'NS102', 2022, 1, 'A', 'MA', 'NN');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'HS301', 2022, 2, 'A', 'HS', 'HC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS304', 2022, 2, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS305', 2022, 2, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS306', 2022, 2, 'A', 'CS', 'PC');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CP301', 2022, 2, 'A', 'CS', 'CP');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'NS103', 2022, 2, 'A', 'MA', 'NN');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS535', 2022, 2, 'A', 'CS', 'PE');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CP302', 2023, 1, 'A', 'CS', 'CP');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'II301', 2023, 1, 'A', 'CS', 'II');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'MA515', 2023, 1, 'A', 'MA', 'SE');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'HS475', 2023, 1, 'A', 'HS', 'HE');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS517', 2023, 1, 'A', 'CS', 'PE');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CP303', 2023, 2, 'A', 'CS', 'CP');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'NS104', 2023, 2, 'A', 'MA', 'NN');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'MA628', 2023, 2, 'A', 'MA', 'SE');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS550', 2023, 2, 'A', 'CS', 'PE');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'HS507', 2023, 2, 'A', 'HS', 'HE');
+INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS539', 2023, 2, 'A', 'CS', 'PE');
+
+UPDATE course_offerings SET instructor_prerequisites = '{{"CP301", "8", "", ""}}' WHERE course_code = 'CS539';

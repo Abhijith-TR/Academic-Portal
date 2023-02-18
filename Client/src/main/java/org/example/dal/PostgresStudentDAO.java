@@ -3,6 +3,7 @@ package org.example.dal;
 import org.example.daoInterfaces.StudentDAO;
 import org.example.utils.Utils;
 
+import javax.xml.transform.Result;
 import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -132,18 +133,21 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     }
 
     @Override
-    public boolean enroll( String courseCode, String entryNumber, int currentYear, int currentSemester ) {
+    public boolean enroll( String courseCode, String entryNumber, int currentYear, int currentSemester, String departmentID, String courseCategory ) {
         try {
-            PreparedStatement enrollmentQuery = databaseConnection.prepareStatement( "INSERT INTO student_course_registration VALUES (?, ?, ?, ?)" );
+            PreparedStatement enrollmentQuery = databaseConnection.prepareStatement( "INSERT INTO student_course_registration(entry_number, course_code, year, semester, department_id, category) VALUES (?, ?, ?, ?, ?, ?)" );
             enrollmentQuery.setString( 1, entryNumber );
             enrollmentQuery.setString( 2, courseCode );
             enrollmentQuery.setInt( 3, currentYear );
             enrollmentQuery.setInt( 4, currentSemester );
+            enrollmentQuery.setString( 5, departmentID );
+            enrollmentQuery.setString( 6, courseCategory );
             // Maybe parameterize the default grade later on? Currently, the database will set the default grade by itself if you don't give it anything
             // Do I just assume that the call to insert was successful?
             enrollmentQuery.executeUpdate();
             return true;
         } catch ( Exception error ) {
+            System.out.println( error.getMessage() );
             System.out.println( "Enrollment Request Failed" );
             return false;
         }
@@ -223,6 +227,24 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return false;
+        }
+    }
+
+    @Override
+    public double getCGPACriteria( String courseCode, int currentYear, int currentSemester, String courseDepartment ) {
+        try {
+            // SQL query to fetch the CGPA criteria from the database
+            PreparedStatement getCriteriaQuery = databaseConnection.prepareStatement("SELECT cgpa_criteria FROM course_offerings WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ?");
+            getCriteriaQuery.setString( 1, courseCode );
+            getCriteriaQuery.setInt( 2, currentYear );
+            getCriteriaQuery.setInt( 3, currentSemester );
+            getCriteriaQuery.setString( 4, courseDepartment );
+            ResultSet getCriteriaQueryResult = getCriteriaQuery.executeQuery();
+            getCriteriaQueryResult.next();
+            return getCriteriaQueryResult.getDouble( 1 );
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return 11;
         }
     }
 
