@@ -16,13 +16,17 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     }
 
     @Override
-    public boolean checkCourseOffering( String courseCode, int currentYear, int currentSemester ) {
+    public boolean checkCourseOffering( String courseCode, int currentYear, int currentSemester, String courseDepartment ) {
         try {
-            PreparedStatement checkQuery = databaseConnection.prepareStatement( "SELECT course_code FROM course_offerings WHERE course_code = ? AND year = ? AND semester = ?" );
+            // SQL query to find the course in the course offerings database
+            PreparedStatement checkQuery = databaseConnection.prepareStatement( "SELECT course_code FROM course_offerings WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ?" );
             checkQuery.setString( 1, courseCode );
             checkQuery.setInt( 2, currentYear );
             checkQuery.setInt( 3, currentSemester );
+            checkQuery.setString( 4, courseDepartment );
             ResultSet doesCourseExist = checkQuery.executeQuery();
+
+            // Returns true if it manages to find such an entry
             return doesCourseExist.next();
         } catch ( SQLException error ) {
             System.out.println( error.getMessage() );
@@ -69,12 +73,13 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     }
 
     @Override
-    public String[][] getInstructorPrerequisites( String courseCode, int year, int semester ) {
+    public String[][] getInstructorPrerequisites( String courseCode, int year, int semester, String courseDepartment ) {
         try {
-            PreparedStatement prerequisiteQuery = databaseConnection.prepareStatement( "SELECT instructor_prerequisites FROM course_offerings WHERE course_code = ? AND semester = ? AND year = ?" );
+            PreparedStatement prerequisiteQuery = databaseConnection.prepareStatement( "SELECT instructor_prerequisites FROM course_offerings WHERE course_code = ? AND semester = ? AND year = ? AND department_id = ?" );
             prerequisiteQuery.setString( 1, courseCode );
             prerequisiteQuery.setInt( 2, semester );
             prerequisiteQuery.setInt( 3, year );
+            prerequisiteQuery.setString( 4, courseDepartment );
             ResultSet prerequisiteResult = prerequisiteQuery.executeQuery();
 
             boolean doesCourseExist = prerequisiteResult.next();
@@ -183,7 +188,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     @Override
     public String[][] getOfferedCourses( int currentYear, int currentSemester ) {
         try {
-            PreparedStatement getCoursesQuery = databaseConnection.prepareStatement( "SELECT course_code, course_title, name, pre_requisites FROM course_offerings NATURAL JOIN course_catalog NATURAL JOIN faculty WHERE year = ? AND semester = ?" );
+            PreparedStatement getCoursesQuery = databaseConnection.prepareStatement( "SELECT course_code, course_title, name, pre_requisites, department_id FROM course_offerings NATURAL JOIN course_catalog NATURAL JOIN faculty WHERE year = ? AND semester = ?" );
             getCoursesQuery.setInt( 1, currentYear );
             getCoursesQuery.setInt( 2, currentSemester );
             ResultSet getCoursesQueryResult = getCoursesQuery.executeQuery();
@@ -194,7 +199,8 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
                 String course_title   = getCoursesQueryResult.getString( 2 );
                 String faculty_name   = getCoursesQueryResult.getString( 3 );
                 String pre_requisites = getCoursesQueryResult.getString( 4 );
-                records.add( new String[]{ course_code, course_title, faculty_name, pre_requisites } );
+                String departmentID   = getCoursesQueryResult.getString( 5 );
+                records.add( new String[]{ course_code, course_title, faculty_name, pre_requisites, departmentID } );
             }
             return records.toArray( new String[records.size()][] );
         } catch ( Exception error ) {
@@ -204,13 +210,31 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     }
 
     @Override
-    public HashMap<String, String[]> getAllOfferings( String courseCode, int year, int semester ) {
+    public boolean isCurrentEventEnrolling( int currentYear, int currentSemester ) {
+        try {
+            // SQL query to check if the current event in the given session is enrolling
+            PreparedStatement offeringCheckQuery = databaseConnection.prepareStatement("SELECT * FROM current_year_and_semester WHERE year = ? AND semester = ? AND current_event = 'ENROLLING'");
+            offeringCheckQuery.setInt( 1, currentYear );
+            offeringCheckQuery.setInt( 2, currentSemester );
+            ResultSet offeringCheckQueryResult = offeringCheckQuery.executeQuery();
+
+            // If there exists such a record, it implies that the current session is offering
+            return offeringCheckQueryResult.next();
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return false;
+        }
+    }
+
+    @Override
+    public HashMap<String, String[]> getAllOfferings( String courseCode, int year, int semester, String courseDepartment ) {
         try {
             // Create the SQL query that will fetch all the departments and batches for which the course was offered
-            PreparedStatement getOfferingsQuery = databaseConnection.prepareStatement( "SELECT sc, se, gr, pc, pe, hc, he, cp, ii, nn, oe FROM course_offerings WHERE course_code = ? AND year = ? AND semester = ? " );
+            PreparedStatement getOfferingsQuery = databaseConnection.prepareStatement( "SELECT sc, se, gr, pc, pe, hc, he, cp, ii, nn, oe FROM course_offerings WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ?" );
             getOfferingsQuery.setString( 1, courseCode );
             getOfferingsQuery.setInt( 2, year );
             getOfferingsQuery.setInt( 3, semester );
+            getOfferingsQuery.setString( 4, courseDepartment );
             ResultSet getOfferingsQueryResult = getOfferingsQuery.executeQuery();
 
             // Now you have to copy the contents of the result set into a hashmap

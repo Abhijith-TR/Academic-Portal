@@ -42,7 +42,7 @@ public class PasswordDatabase implements PasswordDAO {
                     insertLogQuery.setString( 1, id );
                     insertLogQuery.setString( 2, role );
                     insertLogQuery.setObject( 3, LocalDateTime.now() );
-                    insertLogQuery.setString( 4, "in" );
+                    insertLogQuery.setString( 4, "IN" );
                     int insertLogQueryResult = insertLogQuery.executeUpdate();
 
                     // Returns to indicate that the log insertion was successful
@@ -64,7 +64,7 @@ public class PasswordDatabase implements PasswordDAO {
             logoutQuery.setString( 1, id );
             logoutQuery.setString( 2, role );
             logoutQuery.setObject( 3, LocalDateTime.now() );
-            logoutQuery.setString( 4, "out" );
+            logoutQuery.setString( 4, "OUT" );
             int logoutQueryResult = logoutQuery.executeUpdate();
 
             // If the log entry insertion is unsuccessful, the user is not allowed to log out of the application

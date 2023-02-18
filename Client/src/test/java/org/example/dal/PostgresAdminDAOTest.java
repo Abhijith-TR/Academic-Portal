@@ -29,27 +29,33 @@ class PostgresAdminDAOTest {
 
     @Test
     void testGetGradesOfCourse() {
-        admin.getGradesOfCourse("CS101", 2020, 1);
+        admin.getGradesOfCourse( "CS101", 2020, 1 );
     }
 
     @Test
     void checkAllPrerequisites() {
-        assertTrue(admin.checkAllPrerequisites(new String[]{"CS550"}));
-        assertFalse(admin.checkAllPrerequisites(new String[]{"CS555"}));
+        assertTrue( admin.checkAllPrerequisites( new String[]{ "CS550" } ) );
+        assertFalse( admin.checkAllPrerequisites( new String[]{ "CS555" } ) );
 //        admin.checkAllPrerequisites(new String[]{"CS555"});
     }
 
     @Test
     void dropCourseFromCatalog() {
-        assertTrue(admin.dropCourseFromCatalog("CS403"));
+        assertTrue( admin.dropCourseFromCatalog( "CS403" ) );
     }
 
     @Test
     void insertCourse() {
-        assertTrue(admin.insertCourse("CS403", "ADVANCED OS", new double[]{4, 1, 0, 5, 3}, new String[]{"CS550"}, "CS"));
+        assertTrue( admin.insertCourse( "CS403", "ADVANCED OS", new double[]{ 4, 1, 0, 5, 3 }, new String[]{ "CS550" } ) );
     }
 
     @Test
     void insertCoreCourse() {
+    }
+
+    @Test
+    void verifyNoMissingGrades() {
+        assertTrue( admin.verifyNoMissingGrades( 2020, 1 ) );
+        assertFalse( admin.verifyNoMissingGrades( 2021, 1 ) );
     }
 }

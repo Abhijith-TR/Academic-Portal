@@ -4,13 +4,13 @@ import java.util.HashMap;
 
 public interface StudentDAO extends CommonDAO {
 
-    boolean checkCourseOffering( String courseCode, int currentYear, int currentSemester );
+    boolean checkCourseOffering( String courseCode, int currentYear, int currentSemester, String courseDepartment );
 
     boolean checkStudentPassStatus( String courseCode, int gradeCutoff, String entryNumber );
 
     String[] getCourseCatalogPrerequisites( String courseCode );
 
-    String[][] getInstructorPrerequisites( String courseCode, int year, int semester );
+    String[][] getInstructorPrerequisites( String courseCode, int year, int semester, String courseDepartment );
 
     // The 24 is being returned to prevent you from enrolling in the course due to the exception that occurred
     double getCreditsOfCourse( String courseCode );
@@ -26,5 +26,7 @@ public interface StudentDAO extends CommonDAO {
 
     String[][] getOfferedCourses( int currentYear, int currentSemester );
 
-    HashMap<String, String[]> getAllOfferings( String courseCode, int year, int semester );
+    HashMap<String, String[]> getAllOfferings( String courseCode, int year, int semester, String courseDepartment );
+
+    boolean isCurrentEventEnrolling( int currentYear, int currentSemester );
 }

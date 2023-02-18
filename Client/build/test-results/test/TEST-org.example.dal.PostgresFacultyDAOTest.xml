@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.example.dal.PostgresFacultyDAOTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-02-18T11:29:30" hostname="ADMIN" time="0.188">
+  <properties/>
+  <testcase name="isCurrentEventOffering()" classname="org.example.dal.PostgresFacultyDAOTest" time="0.188"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

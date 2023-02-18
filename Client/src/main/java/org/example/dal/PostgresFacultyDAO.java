@@ -2,6 +2,7 @@ package org.example.dal;
 
 import org.example.daoInterfaces.FacultyDAO;
 
+import javax.xml.transform.Result;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -44,14 +45,15 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
     }
 
     @Override
-    public boolean setCGCriteria( String facultyID, String courseCode, double minimumCGPA, int[] currentSession ) {
+    public boolean setCGCriteria( String facultyID, String courseCode, double minimumCGPA, int[] currentSession, String departmentID ) {
         try {
-            PreparedStatement setCGQuery = databaseConnection.prepareStatement( "UPDATE course_offerings SET cgpa_criteria = ? WHERE course_code = ? AND faculty_id = ? AND year = ? AND semester = ?" );
+            PreparedStatement setCGQuery = databaseConnection.prepareStatement( "UPDATE course_offerings SET cgpa_criteria = ? WHERE course_code = ? AND faculty_id = ? AND year = ? AND semester = ? AND department_id = ?" );
             setCGQuery.setDouble( 1, minimumCGPA );
             setCGQuery.setString( 2, courseCode );
             setCGQuery.setString( 3, facultyID );
             setCGQuery.setInt( 4, currentSession[0] );
             setCGQuery.setInt( 5, currentSession[1] );
+            setCGQuery.setString( 6, departmentID );
             int setCGQueryResult = setCGQuery.executeUpdate();
             return setCGQueryResult == 1;
         } catch ( Exception error ) {
@@ -120,7 +122,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
     }
 
     @Override
-    public boolean setCourseCategory( String courseCode, int currentYear, int currentSemester, String courseCategory, String department, int[] years ) {
+    public boolean setCourseCategory( String courseCode, int currentYear, int currentSemester, String courseCategory, String department, int[] years, String facultyDepartment ) {
         try {
             // Sanitise the course category to prevent SQL injection
             boolean isValidCategory = false;
@@ -141,11 +143,12 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
 
             // Create the query to update the entry in the course offerings list
             // Concatenate the departments that you received into the departments that already exist
-            PreparedStatement courseCategoryQuery = databaseConnection.prepareStatement( "UPDATE course_offerings SET " + courseCategory + "=array_cat(" + courseCategory + ", ?) WHERE course_code = ? AND year = ? AND semester = ?" );
+            PreparedStatement courseCategoryQuery = databaseConnection.prepareStatement( "UPDATE course_offerings SET " + courseCategory + "=array_cat(" + courseCategory + ", ?) WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ?" );
             courseCategoryQuery.setObject( 1, cleanDepartmentData );
             courseCategoryQuery.setString( 2, courseCode );
             courseCategoryQuery.setInt( 3, currentYear );
             courseCategoryQuery.setInt( 4, currentSemester );
+            courseCategoryQuery.setString( 5, facultyDepartment );
             // Returns true if any row was affected by the operation to indicate success
             return courseCategoryQuery.executeUpdate() == 1;
         } catch ( Exception error ) {
@@ -238,6 +241,40 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return new String[]{};
+        }
+    }
+
+    @Override
+    public boolean isCurrentEventOffering( int currentYear, int currentSemester ) {
+        try {
+            // SQL query to check if the current event in the given session is enrolling
+            PreparedStatement offeringCheckQuery = databaseConnection.prepareStatement("SELECT * FROM current_year_and_semester WHERE year = ? AND semester = ? AND current_event = 'OFFERING'");
+            offeringCheckQuery.setInt( 1, currentYear );
+            offeringCheckQuery.setInt( 2, currentSemester );
+            ResultSet offeringCheckQueryResult = offeringCheckQuery.executeQuery();
+
+            // If there exists such a record, it implies that the current session is offering
+            return offeringCheckQueryResult.next();
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isCurrentEventGradeSubmission( int currentYear, int currentSemester ) {
+        try {
+            // SQL query to check if the current event in the given session is enrolling
+            PreparedStatement offeringCheckQuery = databaseConnection.prepareStatement("SELECT * FROM current_year_and_semester WHERE year = ? AND semester = ? AND current_event = 'GRADE SUBMISSION'");
+            offeringCheckQuery.setInt( 1, currentYear );
+            offeringCheckQuery.setInt( 2, currentSemester );
+            ResultSet offeringCheckQueryResult = offeringCheckQuery.executeQuery();
+
+            // If there exists such a record, it implies that the current session is offering
+            return offeringCheckQueryResult.next();
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return false;
         }
     }
 

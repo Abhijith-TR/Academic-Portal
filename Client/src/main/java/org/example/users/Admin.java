@@ -30,10 +30,10 @@ public class Admin extends User {
         return adminDAO.insertFaculty( facultyID, name, departmentID );
     }
 
-    public boolean insertCourseIntoCatalog( String courseCode, String courseTitle, double[] creditStructure, String[] prerequisites, String departmentID ) {
+    public boolean insertCourseIntoCatalog( String courseCode, String courseTitle, double[] creditStructure, String[] prerequisites ) {
         boolean allPrerequisitesFound = adminDAO.checkAllPrerequisites( prerequisites );
         if ( !allPrerequisitesFound ) return false;
-        return adminDAO.insertCourse( courseCode, courseTitle, creditStructure, prerequisites, departmentID );
+        return adminDAO.insertCourse( courseCode, courseTitle, creditStructure, prerequisites );
     }
 
     public boolean dropCourseFromCatalog( String courseCode ) {
@@ -197,7 +197,7 @@ public class Admin extends User {
                 }
 
                 // The CGPA of the student will be mentioned at the end
-                fileWriter.printf( "CGPA: %.2f", getCGPA( records ));
+                fileWriter.printf( "CGPA: %.2f", getCGPA( records ) );
                 // Should we be printing the eligibility for graduation?
 
                 // Close the fileWriter object after use to prevent locking issues
@@ -209,6 +209,38 @@ public class Admin extends User {
         } catch ( Exception error ) {
             return false;
         }
+    }
+
+    public boolean startNewSession() {
+        // Get the current academic session
+        int[] currentSession  = adminDAO.getCurrentAcademicSession();
+        int   currentYear     = currentSession[0];
+        int   currentSemester = currentSession[1];
+
+        // Check if this particular session is in the completed stage
+        boolean isPreviousSessionOver = adminDAO.checkIfSessionCompleted( currentYear, currentSemester );
+        if ( isPreviousSessionOver == false ) return false;
+
+        // If the previous session is over, we just create the new session in the database
+        int newSemester = ( currentSemester == 1 ) ? 2 : 1;
+        int newYear     = ( newSemester == 2 ) ? currentYear : currentYear + 1;
+        return adminDAO.createNewSession( newYear, newSemester );
+    }
+
+    public boolean setCurrentSessionStatus( String event ) {
+        // Get the current academic session
+        int[] currentSession  = adminDAO.getCurrentAcademicSession();
+        int   currentYear     = currentSession[0];
+        int   currentSemester = currentSession[1];
+
+        // If the event is "COMPLETED" we have to verify that all students have been assigned grades in the previous session
+        if ( event.equals( "COMPLETED" ) ) {
+            boolean allGradesEntered = adminDAO.verifyNoMissingGrades( currentYear, currentSemester );
+            if ( !allGradesEntered ) return false;
+        }
+
+        // Set the status in the database
+        return adminDAO.setSessionEvent( event, currentYear, currentSemester );
     }
 
     private double computeSGPA( String[][] records ) {

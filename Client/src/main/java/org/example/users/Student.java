@@ -33,10 +33,10 @@ public class Student extends User {
     }
 
     // A database error and no prerequisites will both return null. But student should not be allowed to enroll if there is a database error
-    private boolean checkInstructorPrerequisites( String courseCode, int[] currentSession ) {
+    private boolean checkInstructorPrerequisites( String courseCode, int[] currentSession, String courseDepartment ) {
         int        currentYear     = currentSession[0];
         int        currentSemester = currentSession[1];
-        String[][] prerequisites   = studentDAO.getInstructorPrerequisites( courseCode, currentYear, currentSemester );
+        String[][] prerequisites   = studentDAO.getInstructorPrerequisites( courseCode, currentYear, currentSemester, courseDepartment );
         if ( prerequisites == null ) return false;
 
         for ( String[] listOfCourses : prerequisites ) {
@@ -53,12 +53,12 @@ public class Student extends User {
         return true;
     }
 
-    private boolean checkStudentEligibility( String courseCode, int[] currentSession ) {
+    private boolean checkStudentEligibility( String courseCode, int[] currentSession, String courseDepartment ) {
         boolean hasCompletedCourseCatalogPrerequisites = checkCourseCatalogPrerequisites( courseCode );
         if ( !hasCompletedCourseCatalogPrerequisites ) {
             return false;
         }
-        return checkInstructorPrerequisites( courseCode, currentSession );
+        return checkInstructorPrerequisites( courseCode, currentSession, courseDepartment );
     }
 
     private boolean checkCreditLimit( String courseCode, int[] currentSession ) {
@@ -89,28 +89,34 @@ public class Student extends User {
         return ( creditsInCurrentSemester + creditsOfCourse ) > creditLimit;
     }
 
-    public boolean enroll( String courseCode ) {
+    public boolean enroll( String courseCode, String courseDepartment ) {
         // Gets the current year and semester
         int[] currentSession  = studentDAO.getCurrentAcademicSession();
         int   currentYear     = currentSession[0];
         int   currentSemester = currentSession[1];
 
-        // Checks whether this particular course has been offered in the current session
-        boolean doesCourseExist = studentDAO.checkCourseOffering( courseCode, currentYear, currentSemester );
+        // Check if it is currently the enrolling event
+        if ( !studentDAO.isCurrentEventEnrolling( currentYear, currentSemester ) ) return false;
+
+        // Checks whether this particular course has been offered in the current session by the mentioned department
+        boolean doesCourseExist = studentDAO.checkCourseOffering( courseCode, currentYear, currentSemester, courseDepartment );
+        if ( !doesCourseExist ) return false;
 
         // Checks whether the student has got any grade in this course before
         String courseGrade = studentDAO.getCourseGrade( this.id, courseCode );
         // U is used to denote an error in the database
-        if ( courseGrade.equals( "U" )) return false;
+        if ( courseGrade.equals( "U" ) ) return false;
 
         // Checks whether the student has completed all the prerequisites i.e., instructor prerequisites and course catalog prerequisites
-        boolean isStudentEligible = checkStudentEligibility( courseCode, currentSession );
+        boolean isStudentEligible = checkStudentEligibility( courseCode, currentSession, courseDepartment );
+        if ( !isStudentEligible ) return false;
 
         // Checks whether enrolling in this course would exceed the credit limit
         boolean creditLimitExceeded = checkCreditLimit( courseCode, currentSession );
+        if ( !creditLimitExceeded ) return false;
 
         // If any of the above four conditions prevents the student from enrolling in the course, his request to enroll is rejected
-        if ( !doesCourseExist || Utils.getGradeValue( courseGrade ) >= 4 || !isStudentEligible || creditLimitExceeded )
+        if ( Utils.getGradeValue( courseGrade ) >= 4 )
             return false;
 
         // Getting the department of the student and the department of the course
@@ -121,7 +127,7 @@ public class Student extends User {
         int batch = studentDAO.getBatch( this.id );
 
         // Getting the course category. If the batch and department combination does not exist, the student is not eligible for the offering
-        String courseCategory = getCourseCategory( courseCode, currentYear, currentSemester, studentDepartment, batch );
+        String courseCategory = getCourseCategory( courseCode, currentYear, currentSemester, studentDepartment, batch, courseDepartment );
         if ( courseCategory.equals( "" ) ) return false;
 
         // Once all of the above conditions are fulfilled, the student is eligible to enroll in the course
@@ -129,9 +135,9 @@ public class Student extends User {
         return studentDAO.enroll( courseCode, this.id, currentYear, currentSemester );
     }
 
-    private String getCourseCategory( String courseCode, int year, int semester, String studentDepartment, int batch ) {
+    private String getCourseCategory( String courseCode, int year, int semester, String studentDepartment, int batch, String courseDepartment ) {
         // Contains all the categories and the corresponding departments and batches for which the course is offered
-        HashMap<String, String[]> offerings = studentDAO.getAllOfferings( courseCode, year, semester );
+        HashMap<String, String[]> offerings = studentDAO.getAllOfferings( courseCode, year, semester, courseDepartment );
 
         // Go through all the categories
         for ( String category : offerings.keySet() ) {
@@ -151,9 +157,14 @@ public class Student extends User {
     }
 
     public String drop( String courseCode ) {
+        // Get the current year and semester
         int[]   currentSession   = studentDAO.getCurrentAcademicSession();
         int     currentYear      = currentSession[0];
         int     currentSemester  = currentSession[1];
+
+        // Check if it is currently the enrolling event
+        if ( !studentDAO.isCurrentEventEnrolling( currentYear, currentSemester ) ) return "Drop is only allowed during ENROLLING event";
+
         boolean courseDropStatus = studentDAO.dropCourse( courseCode, id, currentYear, currentSemester );
         if ( courseDropStatus ) return "Enrollment Dropped Successfully";
         else return "Could not find enrollment in current semester";

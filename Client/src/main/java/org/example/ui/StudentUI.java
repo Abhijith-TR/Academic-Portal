@@ -58,8 +58,12 @@ public class StudentUI {
             else if ( studentChoice == 2 ) {
                 // Read the course code
                 String courseCode = keyboardInput.stringInput( "Enter the course code" );
+
+                // Read the course department
+                String courseDepartment = keyboardInput.stringInput( "Enter the offering department" );
+
                 // Print the response from the enroll function
-                boolean enrollStatus = student.enroll( courseCode );
+                boolean enrollStatus = student.enroll( courseCode, courseDepartment );
                 if ( enrollStatus == true ) System.out.println( "Enrolled Successfully" );
                 else System.out.println( "Enrollment Failed. Please check if you are eligible to enroll" );
             }
@@ -105,7 +109,7 @@ public class StudentUI {
                     System.out.println( "No courses offered this session" );
                     return;
                 }
-                Utils.prettyPrint( new String[]{ "Course Code", "Course Title", "Instructor", "Prerequisites" }, coursesOffered );
+                Utils.prettyPrint( new String[]{ "Course Code", "Course Title", "Instructor", "Prerequisites", "Department" }, coursesOffered );
             }
 
             else if ( studentChoice == 8 ) {

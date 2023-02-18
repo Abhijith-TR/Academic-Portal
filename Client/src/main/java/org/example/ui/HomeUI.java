@@ -16,9 +16,9 @@ public class HomeUI {
 
     // Roles in the database system - to allow easy extension
     String[] Role = new String[]{
-            "student",
-            "faculty",
-            "admin"
+            "STUDENT",
+            "FACULTY",
+            "ADMIN"
     };
 
     public HomeUI( String connectionURL, String username, String password ) {

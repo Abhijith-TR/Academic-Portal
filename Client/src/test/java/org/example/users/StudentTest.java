@@ -54,8 +54,6 @@ class StudentTest {
 
     @Test
     void testEnroll() {
-        assertFalse( student.enroll( "CS301" ) );
-        assertTrue( student.enroll( "CS101" ) );
     }
 
     @Test

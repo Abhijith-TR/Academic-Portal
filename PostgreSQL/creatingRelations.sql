@@ -3,7 +3,7 @@
 CREATE TABLE admin
 (
     admin_id VARCHAR(15) PRIMARY KEY,
-    name     VARCHAR(40) NOT NULL,
+    name     VARCHAR(40) NOT NULL
 );
 
 -- department_id: Used to uniquely identify each department. Given based on number of departments
@@ -23,20 +23,6 @@ CREATE TABLE faculty
     FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE
 );
 
--- entry_number: Currently 11 characters. 15 to accommodate older entry numbers
--- name: Longest name encountered: 40 characters
--- batch: denotes the year of joining the institute
-CREATE TABLE student
-(
-    entry_number  VARCHAR(15) PRIMARY KEY,
-    name          VARCHAR(40) NOT NULL,
-    department_id VARCHAR(15) NOT NULL,
-    batch         INTEGER     NOT NULL,
-    FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE,
-    FOREIGN KEY (batch) REFERENCES batch (year) ON DELETE CASCADE
-);
-
-
 -- Longest name encountered: Introduction to Organic Chemistry and Biochemistry
 -- lecture_hours, tutorial_hours, practical_hours, self_study_hours: The course credit structure i.e., L-T-P-S
 -- credits: integer field
@@ -45,6 +31,7 @@ CREATE TABLE student
 
 -- Note: The course_code is unique to each course offered at IIT Ropar
 -- The pre-requisites are allowed to be empty.
+-- Any course can be offered by any department, but the prerequisites for a course are always same
 CREATE TABLE course_catalog
 (
     course_code      VARCHAR(6),
@@ -55,9 +42,7 @@ CREATE TABLE course_catalog
     self_study_hours DECIMAL(4, 2) CHECK (self_study_hours >= 0 AND self_study_hours <= 24) NOT NULL,
     credits          DECIMAL(3, 1) CHECK (credits > 0)                                      NOT NULL,
     pre_requisites   VARCHAR[6][],
-    department_id    VARCHAR(15)                                                            NOT NULL,
-    PRIMARY KEY (course_code, department_id),
-    FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE
+    PRIMARY KEY (course_code)
 );
 
 -- course_code: Same considerations as above
@@ -78,7 +63,7 @@ CREATE TABLE course_offerings
     cgpa_criteria            DECIMAL(4, 2) CHECK (
                 cgpa_criteria >= 0.0
             AND cgpa_criteria <= 10.0
-        ) DEFAULT 0,
+        )                           DEFAULT 0,
     instructor_prerequisites TEXT[][],
     pc                       TEXT[] DEFAULT '{}',
     pe                       TEXT[] DEFAULT '{}',
@@ -92,9 +77,30 @@ CREATE TABLE course_offerings
     ii                       TEXT[] DEFAULT '{}',
     oe                       TEXT[] DEFAULT '{}',
     CHECK (semester IN (1, 2, 3, 4)),
-    FOREIGN KEY (course_code, department_id) REFERENCES course_catalog (course_code, department_id) ON DELETE CASCADE,
+    FOREIGN KEY (course_code) REFERENCES course_catalog (course_code) ON DELETE CASCADE,
+    FOREIGN KEY (department_id) REFERENCES department (department_id),
     FOREIGN KEY (faculty_id) REFERENCES faculty (faculty_id) ON DELETE CASCADE,
-    PRIMARY KEY (course_code, year, semester)
+    PRIMARY KEY (course_code, year, semester, department_id)
+);
+
+-- Table that stores all the batches that are there in the student table
+-- Links the student with the core courses and the UG curriculum corresponding to his batch
+CREATE TABLE batch
+(
+    year INTEGER PRIMARY KEY
+);
+
+-- entry_number: Currently 11 characters. 15 to accommodate older entry numbers
+-- name: Longest name encountered: 40 characters
+-- batch: denotes the year of joining the institute
+CREATE TABLE student
+(
+    entry_number  VARCHAR(15) PRIMARY KEY,
+    name          VARCHAR(40) NOT NULL,
+    department_id VARCHAR(15) NOT NULL,
+    batch         INTEGER     NOT NULL,
+    FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE,
+    FOREIGN KEY (batch) REFERENCES batch (year) ON DELETE CASCADE
 );
 
 -- entry_number: Currently 11 characters. 15 to accommodate older entry numbers
@@ -118,17 +124,18 @@ CREATE TABLE course_offerings
 -- academic_session and course_code as in previous tables
 CREATE TABLE student_course_registration
 (
-    entry_number VARCHAR(15),
-    course_code  VARCHAR(6),
-    year         INTEGER NOT NULL,
-    semester     INTEGER NOT NULL,
-    grade        VARCHAR(2) DEFAULT '-',
-    category     TEXT    NOT NULL,
+    entry_number  VARCHAR(15),
+    course_code   VARCHAR(6),
+    year          INTEGER     NOT NULL,
+    semester      INTEGER     NOT NULL,
+    grade         VARCHAR(2) DEFAULT '-',
+    department_id VARCHAR(15) NOT NULL,
+    category      TEXT        NOT NULL,
     PRIMARY KEY (entry_number, course_code, year, semester),
-    FOREIGN KEY (course_code, year, semester) REFERENCES course_offerings (course_code, year, semester) ON DELETE CASCADE,
+    FOREIGN KEY (course_code, year, semester, department_id) REFERENCES course_offerings (course_code, year, semester, department_id) ON DELETE CASCADE,
     FOREIGN KEY (entry_number) REFERENCES student (entry_number) ON DELETE CASCADE,
     CHECK (grade in (
-                     'A', 'A-', 'B', 'B-', 'C', 'C-', 'D', 'E', 'F', 'NP', 'W', 'I', 'NF', 'EN', '-'
+                     'A', 'A-', 'B', 'B-', 'C', 'C-', 'D', 'E', 'F', 'W', 'I', '-'
         )),
     CHECK (category IN ('SR', 'SE', 'GR', 'PC', 'PE', 'HC', 'HE', 'CP', 'II', 'NN', 'OE'))
 );
@@ -156,7 +163,7 @@ CREATE TABLE current_year_and_semester
     semester      INTEGER NOT NULL,
     current_event TEXT DEFAULT 'NONE',
     PRIMARY KEY (year, semester),
-    CHECK ( current_event IN ('ENROLLING', 'WITHDRAW', 'GRADE SUBMISSION', 'COMPLETED', 'NONE'))
+    CHECK ( current_event IN ('ENROLLING', 'OFFERING', 'GRADE SUBMISSION', 'COMPLETED', 'RUNNING'))
 );
 
 
@@ -170,13 +177,6 @@ CREATE TABLE log
     in_or_out VARCHAR(4)  NOT NULL,
     CHECK ( role in ('ADMIN', 'STUDENT', 'FACULTY')),
     CHECK (in_or_out IN ('IN', 'OUT'))
-);
-
--- Table that stores all the batches that are there in the student table
--- Links the student with the core courses and the UG curriculum corresponding to his batch
-CREATE TABLE batch
-(
-    year INTEGER PRIMARY KEY
 );
 
 -- This table holds the pass criteria for every batch

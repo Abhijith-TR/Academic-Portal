@@ -9,7 +9,7 @@ import org.example.utils.Utils;
 import java.io.BufferedReader;
 
 public class AdminUI {
-    // Add functionality to view the course catalog
+
     String[] adminChoices = {
             "Add Student",
             "Add Faculty",
@@ -17,7 +17,6 @@ public class AdminUI {
             "Remove Course",
             "View Grade of Specific Student",
             "View Grade of Specific Course Offering",
-            // When you are inserting a student, check whether the batch exists or not. Add this feature later
             "Add New Batch",
             "Add Core Courses List",
             "Check Pass Status",
@@ -26,6 +25,8 @@ public class AdminUI {
             "Change Contact Email",
             "View Contact Details",
             "Change Password",
+            "Add new session",
+            "Modify Session",
             "Any other number to log out"
     };
 
@@ -83,8 +84,7 @@ public class AdminUI {
                 String[] prerequisites         = new String[numberOfPrerequisites];
                 for ( int i = 0; i < numberOfPrerequisites; i++ )
                     prerequisites[i] = keyboardInput.stringInput( "Enter the prerequisite" );
-                String departmentID = keyboardInput.stringInput( "Enter the department ID" );
-                if ( admin.insertCourseIntoCatalog( courseCode, courseTitle, creditStructure, prerequisites, departmentID ) )
+                if ( admin.insertCourseIntoCatalog( courseCode, courseTitle, creditStructure, prerequisites ) )
                     System.out.println( "Course inserted successfully" );
                 else System.out.println( "Course insertion failed. Please verify course details" );
             }
@@ -209,6 +209,26 @@ public class AdminUI {
 
                 if ( admin.setPassword( password )) System.out.println( "Password updated successfully" );
                 else System.out.println( "Password Update Failed" );
+            }
+
+            else if ( adminChoice == 15 ) {
+                if ( admin.startNewSession() ) System.out.println( "New session inserted" );
+                else System.out.println( "New session insertion failed" );
+            }
+
+            else if ( adminChoice == 16 ) {
+                System.out.println( "List of possible Events" );
+                String[] eventsList = new String[]{ "ENROLLING", "OFFERING", "GRADE SUBMISSION", "COMPLETED", "RUNNING" };
+                for ( int i=1; i<= eventsList.length; i++) {
+                    System.out.println(i + ". " + eventsList[i] );
+                }
+                int choice = keyboardInput.integerInput( "Enter your choice" );
+                if ( choice <= 0 || choice > eventsList.length ) {
+                    System.out.println( "Invalid Choice" );
+                    continue;
+                }
+                if ( admin.setCurrentSessionStatus( eventsList[choice-1] ) ) System.out.println( "Event updated successfully" );
+                else System.out.println( "Event update failed" );
             }
 
             else break;

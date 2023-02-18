@@ -5,7 +5,7 @@ public interface FacultyDAO extends CommonDAO {
 
     String getDepartment( String id );
 
-    boolean setCGCriteria( String facultyID, String courseCode, double minimumCGPA, int[] currentSession );
+    boolean setCGCriteria( String facultyID, String courseCode, double minimumCGPA, int[] currentSession, String departmentID );
 
     boolean setInstructorPrerequisites( String facultyID, String courseCode, String[][] prerequisites, int[] currentSession );
 
@@ -13,7 +13,7 @@ public interface FacultyDAO extends CommonDAO {
 
     boolean checkIfOfferedBySelf( String facultyID, String courseCode, int currentYear, int currentSemester );
 
-    boolean setCourseCategory( String courseCode, int currentYear, int currentSemester, String courseCategory, String department, int[] years );
+    boolean setCourseCategory( String courseCode, int currentYear, int currentSemester, String courseCategory, String department, int[] years, String facultyDepartment );
 
     boolean verifyCore( String courseCode, String departmentID, int year );
 
@@ -22,6 +22,10 @@ public interface FacultyDAO extends CommonDAO {
     String[][] getCourseEnrollmentsList( String courseCode, int year, int semester );
 
     String[] getListOfStudents( String courseCode, int year, int semester );
+
+    boolean isCurrentEventOffering( int currentYear, int currentSemester );
+
+    boolean isCurrentEventGradeSubmission( int currentYear, int currentSemester );
 
     boolean uploadCourseGrades( String courseCode, int year, int semester, String[] listOfStudents, String[] listOfGrades );
 }

@@ -1,28 +1,11 @@
-Default CGPA criteria is going to be 4
-
 Add stuff in the all the DAOs that will do the case conversion
 
 You can also create a separate utils object for each instance instead of the static idea
 
 The student records will be found until the current year and semester. You may think of ways to prevent that
 
-Should the ltpsc be auto generated using l and p?
-
 > You can think of turning off auto commit and then turning it on in functions that require it
 
 When the instructor is adding the branches and departments for which he is offering, we must ensure that he does not offer anything for the same batch and department twice
 
-Events
-
-Faculty
-- offerCourse
-- setCGAndPrerequisites
-- dropCourseOffering
-- setCourseCategory
-- generateGradeCSV
-- uploadGrades
-
-Student
- - enroll
- - drop
- - getAvailableCourses
+Viewing the course catalog by the admin

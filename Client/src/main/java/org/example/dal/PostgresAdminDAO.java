@@ -2,7 +2,6 @@ package org.example.dal;
 
 import org.example.daoInterfaces.AdminDAO;
 
-import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -79,9 +78,9 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
         }
     }
 
-    public boolean insertCourse( String courseCode, String courseTitle, double[] creditStructure, String[] prerequisites, String departmentID ) {
+    public boolean insertCourse( String courseCode, String courseTitle, double[] creditStructure, String[] prerequisites ) {
         try {
-            PreparedStatement insertCourseQuery = databaseConnection.prepareStatement( "INSERT INTO course_catalog VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)" );
+            PreparedStatement insertCourseQuery = databaseConnection.prepareStatement( "INSERT INTO course_catalog VALUES(?, ?, ?, ?, ?, ?, ?, ?)" );
             insertCourseQuery.setString( 1, courseCode );
             insertCourseQuery.setString( 2, courseTitle );
             insertCourseQuery.setDouble( 3, creditStructure[0] );
@@ -90,7 +89,6 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             insertCourseQuery.setDouble( 6, creditStructure[3] );
             insertCourseQuery.setDouble( 7, creditStructure[4] );
             insertCourseQuery.setObject( 8, prerequisites );
-            insertCourseQuery.setString( 9, departmentID );
             int insertCourseQueryResult = insertCourseQuery.executeUpdate();
             return insertCourseQueryResult == 1;
         } catch ( Exception error ) {
@@ -185,6 +183,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             PreparedStatement resetCoreCoursesQuery = databaseConnection.prepareStatement( "DELETE FROM core_courses WHERE batch = ?" );
             resetCoreCoursesQuery.setInt( 1, batch );
             resetCoreCoursesQuery.executeUpdate();
+
             // If the query executes successfully return true i.e., the table is ready to be inserted into again
             return true;
         } catch ( Exception error ) {
@@ -245,16 +244,102 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
 
             // Now get the list of students returned by the query into a string array
             ArrayList<String> studentsList = new ArrayList<>();
+
             // Get all the entry numbers from the result set
             while ( getStudentsQueryResult.next() ) {
                 String entryNumber = getStudentsQueryResult.getString( 1 );
                 studentsList.add( entryNumber );
             }
+
             // Return the array list converted into a string array
             return studentsList.toArray( new String[studentsList.size()] );
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return new String[]{};
+        }
+    }
+
+    @Override
+    public boolean checkIfSessionCompleted( int year, int semester ) {
+        try  {
+            // Get the status of the session that was provided
+            PreparedStatement getSessionQuery = databaseConnection.prepareStatement( "SELECT current_event FROM current_year_and_semester WHERE year = ? AND semester = ?" );
+            getSessionQuery.setInt( 1, year );
+            getSessionQuery.setInt( 2, semester );
+            ResultSet getSessionQueryResult = getSessionQuery.executeQuery();
+
+            // Check if the given session contains an entry in the database
+            boolean isSessionValid = getSessionQueryResult.next();
+            if ( !isSessionValid ) return false;
+
+            // If the session exists, we need to check if the session is completed
+            String courseStatus = getSessionQueryResult.getString( 1 );
+            return courseStatus.equals( "COMPLETED" );
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return false;
+        }
+    }
+
+    @Override
+    public boolean createNewSession( int newYear, int newSemester ) {
+        try {
+            // Create an SQL query to insert the session into the database
+            PreparedStatement createSessionQuery = databaseConnection.prepareStatement( "INSERT INTO current_year_and_semester( year, semester ) VALUES(?, ?)" );
+            createSessionQuery.setInt( 1, newYear );
+            createSessionQuery.setInt( 2, newSemester );
+
+            // Return true only if a new session was created in the database, false otherwise
+            return createSessionQuery.executeUpdate() == 1;
+        } catch ( Exception error ) {
+            System.out.println( "Database error. Please try again later" );
+            return false;
+        }
+    }
+
+    @Override
+    public boolean setSessionEvent( String event, int currentYear, int currentSemester ) {
+        try {
+            // These are the only statuses that are allowed. If the user has entered a completely different status, it must be rejected
+            String[] availableEvents = new String[]{ "NONE", "ENROLLING", "OFFERING", "GRADE SUBMISSION", "COMPLETED" };
+
+            // Go through all the valid events and check if this particular event is found in the list
+            boolean stringFound = false;
+            for ( String temp : availableEvents ) {
+                stringFound |= temp.equals( event );
+            }
+            if ( !stringFound ) return false;
+
+            // SQL query to update the event in the database
+            PreparedStatement setStatusQuery = databaseConnection.prepareStatement("UPDATE current_year_and_semester SET current_event = ? WHERE year = ? AND semester = ?");
+            setStatusQuery.setString( 1, event );
+            setStatusQuery.setInt( 2, currentYear );
+            setStatusQuery.setInt( 3, currentSemester );
+            setStatusQuery.executeUpdate();
+
+            // If the query was executed successfully the update was successful. The year and semester have been provided by us
+            return true;
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return false;
+        }
+    }
+
+    @Override
+    public boolean verifyNoMissingGrades( int currentYear, int currentSemester ) {
+        try {
+            // SQL query to check if there are any students in the previous semester who have not had their grades entered
+            // '-' is used in the database to indicate that an entry has not yet been inserted
+            PreparedStatement missingGradeQuery = databaseConnection.prepareStatement("SELECT * FROM student_course_registration WHERE year = ? AND semester = ? AND grade = '-'");
+            missingGradeQuery.setInt( 1, currentYear );
+            missingGradeQuery.setInt( 2, currentSemester );
+            ResultSet missingGradeQueryResult = missingGradeQuery.executeQuery();
+
+            // If any row was returned there is a missing grade in the session
+            return !missingGradeQueryResult.next();
+        } catch ( Exception error ) {
+            System.out.println( "Database error. Please try again later" );
+            return false;
         }
     }
 }

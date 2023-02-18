@@ -18,20 +18,39 @@ public class Faculty extends User {
     }
 
     public boolean offerCourse( String courseCode ) {
-        boolean isCoursePresent = facultyDAO.checkCourseCatalog( courseCode );
-        if ( isCoursePresent == false ) return false;
+        // Checking the department of the professor
         String departmentID = facultyDAO.getDepartment( this.id );
         if ( departmentID == "" ) return false;
+
+        // Checking if the course is present in the course catalog and can be offered by this particular department
+        boolean isCoursePresent = facultyDAO.checkCourseCatalog( courseCode );
+        if ( isCoursePresent == false ) return false;
+
+        // Getting the current academic session as the instructor will only be allowed to insert records in the current semester
         int[] currentSession  = facultyDAO.getCurrentAcademicSession();
         int   currentYear     = currentSession[0];
         int   currentSemester = currentSession[1];
+
+        // Check if it is currently the offering event
+        if ( !facultyDAO.isCurrentEventOffering( currentYear, currentSemester) ) return false;
+
+        // Inserting the course into the database, being offered by the instructors department
         return facultyDAO.insertCourseOffering( courseCode, currentYear, currentSemester, departmentID, this.id );
     }
 
     public boolean setCGAndPrerequisites( String courseCode, double minimumCGPA, String[][] prerequisites ) {
         try {
-            int[]   currentAcademicSession = facultyDAO.getCurrentAcademicSession();
-            boolean isMinimumCGPASet       = facultyDAO.setCGCriteria( this.id, courseCode, minimumCGPA, currentAcademicSession );
+            // Get the department ID of the faculty
+            String departmentID = facultyDAO.getDepartment( this.id );
+
+            // Get the current academic session
+            int[] currentAcademicSession = facultyDAO.getCurrentAcademicSession();
+
+            // Check if it is currently the offering event
+            if ( !facultyDAO.isCurrentEventOffering( currentAcademicSession[0], currentAcademicSession[1]) ) return false;
+
+            // Set the minimum CGPA requirement, if no such entry is found, it simply returns false
+            boolean isMinimumCGPASet = facultyDAO.setCGCriteria( this.id, courseCode, minimumCGPA, currentAcademicSession, departmentID );
             if ( isMinimumCGPASet == false ) return false;
             boolean isPrerequisitesValid = true;
             for ( String[] courseBatch : prerequisites ) {
@@ -51,6 +70,10 @@ public class Faculty extends User {
         int[] currentAcademicSession = facultyDAO.getCurrentAcademicSession();
         int   currentYear            = currentAcademicSession[0];
         int   currentSemester        = currentAcademicSession[1];
+
+        // Check if it is currently the offering event
+        if ( !facultyDAO.isCurrentEventOffering( currentYear, currentSemester) ) return false;
+
         return facultyDAO.dropCourseOffering( this.id, courseCode, currentYear, currentSemester );
     }
 
@@ -72,10 +95,17 @@ public class Faculty extends User {
         int   currentYear     = currentSession[0];
         int   currentSemester = currentSession[1];
 
+        // Check if it is currently the offering event
+        if ( !facultyDAO.isCurrentEventOffering( currentYear, currentSemester) ) return false;
+
         // Check if this course code has been offered by this instructor in the current session
         boolean isOwnCourse = facultyDAO.checkIfOfferedBySelf( this.id, courseCode, currentYear, currentSemester );
+
         // If not offered by this instructor, the course category cannot be set
         if ( isOwnCourse == false ) return false;
+
+        // Get the faculty's department
+        String facultyDepartment = facultyDAO.getDepartment( this.id );
 
         // If the course has been offered as a core course by the instructor, you have to verify that it is actually a core course for the particular year
         if ( courseCategory == "PC" || courseCategory == "SC" || courseCategory == "GR" || courseCategory == "HC" || courseCategory == "CP" || courseCategory == "II" || courseCategory == "NN" ) {
@@ -84,7 +114,7 @@ public class Faculty extends User {
         }
 
         // Now that the course has been verified, you can update the course category
-        return facultyDAO.setCourseCategory( courseCode, currentYear, currentSemester, courseCategory, departmentID, years );
+        return facultyDAO.setCourseCategory( courseCode, currentYear, currentSemester, courseCategory, departmentID, years, facultyDepartment );
     }
 
     public String[][][] getGradesOfStudent( String entryNumber ) {
@@ -118,14 +148,14 @@ public class Faculty extends User {
             }
 
             // Get the names of all students enrolled in this particular course offering
-            String[][]  records         = facultyDAO.getCourseEnrollmentsList( courseCode, year, semester );
+            String[][] records = facultyDAO.getCourseEnrollmentsList( courseCode, year, semester );
 
             // Create a new file to insert the name and the entry number ( only the entry number is relevant for use in the program )
-            String      fileName        = courseCode + "_" + year + "_" + semester + ".csv";
-            File        gradeUploadFile = new File( fileName );
+            String fileName        = courseCode + "_" + year + "_" + semester + ".csv";
+            File   gradeUploadFile = new File( fileName );
 
             // Create a printWriter to write into the newly created file
-            PrintWriter fileWriter      = new PrintWriter( gradeUploadFile );
+            PrintWriter fileWriter = new PrintWriter( gradeUploadFile );
 
             // Iterate through all the name and entry numbers and insert them into the file separated by commas
             for ( String[] record : records ) {
@@ -146,6 +176,8 @@ public class Faculty extends User {
             // First we need to verify that the faculty is trying to upload grades for a course offered in the current semester only
             int[] currentSession = facultyDAO.getCurrentAcademicSession();
             if ( year != currentSession[0] || semester != currentSession[1] ) return false;
+
+            if ( !facultyDAO.isCurrentEventGradeSubmission( year, semester ) ) return false;
 
             // Check if the course has been offered by this particular faculty in the current semester
             boolean isOwnCourse = facultyDAO.checkIfOfferedBySelf( this.id, courseCode, year, semester );
