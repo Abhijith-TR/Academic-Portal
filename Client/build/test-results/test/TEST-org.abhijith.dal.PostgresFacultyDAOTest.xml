@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.dal.PostgresFacultyDAOTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-02-20T13:59:10" hostname="ADMIN" time="0.156">
+  <properties/>
+  <testcase name="setInstructorPrerequisites()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.156"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

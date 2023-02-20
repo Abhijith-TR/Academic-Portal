@@ -2,10 +2,8 @@ Add stuff in the all the DAOs that will do the case conversion
 
 You can also create a separate utils object for each instance instead of the static idea
 
-The student records will be found until the current year and semester. You may think of ways to prevent that
-
-> You can think of turning off auto commit and then turning it on in functions that require it
-
-When the instructor is adding the branches and departments for which he is offering, we must ensure that he does not offer anything for the same batch and department twice
-
 Viewing the course catalog by the admin
+
+No editing curriculum is allowed
+
+Test the instructor prerequisites thing
