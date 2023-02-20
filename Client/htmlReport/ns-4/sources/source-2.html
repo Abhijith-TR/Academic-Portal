@@ -1,0 +1,366 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Faculty</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.abhijith.users</a>
+</div>
+
+<h1>Coverage Summary for Class: Faculty (org.abhijith.users)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Faculty</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    81.8%
+  </span>
+  <span class="absValue">
+    (9/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (76/114)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.abhijith.users;
+&nbsp;
+&nbsp;import org.abhijith.dal.PostgresFacultyDAO;
+&nbsp;import org.abhijith.daoInterfaces.FacultyDAO;
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.Properties;
+&nbsp;
+&nbsp;public class Faculty extends User {
+&nbsp;    private FacultyDAO facultyDAO;
+&nbsp;
+&nbsp;    public Faculty( String id ) {
+<b class="fc">&nbsp;        super( id );</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            Properties databaseConfig = new Properties();</b>
+<b class="fc">&nbsp;            ClassLoader classLoader = Faculty.class.getClassLoader();</b>
+<b class="fc">&nbsp;            InputStream inputStream = classLoader.getResourceAsStream( &quot;config.properties&quot; );</b>
+<b class="fc">&nbsp;            databaseConfig.load( inputStream );</b>
+&nbsp;
+<b class="fc">&nbsp;            String connectionURL = databaseConfig.getProperty( &quot;faculty.connectionURL&quot; );</b>
+<b class="fc">&nbsp;            String username      = databaseConfig.getProperty( &quot;faculty.username&quot; );</b>
+<b class="fc">&nbsp;            String password      = databaseConfig.getProperty( &quot;faculty.password&quot; );</b>
+&nbsp;
+<b class="fc">&nbsp;            this.facultyDAO = new PostgresFacultyDAO(</b>
+&nbsp;                    connectionURL,
+&nbsp;                    username,
+&nbsp;                    password
+&nbsp;            );
+<b class="fc">&nbsp;            super.setCommonDAO( facultyDAO );</b>
+<b class="nc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;            System.out.println( &quot;Could not connect to database&quot; );</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setFacultyDAO( FacultyDAO facultyDAO ) {
+<b class="nc">&nbsp;        this.facultyDAO = facultyDAO;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean offerCourse( String courseCode, String offeringDepartment ) {
+&nbsp;        // Checking the input
+<b class="fc">&nbsp;        if ( courseCode == null || offeringDepartment == null ) return false;</b>
+&nbsp;
+&nbsp;        // Checking if the course is present in the course catalog
+<b class="fc">&nbsp;        boolean isCoursePresent = facultyDAO.checkCourseCatalog( courseCode );</b>
+<b class="fc">&nbsp;        if ( !isCoursePresent ) return false;</b>
+&nbsp;
+&nbsp;        // Getting the current academic session as the instructor will only be allowed to insert records in the current semester
+<b class="fc">&nbsp;        int[] currentSession  = facultyDAO.getCurrentAcademicSession();</b>
+<b class="fc">&nbsp;        int   currentYear     = currentSession[0];</b>
+<b class="fc">&nbsp;        int   currentSemester = currentSession[1];</b>
+&nbsp;
+&nbsp;        // Check if it is currently the offering event
+<b class="fc">&nbsp;        if ( !facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ) return false;</b>
+&nbsp;
+&nbsp;        // Check if the course is offered by your department
+<b class="fc">&nbsp;        if ( facultyDAO.isCourseAlreadyOffered( courseCode, currentYear, currentSemester, offeringDepartment ) ) return false;</b>
+&nbsp;
+&nbsp;        // Inserting the course into the database, being offered by the instructors department
+<b class="fc">&nbsp;        return facultyDAO.insertCourseOffering( courseCode, currentYear, currentSemester, offeringDepartment, this.id );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean setCGAndPrerequisites( String courseCode, String offeringDepartment, double minimumCGPA, String[][] prerequisites ) {
+&nbsp;        try {
+&nbsp;            // Checking the input that is given
+<b class="fc">&nbsp;            if ( courseCode == null || minimumCGPA &lt; 0 || minimumCGPA &gt; 10 || prerequisites == null || offeringDepartment == null ) return false;</b>
+&nbsp;
+&nbsp;            // Get the current academic session
+<b class="fc">&nbsp;            int[] currentAcademicSession = facultyDAO.getCurrentAcademicSession();</b>
+<b class="fc">&nbsp;            int   currentYear            = currentAcademicSession[0];</b>
+<b class="fc">&nbsp;            int   currentSemester        = currentAcademicSession[1];</b>
+&nbsp;
+&nbsp;            // Check if it is currently the offering event
+<b class="fc">&nbsp;            if ( !facultyDAO.isCurrentEventOffering( currentAcademicSession[0], currentAcademicSession[1] ) ) {</b>
+<b class="fc">&nbsp;                return false;</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Check if this particular faculty is offering such a course
+<b class="fc">&nbsp;            if ( !facultyDAO.checkIfOfferedBySelf( this.id, courseCode, currentYear, currentSemester, offeringDepartment ) ) return false;</b>
+&nbsp;
+&nbsp;            // Set the minimum CGPA requirement, if no such entry is found, it simply returns false
+<b class="fc">&nbsp;            boolean isMinimumCGPASet = facultyDAO.setCGCriteria( this.id, courseCode, minimumCGPA, currentAcademicSession, offeringDepartment );</b>
+<b class="fc">&nbsp;            if ( !isMinimumCGPASet ) return false;</b>
+&nbsp;
+&nbsp;            // Check if all the courses entered as prerequisites are in the course catalog
+<b class="fc">&nbsp;            boolean isPrerequisitesValid = true;</b>
+<b class="fc">&nbsp;            for ( String[] courseBatch : prerequisites ) {</b>
+<b class="fc">&nbsp;                if ( courseBatch == null ) return false;</b>
+<b class="fc">&nbsp;                for ( int i = 0; i &lt; courseBatch.length; i += 2 ) {</b>
+<b class="fc">&nbsp;                    isPrerequisitesValid &amp;= facultyDAO.checkCourseCatalog( courseBatch[i] );</b>
+&nbsp;                }
+&nbsp;            }
+<b class="fc">&nbsp;            if ( !isPrerequisitesValid ) return false;</b>
+<b class="fc">&nbsp;            return facultyDAO.setInstructorPrerequisites( offeringDepartment, courseCode, prerequisites, currentAcademicSession );</b>
+<b class="nc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean dropCourseOffering( String courseCode, String offeringDepartment ) {
+<b class="fc">&nbsp;        if ( courseCode == null || offeringDepartment == null ) return false;</b>
+&nbsp;
+<b class="fc">&nbsp;        int[] currentAcademicSession = facultyDAO.getCurrentAcademicSession();</b>
+<b class="fc">&nbsp;        int   currentYear            = currentAcademicSession[0];</b>
+<b class="fc">&nbsp;        int   currentSemester        = currentAcademicSession[1];</b>
+&nbsp;
+&nbsp;        // Check if it is currently the offering event
+<b class="fc">&nbsp;        if ( !facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ) return false;</b>
+&nbsp;
+&nbsp;        // Check if the course has been offered by this faculty
+<b class="fc">&nbsp;        if ( !facultyDAO.checkIfOfferedBySelf( this.id, courseCode, currentYear, currentSemester, offeringDepartment ) ) return false;</b>
+&nbsp;
+<b class="fc">&nbsp;        return facultyDAO.dropCourseOffering( this.id, courseCode, currentYear, currentSemester, offeringDepartment );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private boolean verifyCore( String courseCode, String departmentID, int[] years ) {
+&nbsp;        boolean isCore;
+&nbsp;        // Iterate through all the years and verify that it is a core course for all of them
+<b class="fc">&nbsp;        for ( int year : years ) {</b>
+&nbsp;            // If the course is not core for a particular department in a particular year
+<b class="fc">&nbsp;            isCore = facultyDAO.verifyCore( courseCode, departmentID, year );</b>
+&nbsp;            // Then this request to set type is not valid
+<b class="fc">&nbsp;            if ( !isCore ) return false;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean setCourseCategory( String courseCode, String offeringDepartment, String courseCategory, String departmentID, int[] years ) {
+<b class="fc">&nbsp;        if ( courseCode == null || courseCategory == null || departmentID == null || years == null || offeringDepartment == null ) return false;</b>
+&nbsp;
+&nbsp;        // Get the current year and semester
+<b class="fc">&nbsp;        int[] currentSession  = facultyDAO.getCurrentAcademicSession();</b>
+<b class="fc">&nbsp;        int   currentYear     = currentSession[0];</b>
+<b class="fc">&nbsp;        int   currentSemester = currentSession[1];</b>
+&nbsp;
+&nbsp;        // Check if it is currently the offering event
+<b class="fc">&nbsp;        if ( !facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ) return false;</b>
+&nbsp;
+&nbsp;        // Check if this course code has been offered by this instructor in the current session
+<b class="fc">&nbsp;        boolean isOwnCourse = facultyDAO.checkIfOfferedBySelf( this.id, courseCode, currentYear, currentSemester, offeringDepartment );</b>
+&nbsp;
+&nbsp;        // If not offered by this instructor, the course category cannot be set
+<b class="fc">&nbsp;        if ( !isOwnCourse ) return false;</b>
+&nbsp;
+&nbsp;        // If the course has been offered as a core course by the instructor, you have to verify that it is actually a core course for the particular year
+<b class="fc">&nbsp;        if ( courseCategory.equals( &quot;PC&quot; ) || courseCategory.equals( &quot;SC&quot; ) || courseCategory.equals( &quot;GR&quot; ) || courseCategory.equals( &quot;HC&quot; ) || courseCategory.equals( &quot;CP&quot; ) || courseCategory.equals( &quot;II&quot; ) || courseCategory.equals( &quot;NN&quot; ) ) {</b>
+<b class="fc">&nbsp;            boolean isValidCore = verifyCore( courseCode, departmentID, years );</b>
+<b class="fc">&nbsp;            if ( !isValidCore ) return false;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Now that the course has been verified, you can update the course category
+<b class="fc">&nbsp;        return facultyDAO.setCourseCategory( courseCode, currentYear, currentSemester, courseCategory, departmentID, years, offeringDepartment );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String[][][] getGradesOfStudent( String entryNumber ) {
+<b class="fc">&nbsp;        if ( entryNumber == null ) return new String[][][]{};</b>
+&nbsp;        // Arraylist to conveniently store records before returning to the UI layer
+<b class="fc">&nbsp;        ArrayList&lt;String[][]&gt; completeStudentRecords = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;        // Getting the current academic session and the batch of the student
+<b class="fc">&nbsp;        int[]                 currentAcademicSession = facultyDAO.getCurrentAcademicSession();</b>
+<b class="fc">&nbsp;        int                   studentBatch           = facultyDAO.getBatch( entryNumber );</b>
+<b class="fc">&nbsp;        int                   currentYear            = currentAcademicSession[0];</b>
+<b class="fc">&nbsp;        int                   currentSemester        = currentAcademicSession[1];</b>
+&nbsp;
+&nbsp;        // Go through all the semesters from the students joining batch till the current academic session
+<b class="fc">&nbsp;        for ( int year = studentBatch; year &lt;= currentYear; year++ ) {</b>
+<b class="fc">&nbsp;            for ( int semester = 1; semester &lt;= 2; semester++ ) {</b>
+&nbsp;                // Fetches the records for the particular student for this particular year and semester
+<b class="fc">&nbsp;                String[][] semesterRecords = facultyDAO.getStudentGradesForSemester( entryNumber, year, semester );</b>
+<b class="fc">&nbsp;                completeStudentRecords.add( semesterRecords );</b>
+&nbsp;
+&nbsp;                // If we have reached the current semester, then break
+<b class="fc">&nbsp;                if ( year == currentYear &amp;&amp; semester == currentSemester ) break;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return completeStudentRecords.toArray( new String[completeStudentRecords.size()][][] );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String[][] getGradesOfOffering( String courseCode, int year, int semester, String offeringDepartment ) {
+<b class="fc">&nbsp;        if ( courseCode == null || offeringDepartment == null || year &lt; 0 || semester &lt;= 0 ) return new String[][]{};</b>
+<b class="fc">&nbsp;        return facultyDAO.getGradesOfCourse( courseCode, year, semester, offeringDepartment );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean generateGradeCSV( String courseCode, int year, int semester, String offeringDepartment ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( courseCode == null || offeringDepartment == null || year &lt; 0 || semester &lt;= 0 ) return false;</b>
+&nbsp;
+&nbsp;            // Check if the course is offered by the currently logged in instructor
+<b class="fc">&nbsp;            boolean isOwnCourse = facultyDAO.checkIfOfferedBySelf( this.id, courseCode, year, semester, offeringDepartment );</b>
+<b class="fc">&nbsp;            if ( !isOwnCourse ) {</b>
+<b class="fc">&nbsp;                return false;</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Get the names of all students enrolled in this particular course offering
+<b class="nc">&nbsp;            String[][] records = facultyDAO.getCourseEnrollmentsList( courseCode, year, semester, offeringDepartment );</b>
+&nbsp;
+&nbsp;            // Create a new file to insert the name and the entry number ( only the entry number is relevant for use in the program )
+<b class="nc">&nbsp;            String fileName        = courseCode + &quot;_&quot; + year + &quot;_&quot; + semester + &quot;_&quot; + offeringDepartment + &quot;.csv&quot;;</b>
+<b class="nc">&nbsp;            File   gradeUploadFile = new File( fileName );</b>
+&nbsp;
+&nbsp;            // Create a printWriter to write into the newly created file
+<b class="nc">&nbsp;            PrintWriter fileWriter = new PrintWriter( gradeUploadFile );</b>
+&nbsp;
+&nbsp;            // Iterate through all the name and entry numbers and insert them into the file separated by commas
+<b class="nc">&nbsp;            for ( String[] record : records ) {</b>
+<b class="nc">&nbsp;                String lineContent = String.join( &quot;,&quot;, record ) + &quot;,&quot;;</b>
+<b class="nc">&nbsp;                fileWriter.println( lineContent );</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Close the file that was written into
+<b class="nc">&nbsp;            fileWriter.close();</b>
+<b class="nc">&nbsp;            return true;</b>
+<b class="nc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean uploadGrades( String courseCode, int year, int semester, BufferedReader gradeCSVFile, String offeringDepartment ) {
+&nbsp;        try {
+&nbsp;            // First we need to verify that the faculty is trying to upload grades for a course offered in the current semester only
+<b class="nc">&nbsp;            int[] currentSession = facultyDAO.getCurrentAcademicSession();</b>
+<b class="nc">&nbsp;            if ( year != currentSession[0] || semester != currentSession[1] ) return false;</b>
+&nbsp;
+<b class="nc">&nbsp;            if ( !facultyDAO.isCurrentEventGradeSubmission( year, semester ) ) return false;</b>
+&nbsp;
+&nbsp;            // Check if the course has been offered by this particular faculty in the current semester
+<b class="nc">&nbsp;            boolean isOwnCourse = facultyDAO.checkIfOfferedBySelf( this.id, courseCode, year, semester, offeringDepartment );</b>
+<b class="nc">&nbsp;            if ( !isOwnCourse ) return false;</b>
+&nbsp;
+<b class="nc">&nbsp;            ArrayList&lt;String&gt; arraylistOfEntryNumbers = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;            ArrayList&lt;String&gt; arraylistOfGrades       = new ArrayList&lt;&gt;();</b>
+&nbsp;            String            courseRecord;
+&nbsp;
+<b class="nc">&nbsp;            while ( ( courseRecord = gradeCSVFile.readLine() ) != null ) {</b>
+<b class="nc">&nbsp;                String[] lineContents = courseRecord.split( &quot;,&quot; );</b>
+<b class="nc">&nbsp;                arraylistOfEntryNumbers.add( lineContents[1] );</b>
+<b class="nc">&nbsp;                arraylistOfGrades.add( lineContents[2] );</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            String[] listOfEntryNumbers = arraylistOfEntryNumbers.toArray( new String[arraylistOfEntryNumbers.size()] );</b>
+&nbsp;
+&nbsp;            // Sorted list of the entry numbers in the CSV file
+<b class="nc">&nbsp;            Collections.sort( arraylistOfEntryNumbers );</b>
+&nbsp;
+&nbsp;            // Sorted list of the entry numbers in the database
+<b class="nc">&nbsp;            String[] listOfStudentsInDatabase = facultyDAO.getListOfStudents( courseCode, year, semester, offeringDepartment );</b>
+<b class="nc">&nbsp;            Arrays.sort( listOfStudentsInDatabase );</b>
+&nbsp;
+&nbsp;            // These two lists must contain the same entry numbers because that was the file generated by the program
+<b class="nc">&nbsp;            if ( listOfEntryNumbers.length != listOfStudentsInDatabase.length ) return false;</b>
+<b class="nc">&nbsp;            for ( int i = 0; i &lt; arraylistOfEntryNumbers.size(); i++ ) {</b>
+<b class="nc">&nbsp;                if ( !arraylistOfEntryNumbers.get( i ).equals( listOfStudentsInDatabase[i] ) ) return false;</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // The course has been verified and the students have been verified. Now we can insert the records into the database
+<b class="nc">&nbsp;            return facultyDAO.uploadCourseGrades( courseCode, year, semester, offeringDepartment, listOfEntryNumbers, arraylistOfGrades.toArray( new String[arraylistOfGrades.size()] ) );</b>
+<b class="nc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-21 01:26</div>
+</div>
+</body>
+</html>

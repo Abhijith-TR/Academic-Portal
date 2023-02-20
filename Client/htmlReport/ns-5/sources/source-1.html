@@ -1,0 +1,198 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CustomScanner</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.abhijith.utils</a>
+</div>
+
+<h1>Coverage Summary for Class: CustomScanner (org.abhijith.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CustomScanner</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/53)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.abhijith.utils;
+&nbsp;
+&nbsp;import java.awt.*;
+&nbsp;import java.io.BufferedReader;
+&nbsp;import java.io.FileReader;
+&nbsp;import java.util.Scanner;
+&nbsp;
+&nbsp;public class CustomScanner {
+&nbsp;    Scanner keyboardInput;
+&nbsp;
+<b class="nc">&nbsp;    public CustomScanner() {</b>
+<b class="nc">&nbsp;        keyboardInput = new Scanner( System.in );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public double doubleInput( String message ) {
+&nbsp;        while ( true ) {
+&nbsp;            try {
+<b class="nc">&nbsp;                System.out.print( message + &quot;: &quot; );</b>
+<b class="nc">&nbsp;                double input = keyboardInput.nextDouble();</b>
+<b class="nc">&nbsp;                keyboardInput.nextLine();</b>
+<b class="nc">&nbsp;                return input;</b>
+<b class="nc">&nbsp;            } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;                System.out.println( &quot;Please Enter Valid Input&quot; );</b>
+<b class="nc">&nbsp;                keyboardInput = new Scanner( System.in );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public int integerInput( String message ) {
+&nbsp;        while ( true ) {
+&nbsp;            try {
+<b class="nc">&nbsp;                System.out.print( message + &quot;: &quot; );</b>
+<b class="nc">&nbsp;                int input = keyboardInput.nextInt();</b>
+<b class="nc">&nbsp;                keyboardInput.nextLine();</b>
+<b class="nc">&nbsp;                return input;</b>
+<b class="nc">&nbsp;            } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;                System.out.println( &quot;Please Enter Valid Input&quot; );</b>
+<b class="nc">&nbsp;                keyboardInput = new Scanner( System.in );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public String stringInput( String message ) {
+&nbsp;        while ( true ) {
+&nbsp;            try {
+<b class="nc">&nbsp;                System.out.print( message + &quot;: &quot; );</b>
+<b class="nc">&nbsp;                return keyboardInput.nextLine();</b>
+<b class="nc">&nbsp;            } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;                System.out.println( &quot;Please Enter Valid Input&quot; );</b>
+<b class="nc">&nbsp;                keyboardInput = new Scanner( System.in );</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public BufferedReader CSVFileInput( String message ) {
+&nbsp;        try {
+<b class="nc">&nbsp;            FileDialog dialog = new FileDialog( (Frame) null, &quot;Select File to Open&quot; );</b>
+<b class="nc">&nbsp;            dialog.setMode( FileDialog.LOAD );</b>
+<b class="nc">&nbsp;            dialog.setVisible( true );</b>
+<b class="nc">&nbsp;            String fileName = dialog.getDirectory() + dialog.getFile();</b>
+<b class="nc">&nbsp;            if ( !fileName.substring( fileName.length() - 3 ).equals( &quot;csv&quot; ) )</b>
+<b class="nc">&nbsp;                throw new RuntimeException( &quot;Enter a valid CSV file&quot; );</b>
+<b class="nc">&nbsp;            dialog.dispose();</b>
+<b class="nc">&nbsp;            BufferedReader CSVFile = new BufferedReader( new FileReader( fileName ) );</b>
+<b class="nc">&nbsp;            return CSVFile;</b>
+<b class="nc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;            System.out.println( &quot;Enter a valid CSV file&quot; );</b>
+<b class="nc">&nbsp;            keyboardInput = new Scanner( System.in );</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public BufferedReader openCourseCSVFile( String courseCode, int year, int semester, String departmentID ) {
+&nbsp;        try {
+<b class="nc">&nbsp;            String expectedFileName = new StringBuilder().append( courseCode ).append( &quot;_&quot; ).append( year ).append( &quot;_&quot; ).append( semester ).append( &quot;_&quot; ).append( departmentID ).append( &quot;.csv&quot; ).toString();</b>
+<b class="nc">&nbsp;            FileDialog dialog = new FileDialog( (Frame) null, &quot;Select File to Open&quot; );</b>
+<b class="nc">&nbsp;            dialog.setMode( FileDialog.LOAD );</b>
+<b class="nc">&nbsp;            dialog.setVisible( true );</b>
+<b class="nc">&nbsp;            String fileName = dialog.getDirectory() + dialog.getFile();</b>
+<b class="nc">&nbsp;            if ( !fileName.substring( fileName.length() - 3 ).equals( &quot;csv&quot; ) )</b>
+<b class="nc">&nbsp;                throw new RuntimeException( &quot;Enter a valid CSV file&quot; );</b>
+<b class="nc">&nbsp;            dialog.dispose();</b>
+&nbsp;
+<b class="nc">&nbsp;            if ( !dialog.getFile().equals( expectedFileName ) ) {</b>
+<b class="nc">&nbsp;                System.out.println( dialog.getFile() + &quot; &quot; + expectedFileName );</b>
+<b class="nc">&nbsp;                throw new RuntimeException( &quot;Unexpected file name&quot; );</b>
+&nbsp;            }
+<b class="nc">&nbsp;            BufferedReader CSVFile = new BufferedReader( new FileReader( fileName ) );</b>
+<b class="nc">&nbsp;            return CSVFile;</b>
+<b class="nc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;            System.out.println( error.getMessage() );</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-21 01:26</div>
+</div>
+</body>
+</html>

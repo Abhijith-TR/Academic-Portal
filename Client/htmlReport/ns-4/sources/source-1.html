@@ -1,0 +1,443 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Admin</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.abhijith.users</a>
+</div>
+
+<h1>Coverage Summary for Class: Admin (org.abhijith.users)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Admin</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    15.8%
+  </span>
+  <span class="absValue">
+    (3/19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    8.4%
+  </span>
+  <span class="absValue">
+    (14/167)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.abhijith.users;
+&nbsp;
+&nbsp;import org.abhijith.dal.PostgresAdminDAO;
+&nbsp;import org.abhijith.daoInterfaces.AdminDAO;
+&nbsp;import org.abhijith.utils.Utils;
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Properties;
+&nbsp;
+&nbsp;public class Admin extends User {
+&nbsp;    private AdminDAO adminDAO;
+&nbsp;
+&nbsp;    public Admin( String name ) {
+<b class="fc">&nbsp;        super( name );</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            Properties databaseConfig = new Properties();</b>
+<b class="fc">&nbsp;            ClassLoader classLoader = Admin.class.getClassLoader();</b>
+<b class="fc">&nbsp;            InputStream inputStream = classLoader.getResourceAsStream( &quot;config.properties&quot; );</b>
+<b class="fc">&nbsp;            databaseConfig.load( inputStream );</b>
+&nbsp;
+<b class="fc">&nbsp;            String connectionURL = databaseConfig.getProperty( &quot;admin.connectionURL&quot; );</b>
+<b class="fc">&nbsp;            String username      = databaseConfig.getProperty( &quot;admin.username&quot; );</b>
+<b class="fc">&nbsp;            String password      = databaseConfig.getProperty( &quot;admin.password&quot; );</b>
+<b class="fc">&nbsp;            this.adminDAO = new PostgresAdminDAO(</b>
+&nbsp;                    connectionURL,
+&nbsp;                    username,
+&nbsp;                    password
+&nbsp;            );
+<b class="fc">&nbsp;            super.setCommonDAO( adminDAO );</b>
+<b class="nc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;            System.out.println( &quot;Could not connect to database&quot; );</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setAdminDAO( AdminDAO adminDAO ) {
+<b class="fc">&nbsp;        this.adminDAO = adminDAO;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String[][] getGradesOfOffering( String courseCode, int year, int semester, String departmentID ) {
+<b class="fc">&nbsp;        if ( courseCode == null || year &lt;= 0 || semester &lt;= 0 || departmentID == null ) return new String[][]{};</b>
+<b class="fc">&nbsp;        return adminDAO.getGradesOfCourse( courseCode, year, semester, departmentID );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean insertStudent( String entryNumber, String name, String departmentID, int batch ) {
+<b class="nc">&nbsp;        if ( entryNumber == null || name == null || departmentID == null || batch &lt;= 0 ) return false;</b>
+<b class="nc">&nbsp;        return adminDAO.insertStudent( entryNumber, name, departmentID, batch );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean insertFaculty( String facultyID, String name, String departmentID ) {
+<b class="nc">&nbsp;        return adminDAO.insertFaculty( facultyID, name, departmentID );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean insertCourseIntoCatalog( String courseCode, String courseTitle, double[] creditStructure, String[] prerequisites ) {
+<b class="nc">&nbsp;        boolean allPrerequisitesFound = adminDAO.checkAllPrerequisites( prerequisites );</b>
+<b class="nc">&nbsp;        if ( !allPrerequisitesFound ) return false;</b>
+<b class="nc">&nbsp;        return adminDAO.insertCourse( courseCode, courseTitle, creditStructure, prerequisites );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean dropCourseFromCatalog( String courseCode ) {
+<b class="nc">&nbsp;        return adminDAO.dropCourseFromCatalog( courseCode );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String[][][] getGradesOfStudent( String entryNumber ) {
+<b class="nc">&nbsp;        ArrayList&lt;String[][]&gt; completeStudentRecords = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        int[]                 currentAcademicSession = adminDAO.getCurrentAcademicSession();</b>
+<b class="nc">&nbsp;        int                   studentBatch           = adminDAO.getBatch( entryNumber );</b>
+<b class="nc">&nbsp;        if ( studentBatch == -1 ) return new String[][][]{};</b>
+&nbsp;
+<b class="nc">&nbsp;        int currentYear     = currentAcademicSession[0];</b>
+<b class="nc">&nbsp;        int currentSemester = currentAcademicSession[1];</b>
+&nbsp;
+<b class="nc">&nbsp;        for ( int year = studentBatch; year &lt;= currentYear; year++ ) {</b>
+<b class="nc">&nbsp;            for ( int semester = 1; semester &lt;= 2; semester++ ) {</b>
+<b class="nc">&nbsp;                String[][] semesterRecords = adminDAO.getStudentGradesForSemester( entryNumber, year, semester );</b>
+<b class="nc">&nbsp;                completeStudentRecords.add( semesterRecords );</b>
+<b class="nc">&nbsp;                if ( year == currentYear &amp;&amp; semester == currentSemester ) break;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return completeStudentRecords.toArray( new String[completeStudentRecords.size()][][] );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean createBatch( int batchYear, double[] creditRequirements ) {
+<b class="nc">&nbsp;        boolean createBatchStatus = adminDAO.createBatch( batchYear );</b>
+<b class="nc">&nbsp;        if ( !createBatchStatus ) return false;</b>
+<b class="nc">&nbsp;        return adminDAO.createCurriculum( batchYear, creditRequirements );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean insertCoreCourses( int batch, BufferedReader courseCSVFile ) {
+&nbsp;        try {
+<b class="nc">&nbsp;            boolean isCoreListRemoved = adminDAO.resetCoreCoursesList( batch );</b>
+<b class="nc">&nbsp;            if ( !isCoreListRemoved ) return false;</b>
+&nbsp;            String courseRecord;
+<b class="nc">&nbsp;            while ( ( courseRecord = courseCSVFile.readLine() ) != null ) {</b>
+<b class="nc">&nbsp;                String[] lineContents    = courseRecord.split( &quot;,&quot; );</b>
+<b class="nc">&nbsp;                String   courseCode      = lineContents[0];</b>
+<b class="nc">&nbsp;                String   courseCategory  = lineContents[1];</b>
+<b class="nc">&nbsp;                String[] departmentCodes = Arrays.copyOfRange( lineContents, 2, lineContents.length );</b>
+<b class="nc">&nbsp;                boolean  courseExists    = adminDAO.checkCourseCatalog( courseCode );</b>
+<b class="nc">&nbsp;                if ( !courseExists ) return false;</b>
+<b class="nc">&nbsp;                adminDAO.insertCoreCourse( courseCode, departmentCodes, batch, courseCategory );</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            return true;</b>
+<b class="nc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean checkStudentPassStatus( String entryNumber ) {
+&nbsp;        // Check if the entry number that has been entered exists in the database.
+&nbsp;        // This is done because the hashmap operation is expensive
+<b class="nc">&nbsp;        boolean isEntryNumberValid = adminDAO.findEntryNumber( entryNumber );</b>
+<b class="nc">&nbsp;        if ( !isEntryNumberValid ) return false;</b>
+&nbsp;
+&nbsp;        // We check if the student has credited all the core courses he should have done
+<b class="nc">&nbsp;        int      batch             = adminDAO.getBatch( entryNumber );</b>
+<b class="nc">&nbsp;        String   studentDepartment = adminDAO.getStudentDepartment( entryNumber );</b>
+<b class="nc">&nbsp;        String[] listOfCoreCourses = adminDAO.getCoreCourses( batch, studentDepartment );</b>
+&nbsp;
+&nbsp;        // Iterate through all the courses and verify that the student has passed all the courses
+<b class="nc">&nbsp;        for ( String courseCode : listOfCoreCourses ) {</b>
+<b class="nc">&nbsp;            String grade = adminDAO.getCourseGrade( entryNumber, courseCode );</b>
+<b class="nc">&nbsp;            if ( Utils.getGradeValue( grade ) &lt; 4 ) {</b>
+<b class="nc">&nbsp;                return false;</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        // Get the credit requirements that are left for this particular student
+<b class="nc">&nbsp;        HashMap&lt;String, Double&gt; creditsLeft = getRemainingCreditRequirements( entryNumber );</b>
+&nbsp;        // Iterate through the UG curriculum requirements left. If all entries are 0, the student is eligible to pass
+<b class="nc">&nbsp;        for ( String category : creditsLeft.keySet() ) {</b>
+<b class="nc">&nbsp;            if ( Double.compare( creditsLeft.get( category ), 0.0 ) != 0 ) return false;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;        // If the student is valid, and he has done all the credits, he is eligible to pass
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private HashMap&lt;String, Double&gt; getRemainingCreditRequirements( String entryNumber ) {
+&nbsp;        // Get the batch of the student and retrieve the UG curriculum of the corresponding batch
+<b class="nc">&nbsp;        int                     batch        = adminDAO.getBatch( entryNumber );</b>
+<b class="nc">&nbsp;        HashMap&lt;String, Double&gt; ugCurriculum = adminDAO.getUGCurriculum( batch );</b>
+&nbsp;
+&nbsp;        // Now we have to fetch the course categories and the corresponding credits done by the student
+<b class="nc">&nbsp;        HashMap&lt;String, Double&gt; categoryCreditsCompleted = adminDAO.getCreditsInAllCategories( entryNumber );</b>
+<b class="nc">&nbsp;        HashMap&lt;String, Double&gt; categoryCreditsLeft      = new HashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;        // Additional credits in any category will count towards the open electives section
+<b class="nc">&nbsp;        double additionalCredits = 0;</b>
+<b class="nc">&nbsp;        for ( String category : ugCurriculum.keySet() ) {</b>
+<b class="nc">&nbsp;            if ( categoryCreditsCompleted.containsKey( category ) ) {</b>
+<b class="nc">&nbsp;                double creditsNeeded    = ugCurriculum.get( category );</b>
+<b class="nc">&nbsp;                double creditsCompleted = categoryCreditsCompleted.get( category );</b>
+&nbsp;
+&nbsp;                // If student has done fewer credits than necessary, return false
+<b class="nc">&nbsp;                if ( creditsNeeded &gt; creditsCompleted ) {</b>
+<b class="nc">&nbsp;                    categoryCreditsLeft.put( category, creditsNeeded - creditsCompleted );</b>
+&nbsp;                }
+&nbsp;                // If student has done more credits than necessary, those can be used for open electives
+&nbsp;                else {
+<b class="nc">&nbsp;                    categoryCreditsLeft.put( category, 0.0 );</b>
+<b class="nc">&nbsp;                    additionalCredits += creditsCompleted - creditsNeeded;</b>
+&nbsp;                }
+<b class="nc">&nbsp;            }</b>
+&nbsp;            else {
+<b class="nc">&nbsp;                categoryCreditsLeft.put( category, ugCurriculum.get( category ) );</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;        // Now we have to get open elective requirements to 0 if required
+<b class="nc">&nbsp;        if ( categoryCreditsLeft.containsKey( &quot;OE&quot; ) ) {</b>
+<b class="nc">&nbsp;            double creditsLeft = categoryCreditsLeft.get( &quot;OE&quot; );</b>
+<b class="nc">&nbsp;            categoryCreditsLeft.put( &quot;OE&quot;, Math.max( creditsLeft - additionalCredits, 0.0 ) );</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return categoryCreditsLeft;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean generateTranscripts( int batch, String department ) {
+&nbsp;        try {
+&nbsp;            // If the batch does not exist no students will be returned by the function and so no records will be generated
+<b class="nc">&nbsp;            String[] listOfStudents = adminDAO.getListOfStudentsInBatch( batch, department );</b>
+&nbsp;
+&nbsp;            // Create the directory where all the records will be stored
+<b class="nc">&nbsp;            String directoryName = &quot;./&quot; + batch + &quot;-&quot; + department;</b>
+<b class="nc">&nbsp;            boolean isDirectoryMade = new File( directoryName ).mkdirs();</b>
+<b class="nc">&nbsp;            if ( !isDirectoryMade ) return false;</b>
+&nbsp;
+&nbsp;            // Iterate through the list of students and generate the transcript for each student
+<b class="nc">&nbsp;            for ( String entryNumber : listOfStudents ) {</b>
+<b class="nc">&nbsp;                String[][][] records = getGradesOfStudent( entryNumber );</b>
+&nbsp;
+&nbsp;                // Create a new file to store all the records of the student
+<b class="nc">&nbsp;                String fileName       = entryNumber + &quot;.txt&quot;;</b>
+<b class="nc">&nbsp;                File   transcriptFile = new File( directoryName + &quot;/&quot; + fileName );</b>
+&nbsp;
+&nbsp;                // Create a PrintWriter to write into the newly created file
+<b class="nc">&nbsp;                PrintWriter fileWriter = new PrintWriter( transcriptFile );</b>
+&nbsp;
+&nbsp;                // Write the heading into the file
+<b class="nc">&nbsp;                boolean isHeadingWritten = writeHeading( fileWriter, entryNumber );</b>
+<b class="nc">&nbsp;                if ( !isHeadingWritten ) {</b>
+<b class="nc">&nbsp;                    fileWriter.close();</b>
+<b class="nc">&nbsp;                    continue;</b>
+&nbsp;                }
+&nbsp;
+&nbsp;                // Write the records into the file
+<b class="nc">&nbsp;                int year     = batch;</b>
+<b class="nc">&nbsp;                int semester = 1;</b>
+&nbsp;
+&nbsp;                // Set the headings of each record in the file
+<b class="nc">&nbsp;                String[] headings = new String[]{ &quot;Course Code&quot;, &quot;Course Title&quot;, &quot;Grade&quot;, &quot;Credits Earned&quot; };</b>
+&nbsp;
+&nbsp;                // Print the records of every semester into the file
+<b class="nc">&nbsp;                for ( String[][] record : records ) {</b>
+<b class="nc">&nbsp;                    writeRecordsIntoFile( headings, record, year, semester, fileWriter );</b>
+<b class="nc">&nbsp;                    if ( semester == 2 ) year++;</b>
+<b class="nc">&nbsp;                    semester = ( semester == 1 ) ? 2 : 1;</b>
+&nbsp;                }
+&nbsp;
+&nbsp;                // The CGPA of the student will be mentioned at the end
+<b class="nc">&nbsp;                fileWriter.printf( &quot;CGPA: %.2f&quot;, getCGPA( records ) );</b>
+&nbsp;
+&nbsp;                // If the student is eligible for graduation, then there is no need to mention anything in the transcript
+<b class="nc">&nbsp;                if ( !checkStudentPassStatus( entryNumber )) fileWriter.printf( &quot;INELIGIBLE FOR GRADUATION\n&quot; );</b>
+&nbsp;
+&nbsp;                // Close the fileWriter object after use to prevent locking issues
+<b class="nc">&nbsp;                fileWriter.close();</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Return true once all the students have been processed
+<b class="nc">&nbsp;            return true;</b>
+<b class="nc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean startNewSession() {
+&nbsp;        // Get the current academic session
+<b class="nc">&nbsp;        int[] currentSession  = adminDAO.getCurrentAcademicSession();</b>
+<b class="nc">&nbsp;        int   currentYear     = currentSession[0];</b>
+<b class="nc">&nbsp;        int   currentSemester = currentSession[1];</b>
+&nbsp;
+&nbsp;        // Check if this particular session is in the completed stage
+<b class="nc">&nbsp;        boolean isPreviousSessionOver = adminDAO.checkIfSessionCompleted( currentYear, currentSemester );</b>
+<b class="nc">&nbsp;        if ( !isPreviousSessionOver ) return false;</b>
+&nbsp;
+&nbsp;        // If the previous session is over, we just create the new session in the database
+<b class="nc">&nbsp;        int newSemester = ( currentSemester == 1 ) ? 2 : 1;</b>
+<b class="nc">&nbsp;        int newYear     = ( newSemester == 2 ) ? currentYear : currentYear + 1;</b>
+<b class="nc">&nbsp;        return adminDAO.createNewSession( newYear, newSemester );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean setCurrentSessionStatus( String event ) {
+&nbsp;        // Get the current academic session
+<b class="nc">&nbsp;        int[] currentSession  = adminDAO.getCurrentAcademicSession();</b>
+<b class="nc">&nbsp;        int   currentYear     = currentSession[0];</b>
+<b class="nc">&nbsp;        int   currentSemester = currentSession[1];</b>
+&nbsp;
+&nbsp;        // If the event is &quot;COMPLETED&quot; we have to verify that all students have been assigned grades in the previous session
+<b class="nc">&nbsp;        if ( event.equals( &quot;COMPLETED&quot; ) ) {</b>
+<b class="nc">&nbsp;            boolean allGradesEntered = adminDAO.verifyNoMissingGrades( currentYear, currentSemester );</b>
+<b class="nc">&nbsp;            if ( !allGradesEntered ) return false;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Set the status in the database
+<b class="nc">&nbsp;        return adminDAO.setSessionEvent( event, currentYear, currentSemester );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private double computeSGPA( String[][] records ) {
+<b class="nc">&nbsp;        double totalCredits  = 0;</b>
+<b class="nc">&nbsp;        double creditsEarned = 0;</b>
+&nbsp;
+&nbsp;        // Iterate through all the records of the student and calculate the SGPA.
+<b class="nc">&nbsp;        for ( String[] record : records ) {</b>
+<b class="nc">&nbsp;            double credits             = Double.parseDouble( record[3] );</b>
+<b class="nc">&nbsp;            double numericalGradeValue = Utils.getGradeValue( record[2] );</b>
+&nbsp;
+&nbsp;            // The SGPA takes into account courses even if you have not passed them
+<b class="nc">&nbsp;            totalCredits += credits;</b>
+<b class="nc">&nbsp;            creditsEarned += ( numericalGradeValue ) / 10 * credits;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // If the student has not done any courses, simply return 0
+<b class="nc">&nbsp;        if ( totalCredits == 0 ) return 0;</b>
+<b class="nc">&nbsp;        return creditsEarned / totalCredits * 10;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void writeRecordsIntoFile( String[] headings, String[][] records, int year, int semester, PrintWriter fileWriter ) {
+&nbsp;        // Find out the length of the records
+<b class="nc">&nbsp;        int rows = records.length;</b>
+<b class="nc">&nbsp;        if ( rows == 0 ) return;</b>
+<b class="nc">&nbsp;        fileWriter.println( &quot;Year: &quot; + year + &quot;    Semester: &quot; + semester + &quot;     SGPA: &quot; + computeSGPA( records ) );</b>
+<b class="nc">&nbsp;        int   columns            = records[0].length;</b>
+<b class="nc">&nbsp;        int[] maximumFieldLength = new int[]{ 15, 60, 10, 10 };</b>
+&nbsp;
+<b class="nc">&nbsp;        StringBuilder formatString = new StringBuilder();</b>
+<b class="nc">&nbsp;        for ( int i = 0; i &lt; columns; i++ ) {</b>
+<b class="nc">&nbsp;            formatString.append( &quot;%-&quot; ).append( maximumFieldLength[i] ).append( &quot;s&quot; );</b>
+&nbsp;        }
+<b class="nc">&nbsp;        formatString.append( &quot;\n&quot; );</b>
+&nbsp;
+<b class="nc">&nbsp;        fileWriter.format( formatString.toString(), (Object[]) headings );</b>
+<b class="nc">&nbsp;        for ( final Object[] rowContent : records ) {</b>
+<b class="nc">&nbsp;            fileWriter.format( formatString.toString(), rowContent );</b>
+&nbsp;        }
+<b class="nc">&nbsp;        fileWriter.println();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private boolean writeHeading( PrintWriter fileWriter, String entryNumber ) {
+&nbsp;        try {
+<b class="nc">&nbsp;            fileWriter.println( &quot;INDIAN INSTITUTE OF TECHNOLOGY, ROPAR&quot; );</b>
+<b class="nc">&nbsp;            fileWriter.println( &quot;STUDENT GRADE TRANSCRIPT\n&quot; );</b>
+<b class="nc">&nbsp;            fileWriter.println( &quot;Entry Number: &quot; + entryNumber );</b>
+<b class="nc">&nbsp;            fileWriter.println();</b>
+<b class="nc">&nbsp;            return true;</b>
+<b class="nc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private double getCGPA( String[][][] records ) {
+<b class="nc">&nbsp;        double totalCredits  = 0;</b>
+<b class="nc">&nbsp;        double creditsEarned = 0;</b>
+<b class="nc">&nbsp;        for ( String[][] record : records ) {</b>
+<b class="nc">&nbsp;            for ( String[] subjectRecord : record ) {</b>
+<b class="nc">&nbsp;                double credits             = Double.parseDouble( subjectRecord[3] );</b>
+<b class="nc">&nbsp;                int    numericalGradeValue = Utils.getGradeValue( subjectRecord[2] );</b>
+&nbsp;                // E and F grades are not considered in the computation of CGPA
+<b class="nc">&nbsp;                if ( numericalGradeValue &lt; 4 ) continue;</b>
+<b class="nc">&nbsp;                totalCredits += credits;</b>
+<b class="nc">&nbsp;                creditsEarned += ( numericalGradeValue ) / 10.0 * credits;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        if ( totalCredits == 0 ) return 0;</b>
+<b class="nc">&nbsp;        return creditsEarned / totalCredits * 10;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-21 01:26</div>
+</div>
+</body>
+</html>

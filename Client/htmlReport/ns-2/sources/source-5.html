@@ -1,0 +1,425 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > PostgresStudentDAO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.abhijith.dal</a>
+</div>
+
+<h1>Coverage Summary for Class: PostgresStudentDAO (org.abhijith.dal)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PostgresStudentDAO</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (192/192)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package org.abhijith.dal;
+&nbsp;
+&nbsp;import org.abhijith.daoInterfaces.StudentDAO;
+&nbsp;import org.abhijith.utils.Utils;
+&nbsp;
+&nbsp;import java.sql.Array;
+&nbsp;import java.sql.PreparedStatement;
+&nbsp;import java.sql.ResultSet;
+&nbsp;import java.sql.SQLException;
+&nbsp;import java.util.ArrayList;
+&nbsp;
+&nbsp;public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO {
+&nbsp;    public PostgresStudentDAO( String connectionURL, String username, String password ) {
+<b class="fc">&nbsp;        super( connectionURL, username, password );</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean checkCourseOffering( String courseCode, int currentYear, int currentSemester, String courseDepartment ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( currentYear &lt;= 0 || currentSemester &lt;= 0 || courseCode == null || courseDepartment == null )</b>
+<b class="fc">&nbsp;                return false;</b>
+<b class="fc">&nbsp;            courseCode = courseCode.toUpperCase();</b>
+<b class="fc">&nbsp;            courseDepartment = courseDepartment.toUpperCase();</b>
+&nbsp;
+&nbsp;            // SQL query to find the course in the course offerings database
+<b class="fc">&nbsp;            PreparedStatement checkQuery = databaseConnection.prepareStatement( &quot;SELECT course_code FROM course_offerings WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ?&quot; );</b>
+<b class="fc">&nbsp;            checkQuery.setString( 1, courseCode );</b>
+<b class="fc">&nbsp;            checkQuery.setInt( 2, currentYear );</b>
+<b class="fc">&nbsp;            checkQuery.setInt( 3, currentSemester );</b>
+<b class="fc">&nbsp;            checkQuery.setString( 4, courseDepartment );</b>
+<b class="fc">&nbsp;            ResultSet doesCourseExist = checkQuery.executeQuery();</b>
+&nbsp;
+&nbsp;            // Returns true if it manages to find such an entry
+<b class="fc">&nbsp;            return doesCourseExist.next();</b>
+<b class="fc">&nbsp;        } catch ( SQLException error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Please try again later&quot; );</b>
+<b class="fc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean checkStudentPassStatus( String courseCode, int gradeCutoff, String entryNumber ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( courseCode == null || gradeCutoff &lt; 0 || gradeCutoff &gt; 10 || entryNumber == null ) return false;</b>
+<b class="fc">&nbsp;            courseCode = courseCode.toUpperCase();</b>
+<b class="fc">&nbsp;            entryNumber = entryNumber.toUpperCase();</b>
+&nbsp;
+<b class="fc">&nbsp;            PreparedStatement gradeQuery = databaseConnection.prepareStatement( &quot;SELECT grade FROM student_course_registration WHERE entry_number = ? AND course_code = ?&quot; );</b>
+<b class="fc">&nbsp;            gradeQuery.setString( 1, entryNumber );</b>
+<b class="fc">&nbsp;            gradeQuery.setString( 2, courseCode );</b>
+<b class="fc">&nbsp;            ResultSet courseQueryResult = gradeQuery.executeQuery();</b>
+<b class="fc">&nbsp;            boolean   studentCredited   = courseQueryResult.next();</b>
+<b class="fc">&nbsp;            if ( !studentCredited ) {</b>
+<b class="fc">&nbsp;                return false;</b>
+&nbsp;            }
+<b class="fc">&nbsp;            String grade = courseQueryResult.getString( 1 );</b>
+<b class="fc">&nbsp;            return Utils.getGradeValue( grade ) &gt;= gradeCutoff;</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Please try again later&quot; );</b>
+<b class="fc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String[] getCourseCatalogPrerequisites( String courseCode ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( courseCode == null ) return null;</b>
+<b class="fc">&nbsp;            courseCode = courseCode.toUpperCase();</b>
+&nbsp;
+<b class="fc">&nbsp;            PreparedStatement prerequisiteQuery = databaseConnection.prepareStatement( &quot;SELECT pre_requisites FROM course_catalog WHERE course_code = ?&quot; );</b>
+<b class="fc">&nbsp;            prerequisiteQuery.setString( 1, courseCode );</b>
+<b class="fc">&nbsp;            ResultSet courseCatalogResult = prerequisiteQuery.executeQuery();</b>
+<b class="fc">&nbsp;            boolean   subjectExists       = courseCatalogResult.next();</b>
+<b class="fc">&nbsp;            if ( !subjectExists ) {</b>
+<b class="fc">&nbsp;                return null;</b>
+&nbsp;            }
+<b class="fc">&nbsp;            Array prerequisites = courseCatalogResult.getArray( 1 );</b>
+<b class="fc">&nbsp;            if ( prerequisites == null ) return new String[]{};</b>
+<b class="fc">&nbsp;            return (String[]) prerequisites.getArray();</b>
+<b class="fc">&nbsp;        } catch ( SQLException error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Please try again later&quot; );</b>
+<b class="fc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String[][] getInstructorPrerequisites( String courseCode, int year, int semester, String courseDepartment ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( courseCode == null || year &lt;= 0 || semester &lt;= 0 || courseDepartment == null ) return null;</b>
+<b class="fc">&nbsp;            courseCode = courseCode.toUpperCase();</b>
+<b class="fc">&nbsp;            courseDepartment = courseDepartment.toUpperCase();</b>
+&nbsp;
+&nbsp;            // SQL query to get the prerequisites of a particular offering from the database
+<b class="fc">&nbsp;            PreparedStatement prerequisiteQuery = databaseConnection.prepareStatement( &quot;SELECT prereq, grade_criteria, type FROM instructor_prerequisites WHERE course_code = ? AND semester = ? AND year = ? AND department_id = ? ORDER BY type ASC&quot; );</b>
+<b class="fc">&nbsp;            prerequisiteQuery.setString( 1, courseCode );</b>
+<b class="fc">&nbsp;            prerequisiteQuery.setInt( 2, semester );</b>
+<b class="fc">&nbsp;            prerequisiteQuery.setInt( 3, year );</b>
+<b class="fc">&nbsp;            prerequisiteQuery.setString( 4, courseDepartment );</b>
+<b class="fc">&nbsp;            ResultSet prerequisiteResult = prerequisiteQuery.executeQuery();</b>
+&nbsp;
+<b class="fc">&nbsp;            ArrayList&lt;ArrayList&lt;String&gt;&gt; prerequisites = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;            while ( prerequisiteResult.next() ) {</b>
+<b class="fc">&nbsp;                String course        = prerequisiteResult.getString( 1 );</b>
+<b class="fc">&nbsp;                String gradeCriteria = prerequisiteResult.getString( 2 );</b>
+<b class="fc">&nbsp;                int    type          = prerequisiteResult.getInt( 3 );</b>
+<b class="fc">&nbsp;                if ( type &gt; prerequisites.size() ) {</b>
+<b class="fc">&nbsp;                    prerequisites.add( new ArrayList&lt;&gt;() );</b>
+&nbsp;                }
+<b class="fc">&nbsp;                prerequisites.get( type - 1 ).add( course );</b>
+<b class="fc">&nbsp;                prerequisites.get( type - 1 ).add( gradeCriteria );</b>
+<b class="fc">&nbsp;            }</b>
+&nbsp;
+<b class="fc">&nbsp;            ArrayList&lt;String[]&gt; arrayToReturn = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;            for ( ArrayList&lt;String&gt; temp : prerequisites ) arrayToReturn.add( temp.toArray( new String[temp.size()] ) );</b>
+<b class="fc">&nbsp;            return arrayToReturn.toArray( new String[arrayToReturn.size()][] );</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Please try again later&quot; );</b>
+<b class="fc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // The 24 is being returned to prevent you from enrolling in the course due to the exception that occurred
+&nbsp;    @Override
+&nbsp;    public double getCreditsOfCourse( String courseCode ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( courseCode == null ) return 24;</b>
+<b class="fc">&nbsp;            courseCode = courseCode.toUpperCase();</b>
+&nbsp;
+<b class="fc">&nbsp;            PreparedStatement creditQuery = databaseConnection.prepareStatement( &quot;SELECT credits FROM course_catalog WHERE course_code = ?&quot; );</b>
+<b class="fc">&nbsp;            creditQuery.setString( 1, courseCode );</b>
+<b class="fc">&nbsp;            ResultSet creditQueryResult  = creditQuery.executeQuery();</b>
+<b class="fc">&nbsp;            boolean   querySuccessStatus = creditQueryResult.next();</b>
+<b class="fc">&nbsp;            if ( !querySuccessStatus ) return 24;</b>
+<b class="fc">&nbsp;            return creditQueryResult.getInt( 1 );</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Please try again later&quot; );</b>
+<b class="fc">&nbsp;            return 24;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // The minimum credit limit is set to 18 and the maximum is set to 24
+&nbsp;    @Override
+&nbsp;    public double getCreditsInSession( String entryNumber, int currentYear, int currentSemester ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( entryNumber == null || currentSemester &lt;= 0 || currentYear &lt;= 0 ) return 25;</b>
+<b class="fc">&nbsp;            entryNumber = entryNumber.toUpperCase();</b>
+&nbsp;
+<b class="fc">&nbsp;            PreparedStatement creditQuery = databaseConnection.prepareStatement( &quot;SELECT SUM(credits) FROM course_catalog WHERE course_code IN (SELECT course_code FROM student_course_registration WHERE entry_number = ? AND year = ? AND semester = ?)&quot; );</b>
+<b class="fc">&nbsp;            creditQuery.setString( 1, entryNumber );</b>
+<b class="fc">&nbsp;            creditQuery.setInt( 2, currentYear );</b>
+<b class="fc">&nbsp;            creditQuery.setInt( 3, currentSemester );</b>
+<b class="fc">&nbsp;            ResultSet creditQueryResult = creditQuery.executeQuery();</b>
+&nbsp;
+<b class="fc">&nbsp;            boolean coursesFound = creditQueryResult.next();</b>
+<b class="fc">&nbsp;            return ( coursesFound ) ? creditQueryResult.getInt( 1 ) : 0;</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Please try again later&quot; );</b>
+&nbsp;            // You should be setting the credit limit over here
+<b class="fc">&nbsp;            return 25;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean enroll( String courseCode, String entryNumber, int currentYear, int currentSemester, String offeringDepartment, String courseCategory ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( courseCode == null || entryNumber == null || currentSemester &lt;= 0 || currentYear &lt;= 0 || offeringDepartment == null || courseCategory == null )</b>
+<b class="fc">&nbsp;                return false;</b>
+<b class="fc">&nbsp;            courseCode = courseCode.toUpperCase();</b>
+<b class="fc">&nbsp;            entryNumber = entryNumber.toUpperCase();</b>
+<b class="fc">&nbsp;            offeringDepartment = offeringDepartment.toUpperCase();</b>
+<b class="fc">&nbsp;            courseCategory = courseCategory.toUpperCase();</b>
+&nbsp;
+<b class="fc">&nbsp;            PreparedStatement enrollmentQuery = databaseConnection.prepareStatement( &quot;INSERT INTO student_course_registration(entry_number, course_code, year, semester, department_id, category) VALUES (?, ?, ?, ?, ?, ?)&quot; );</b>
+<b class="fc">&nbsp;            enrollmentQuery.setString( 1, entryNumber );</b>
+<b class="fc">&nbsp;            enrollmentQuery.setString( 2, courseCode );</b>
+<b class="fc">&nbsp;            enrollmentQuery.setInt( 3, currentYear );</b>
+<b class="fc">&nbsp;            enrollmentQuery.setInt( 4, currentSemester );</b>
+<b class="fc">&nbsp;            enrollmentQuery.setString( 5, offeringDepartment );</b>
+<b class="fc">&nbsp;            enrollmentQuery.setString( 6, courseCategory );</b>
+&nbsp;            // Maybe parameterize the default grade later on? Currently, the database will set the default grade by itself if you don&#39;t give it anything
+&nbsp;            // Do I just assume that the call to insert was successful?
+<b class="fc">&nbsp;            enrollmentQuery.executeUpdate();</b>
+<b class="fc">&nbsp;            return true;</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Enrollment Request Failed&quot; );</b>
+<b class="fc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean dropCourse( String courseCode, String entryNumber, int currentYear, int currentSemester ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( courseCode == null || entryNumber == null || currentYear &lt;= 0 || currentSemester &lt;= 0 ) return false;</b>
+<b class="fc">&nbsp;            courseCode = courseCode.toUpperCase();</b>
+<b class="fc">&nbsp;            entryNumber = entryNumber.toUpperCase();</b>
+&nbsp;
+<b class="fc">&nbsp;            PreparedStatement dropQuery = databaseConnection.prepareStatement( &quot;DELETE FROM student_course_registration WHERE course_code = ? AND entry_number = ? AND year = ? AND semester = ?&quot; );</b>
+<b class="fc">&nbsp;            dropQuery.setString( 1, courseCode );</b>
+<b class="fc">&nbsp;            dropQuery.setString( 2, entryNumber );</b>
+<b class="fc">&nbsp;            dropQuery.setInt( 3, currentYear );</b>
+<b class="fc">&nbsp;            dropQuery.setInt( 4, currentSemester );</b>
+<b class="fc">&nbsp;            int dropQueryResult = dropQuery.executeUpdate();</b>
+<b class="fc">&nbsp;            return dropQueryResult == 1;</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Try again later&quot; );</b>
+<b class="fc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String[][] getAllRecords( String entryNumber ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( entryNumber == null ) return new String[][]{};</b>
+<b class="fc">&nbsp;            entryNumber = entryNumber.toUpperCase();</b>
+&nbsp;
+<b class="fc">&nbsp;            PreparedStatement recordsQuery = databaseConnection.prepareStatement( &quot;SELECT credits, grade FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ?&quot; );</b>
+<b class="fc">&nbsp;            recordsQuery.setString( 1, entryNumber );</b>
+<b class="fc">&nbsp;            ResultSet recordsQueryResult = recordsQuery.executeQuery();</b>
+&nbsp;
+<b class="fc">&nbsp;            ArrayList&lt;String[]&gt; records = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;            while ( recordsQueryResult.next() ) {</b>
+<b class="fc">&nbsp;                String credits = recordsQueryResult.getString( 1 );</b>
+<b class="fc">&nbsp;                String grade   = recordsQueryResult.getString( 2 );</b>
+<b class="fc">&nbsp;                records.add( new String[]{ credits, grade } );</b>
+<b class="fc">&nbsp;            }</b>
+<b class="fc">&nbsp;            return records.toArray( new String[records.size()][] );</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Try again later&quot; );</b>
+<b class="fc">&nbsp;            return new String[][]{};</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String[][] getOfferedCourses( int currentYear, int currentSemester ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( currentYear &lt;= 0 || currentSemester &lt;= 0 ) return new String[][]{};</b>
+&nbsp;
+<b class="fc">&nbsp;            PreparedStatement getCoursesQuery = databaseConnection.prepareStatement( &quot;SELECT course_code, course_title, name, pre_requisites, department_id FROM course_offerings NATURAL JOIN course_catalog NATURAL JOIN faculty WHERE year = ? AND semester = ?&quot; );</b>
+<b class="fc">&nbsp;            getCoursesQuery.setInt( 1, currentYear );</b>
+<b class="fc">&nbsp;            getCoursesQuery.setInt( 2, currentSemester );</b>
+<b class="fc">&nbsp;            ResultSet getCoursesQueryResult = getCoursesQuery.executeQuery();</b>
+&nbsp;
+<b class="fc">&nbsp;            ArrayList&lt;String[]&gt; records = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;            while ( getCoursesQueryResult.next() ) {</b>
+<b class="fc">&nbsp;                String course_code    = getCoursesQueryResult.getString( 1 );</b>
+<b class="fc">&nbsp;                String course_title   = getCoursesQueryResult.getString( 2 );</b>
+<b class="fc">&nbsp;                String faculty_name   = getCoursesQueryResult.getString( 3 );</b>
+<b class="fc">&nbsp;                String pre_requisites = getCoursesQueryResult.getString( 4 );</b>
+<b class="fc">&nbsp;                String departmentID   = getCoursesQueryResult.getString( 5 );</b>
+<b class="fc">&nbsp;                records.add( new String[]{ course_code, course_title, faculty_name, pre_requisites, departmentID, &quot;&quot; } );</b>
+<b class="fc">&nbsp;            }</b>
+<b class="fc">&nbsp;            return records.toArray( new String[records.size()][] );</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Try again later&quot; );</b>
+<b class="fc">&nbsp;            return new String[][]{};</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean isCurrentEventEnrolling( int currentYear, int currentSemester ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( currentYear &lt;= 0 || currentSemester &lt;= 0 ) return false;</b>
+&nbsp;
+&nbsp;            // SQL query to check if the current event in the given session is enrolling
+<b class="fc">&nbsp;            PreparedStatement offeringCheckQuery = databaseConnection.prepareStatement( &quot;SELECT * FROM current_year_and_semester WHERE year = ? AND semester = ? AND current_event = &#39;ENROLLING&#39;&quot; );</b>
+<b class="fc">&nbsp;            offeringCheckQuery.setInt( 1, currentYear );</b>
+<b class="fc">&nbsp;            offeringCheckQuery.setInt( 2, currentSemester );</b>
+<b class="fc">&nbsp;            ResultSet offeringCheckQueryResult = offeringCheckQuery.executeQuery();</b>
+&nbsp;
+&nbsp;            // If there exists such a record, it implies that the current session is offering
+<b class="fc">&nbsp;            return offeringCheckQueryResult.next();</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Please try again later&quot; );</b>
+<b class="fc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public double getCGPACriteria( String courseCode, int currentYear, int currentSemester, String courseDepartment ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( courseCode == null || currentSemester &lt;= 0 || currentYear &lt;= 0 || courseDepartment == null ) return 11;</b>
+&nbsp;
+&nbsp;            // SQL query to fetch the CGPA criteria from the database
+<b class="fc">&nbsp;            PreparedStatement getCriteriaQuery = databaseConnection.prepareStatement( &quot;SELECT cgpa_criteria FROM course_offerings WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ?&quot; );</b>
+<b class="fc">&nbsp;            getCriteriaQuery.setString( 1, courseCode );</b>
+<b class="fc">&nbsp;            getCriteriaQuery.setInt( 2, currentYear );</b>
+<b class="fc">&nbsp;            getCriteriaQuery.setInt( 3, currentSemester );</b>
+<b class="fc">&nbsp;            getCriteriaQuery.setString( 4, courseDepartment );</b>
+<b class="fc">&nbsp;            ResultSet getCriteriaQueryResult = getCriteriaQuery.executeQuery();</b>
+<b class="fc">&nbsp;            getCriteriaQueryResult.next();</b>
+<b class="fc">&nbsp;            return getCriteriaQueryResult.getDouble( 1 );</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Please try again later&quot; );</b>
+<b class="fc">&nbsp;            return 11;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String getCourseCategory( String courseCode, int year, int semester, String courseDepartment, String studentDepartment, int batch ) {
+&nbsp;        try {
+<b class="fc">&nbsp;            if ( courseCode == null || year &lt;= 0 || semester &lt;= 0 || courseDepartment == null || studentDepartment == null || batch &lt;= 0 )</b>
+<b class="fc">&nbsp;                return &quot;&quot;;</b>
+&nbsp;
+&nbsp;            // SQL query to fetch the course category for this particular student from the database
+<b class="fc">&nbsp;            PreparedStatement getCategoryQuery = databaseConnection.prepareStatement( &quot;SELECT category FROM course_category WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ? AND batch = ? AND department = ?&quot; );</b>
+<b class="fc">&nbsp;            getCategoryQuery.setString( 1, courseCode );</b>
+<b class="fc">&nbsp;            getCategoryQuery.setInt( 2, year );</b>
+<b class="fc">&nbsp;            getCategoryQuery.setInt( 3, semester );</b>
+<b class="fc">&nbsp;            getCategoryQuery.setString( 4, courseDepartment );</b>
+<b class="fc">&nbsp;            getCategoryQuery.setInt( 5, batch );</b>
+<b class="fc">&nbsp;            getCategoryQuery.setString( 6, studentDepartment );</b>
+<b class="fc">&nbsp;            ResultSet getCategoryQueryResult = getCategoryQuery.executeQuery();</b>
+&nbsp;
+&nbsp;            // If there is no such entry, student is not eligible
+<b class="fc">&nbsp;            if ( !getCategoryQueryResult.next() ) return &quot;&quot;;</b>
+<b class="fc">&nbsp;            return getCategoryQueryResult.getString( 1 );</b>
+<b class="fc">&nbsp;        } catch ( Exception error ) {</b>
+<b class="fc">&nbsp;            System.out.println( &quot;Database Error. Please try again later&quot; );</b>
+<b class="fc">&nbsp;            return &quot;&quot;;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-21 01:26</div>
+</div>
+</body>
+</html>
