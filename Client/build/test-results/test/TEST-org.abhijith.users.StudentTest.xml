@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.users.StudentTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2023-02-20T19:56:24" hostname="ADMIN" time="1.236">
+<testsuite name="org.abhijith.users.StudentTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2023-02-21T06:17:24" hostname="ADMIN" time="1.072">
   <properties/>
-  <testcase name="enroll()" classname="org.abhijith.users.StudentTest" time="0.16"/>
-  <testcase name="getCGPA()" classname="org.abhijith.users.StudentTest" time="0.119"/>
-  <testcase name="drop()" classname="org.abhijith.users.StudentTest" time="0.134"/>
-  <testcase name="computeSGPA()" classname="org.abhijith.users.StudentTest" time="0.102"/>
-  <testcase name="getRemainingCreditRequirements()" classname="org.abhijith.users.StudentTest" time="0.107"/>
-  <testcase name="getGradesForCourse()" classname="org.abhijith.users.StudentTest" time="0.131"/>
-  <testcase name="getGrades()" classname="org.abhijith.users.StudentTest" time="0.139"/>
-  <testcase name="getAvailableCourses()" classname="org.abhijith.users.StudentTest" time="0.225"/>
-  <testcase name="getBatch()" classname="org.abhijith.users.StudentTest" time="0.117"/>
+  <testcase name="enroll()" classname="org.abhijith.users.StudentTest" time="0.148"/>
+  <testcase name="getCGPA()" classname="org.abhijith.users.StudentTest" time="0.113"/>
+  <testcase name="drop()" classname="org.abhijith.users.StudentTest" time="0.124"/>
+  <testcase name="computeSGPA()" classname="org.abhijith.users.StudentTest" time="0.109"/>
+  <testcase name="getRemainingCreditRequirements()" classname="org.abhijith.users.StudentTest" time="0.106"/>
+  <testcase name="getGradesForCourse()" classname="org.abhijith.users.StudentTest" time="0.126"/>
+  <testcase name="getGrades()" classname="org.abhijith.users.StudentTest" time="0.124"/>
+  <testcase name="getAvailableCourses()" classname="org.abhijith.users.StudentTest" time="0.113"/>
+  <testcase name="getBatch()" classname="org.abhijith.users.StudentTest" time="0.107"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

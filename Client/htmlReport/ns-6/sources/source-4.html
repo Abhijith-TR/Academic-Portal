@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > PasswordDAO</title>
+  <title>Coverage Report > CommonDAO</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">org.abhijith.daoInterfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: PasswordDAO (org.abhijith.daoInterfaces)</h1>
+<h1>Coverage Summary for Class: CommonDAO (org.abhijith.daoInterfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">PasswordDAO</td>
+  <td class="name">CommonDAO</td>
 </tr>
 
 </table>
@@ -40,12 +40,34 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package org.abhijith.daoInterfaces;
 &nbsp;
-&nbsp;public interface PasswordDAO {
-&nbsp;     boolean authenticateUser( String username, String password, String role );
+&nbsp;import java.util.HashMap;
 &nbsp;
-&nbsp;      boolean logLogoutEntry( String id, String role );
+&nbsp;public interface CommonDAO {
+&nbsp;    String[][] getStudentGradesForSemester( String entryNumber, int year, int semester );
 &nbsp;
-&nbsp;     boolean logoutPreviousUser();
+&nbsp;    // Returns the current year and semester if successful
+&nbsp;    // Otherwise returns default year and session i.e., 2020-1
+&nbsp;    int[] getCurrentAcademicSession();
+&nbsp;
+&nbsp;    int getBatch( String entryNumber );
+&nbsp;
+&nbsp;    boolean checkCourseCatalog( String courseCode );
+&nbsp;
+&nbsp;    String getStudentDepartment( String entryNumber );
+&nbsp;
+&nbsp;    HashMap&lt;String, Double&gt; getUGCurriculum( int batch );
+&nbsp;
+&nbsp;    String getCourseGrade( String entryNumber, String courseCode );
+&nbsp;
+&nbsp;    HashMap&lt;String, Double&gt; getCreditsInAllCategories( String entryNumber );
+&nbsp;
+&nbsp;    boolean setPhoneNumber( String id, String phoneNumber );
+&nbsp;
+&nbsp;    boolean setEmail( String id, String email );
+&nbsp;
+&nbsp;    String[] getContactDetails( String userID );
+&nbsp;
+&nbsp;    boolean setPassword( String id, String password );
 &nbsp;}
 </code>
 </pre>
@@ -70,7 +92,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-02-21 01:26</div>
+    <div style="float:right;">generated on 2023-02-21 11:47</div>
 </div>
 </body>
 </html>

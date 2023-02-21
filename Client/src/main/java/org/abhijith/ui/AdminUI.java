@@ -35,6 +35,9 @@ public class AdminUI {
     public void adminInterfaceHomeScreen( String id ) {
         CustomScanner keyboardInput = new CustomScanner();
         Admin         admin         = new Admin( id );
+
+        // Uses the default database connection
+        admin.setAdminDAO();
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );

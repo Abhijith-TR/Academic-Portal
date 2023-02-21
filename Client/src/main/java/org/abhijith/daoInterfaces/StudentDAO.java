@@ -16,7 +16,7 @@ public interface StudentDAO extends CommonDAO {
     // The minimum credit limit is set to 18 and the maximum is set to 24
     double getCreditsInSession( String entryNumber, int currentYear, int currentSemester );
 
-    boolean enroll( String courseCode, String entryNumber, int currentYear, int currentSemester, String departmentID, String courseCategory );
+    boolean enroll( String courseCode, String entryNumber, int currentYear, int currentSemester, String offeringDepartment, String courseCategory );
 
     boolean dropCourse( String courseCode, String entryNumber, int currentYear, int currentSemester );
 

@@ -119,7 +119,7 @@ public class PostgresCommonDAO implements CommonDAO {
             return creditRequirements;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
-            return new HashMap<>();
+            return null;
         }
     }
 
@@ -142,7 +142,7 @@ public class PostgresCommonDAO implements CommonDAO {
             return categoryCredits;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later " );
-            return new HashMap<>();
+            return null;
         }
     }
 

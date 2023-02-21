@@ -39,8 +39,9 @@ public class FacultyUI {
             }
             int facultyChoice = keyboardInput.integerInput( "Enter your choice" );
             if ( facultyChoice == 1 ) {
-                String  courseCode = keyboardInput.stringInput( "Enter the course code" );
-                boolean status     = faculty.offerCourse( courseCode );
+                String  courseCode   = keyboardInput.stringInput( "Enter the course code" );
+                String  departmentID = keyboardInput.stringInput( "Enter the offering department" );
+                boolean status       = faculty.offerCourse( courseCode, departmentID );
                 if ( status )
                     System.out.println( "Course offered. Please update prerequisites and CG criteria manually" );
                 else
@@ -48,7 +49,8 @@ public class FacultyUI {
             }
 
             else if ( facultyChoice == 2 ) {
-                String courseCode  = keyboardInput.stringInput( "Enter the course code" );
+                String courseCode   = keyboardInput.stringInput( "Enter the course code" );
+                String departmentID = keyboardInput.stringInput( "Enter the offering department" );
                 double minimumCGPA;
                 minimumCGPA = keyboardInput.doubleInput( "Enter the minimum CGPA criteria" );
 
@@ -73,27 +75,31 @@ public class FacultyUI {
                     }
                     prerequisites.add( courses.toArray( new String[courses.size()] ) );
                 }
-                if ( faculty.setCGAndPrerequisites( courseCode, minimumCGPA, prerequisites.toArray( new String[prerequisites.size()][] ) ) )
+                if ( faculty.setCGAndPrerequisites( courseCode, departmentID, minimumCGPA, prerequisites.toArray( new String[prerequisites.size()][] ) ) )
                     System.out.println( "Details Updated Successfully" );
                 else System.out.println( "Criteria Update Failed" );
             }
 
             else if ( facultyChoice == 3 ) {
-                String courseCode     = keyboardInput.stringInput( "Enter the course code" );
-                String courseCategory = keyboardInput.stringInput( "Enter the course category" );
-                String department     = keyboardInput.stringInput( "Enter the department for which you wish to offer the course" );
-                int    numberOfYears  = keyboardInput.integerInput( "Enter the number of years" );
-                int[]  years          = new int[numberOfYears];
+                String courseCode         = keyboardInput.stringInput( "Enter the course code" );
+                String offeringDepartment = keyboardInput.stringInput( "Enter the offering department" );
+                String courseCategory     = keyboardInput.stringInput( "Enter the course category" );
+                String department         = keyboardInput.stringInput( "Enter the department for which you wish to offer the course" );
+                int    numberOfYears      = keyboardInput.integerInput( "Enter the number of years" );
+                int[]  years              = new int[numberOfYears];
                 for ( int i = 1; i <= numberOfYears; i++ ) {
                     years[i - 1] = keyboardInput.integerInput( "Enter year " + i );
                 }
-                if ( faculty.setCourseCategory( courseCode, courseCategory, department, years ) ) System.out.println( "Category set successfully" );
-                else System.out.println( "Category setting failed. Please verify that you are not offering for the same batch twice." );
+                if ( faculty.setCourseCategory( courseCode, offeringDepartment, courseCategory, department, years ) )
+                    System.out.println( "Category set successfully" );
+                else
+                    System.out.println( "Category setting failed. Please verify that you are not offering for the same batch twice." );
             }
 
             else if ( facultyChoice == 4 ) {
-                String courseCode = keyboardInput.stringInput( "Enter the course code" );
-                if ( faculty.dropCourseOffering( courseCode ) )
+                String courseCode   = keyboardInput.stringInput( "Enter the course code" );
+                String departmentID = keyboardInput.stringInput( "Enter the offering department" );
+                if ( faculty.dropCourseOffering( courseCode, departmentID ) )
                     System.out.println( "Course offering dropped successfully" );
                 else System.out.println( "Course offering not dropped. Please verify the course code" );
             }
@@ -111,10 +117,11 @@ public class FacultyUI {
             }
 
             else if ( facultyChoice == 6 ) {
-                String     courseCode = keyboardInput.stringInput( "Enter the course code" );
-                int        year       = keyboardInput.integerInput( "Enter the year" );
-                int        semester   = keyboardInput.integerInput( "Enter the semester" );
-                String[][] records    = faculty.getGradesOfOffering( courseCode, year, semester );
+                String     courseCode   = keyboardInput.stringInput( "Enter the course code" );
+                int        year         = keyboardInput.integerInput( "Enter the year" );
+                int        semester     = keyboardInput.integerInput( "Enter the semester" );
+                String     departmentID = keyboardInput.stringInput( "Enter the offering department" );
+                String[][] records      = faculty.getGradesOfOffering( courseCode, year, semester, departmentID );
                 if ( records.length == 0 ) {
                     System.out.println( "No course found with given specifications" );
                     continue;
@@ -124,25 +131,27 @@ public class FacultyUI {
             }
 
             else if ( facultyChoice == 7 ) {
-                String courseCode = keyboardInput.stringInput( "Enter the course code" );
-                int    year       = keyboardInput.integerInput( "Enter the year" );
-                int    semester   = keyboardInput.integerInput( "Enter the semester" );
-                boolean isFileCreated = faculty.generateGradeCSV( courseCode, year, semester );
+                String  courseCode    = keyboardInput.stringInput( "Enter the course code" );
+                int     year          = keyboardInput.integerInput( "Enter the year" );
+                int     semester      = keyboardInput.integerInput( "Enter the semester" );
+                String  departmentID  = keyboardInput.stringInput( "Enter the offering department" );
+                boolean isFileCreated = faculty.generateGradeCSV( courseCode, year, semester, departmentID );
                 if ( isFileCreated ) System.out.println( "File Generated Successfully" );
                 else System.out.println( "File Not Generated. Only generate files for your own courses" );
             }
 
             else if ( facultyChoice == 8 ) {
-                String courseCode = keyboardInput.stringInput( "Enter the course code" );
-                int    year       = keyboardInput.integerInput( "Enter the year" );
-                int    semester   = keyboardInput.integerInput( "Enter the semester" );
+                String courseCode   = keyboardInput.stringInput( "Enter the course code" );
+                int    year         = keyboardInput.integerInput( "Enter the year" );
+                int    semester     = keyboardInput.integerInput( "Enter the semester" );
+                String departmentID = keyboardInput.stringInput( "Enter the offering department" );
                 // You need to perform faculty authentication even here
                 try {
-                    BufferedReader gradeCSVFile = keyboardInput.openCourseCSVFile( courseCode, year, semester );
+                    BufferedReader gradeCSVFile = keyboardInput.openCourseCSVFile( courseCode, year, semester, departmentID );
                     if ( gradeCSVFile == null ) {
                         continue;
                     }
-                    if ( faculty.uploadGrades( courseCode, year, semester, gradeCSVFile ) )
+                    if ( faculty.uploadGrades( courseCode, year, semester, gradeCSVFile, departmentID ) )
                         System.out.println( "Grades inserted successfully" );
                     else
                         System.out.println( "Please verify that all students exist and the course is offered by this id" );

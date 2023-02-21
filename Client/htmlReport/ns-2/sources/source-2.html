@@ -207,8 +207,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;        try {
 <b class="nc">&nbsp;            PreparedStatement createBatchQuery = databaseConnection.prepareStatement( &quot;INSERT INTO batch VALUES(?)&quot; );</b>
 <b class="nc">&nbsp;            createBatchQuery.setInt( 1, batchYear );</b>
-<b class="nc">&nbsp;            int createBatchQueryResult = createBatchQuery.executeUpdate();</b>
-<b class="nc">&nbsp;            return createBatchQueryResult == 1;</b>
+<b class="nc">&nbsp;            createBatchQuery.executeUpdate();</b>
+<b class="nc">&nbsp;            return true;</b>
 <b class="nc">&nbsp;        } catch ( Exception error ) {</b>
 <b class="nc">&nbsp;            System.out.println( &quot;Database Error. Something went wrong&quot; );</b>
 <b class="nc">&nbsp;            return false;</b>
@@ -329,7 +329,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;            return studentsList.toArray( new String[studentsList.size()] );</b>
 <b class="nc">&nbsp;        } catch ( Exception error ) {</b>
 <b class="nc">&nbsp;            System.out.println( &quot;Database Error. Please try again later&quot; );</b>
-<b class="nc">&nbsp;            return new String[]{};</b>
+<b class="nc">&nbsp;            return null;</b>
 &nbsp;        }
 &nbsp;    }
 &nbsp;
@@ -440,7 +440,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-02-21 01:26</div>
+    <div style="float:right;">generated on 2023-02-21 11:47</div>
 </div>
 </body>
 </html>

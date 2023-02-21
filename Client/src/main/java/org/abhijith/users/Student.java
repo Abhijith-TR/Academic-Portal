@@ -5,6 +5,7 @@ import org.abhijith.daoInterfaces.StudentDAO;
 import org.abhijith.utils.Utils;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
@@ -16,7 +17,9 @@ public class Student extends User {
         super( id );
         try {
             Properties databaseConfig = new Properties();
-            databaseConfig.load( new FileInputStream( "./src/main/resources/config.properties" ) );
+            ClassLoader classLoader = Student.class.getClassLoader();
+            InputStream inputStream = classLoader.getResourceAsStream( "config.properties" );
+            databaseConfig.load( inputStream );
 
             String connectionURL = databaseConfig.getProperty( "student.connectionURL" );
             String username      = databaseConfig.getProperty( "student.username" );
@@ -113,9 +116,6 @@ public class Student extends User {
         int[] currentSession  = studentDAO.getCurrentAcademicSession();
         int   currentYear     = currentSession[0];
         int   currentSemester = currentSession[1];
-
-        System.out.println( currentYear + " " + currentSemester );
-        if ( currentYear == 2022 ) return false;
 
         // Check if it is currently the enrolling event
         if ( !studentDAO.isCurrentEventEnrolling( currentYear, currentSemester ) ) return false;

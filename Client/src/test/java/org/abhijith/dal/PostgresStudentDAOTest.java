@@ -180,7 +180,7 @@ class PostgresStudentDAOTest {
         facultyDAO.setCourseCategory( "HS507", 2023, 2, "HE", "CS", new int[]{ 2021 }, "HS" );
         assertTrue( postgresStudentDAO.enroll( "HS507", "2021CSB1062", 2023, 2, "HS", "HE" ) );
         postgresStudentDAO.dropCourse( "HS507", "2021CSB1062", 2023, 2 );
-        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2 );
+        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, "HS" );
         facultyDAO.insertCourseOffering( "HS507", 2023, 2, "HS", "FAC38" );
         adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
 
@@ -206,7 +206,7 @@ class PostgresStudentDAOTest {
         facultyDAO.setCourseCategory( "HS507", 2023, 2, "HE", "CS", new int[]{ 2021 }, "HS" );
         postgresStudentDAO.enroll( "HS507", "2021CSB1062", 2023, 2, "HS", "HE" );
         assertTrue( postgresStudentDAO.dropCourse( "HS507", "2021CSB1062", 2023, 2 ) );
-        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2 );
+        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, "HS" );
         facultyDAO.insertCourseOffering( "HS507", 2023, 2, "HS", "FAC38" );
         adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
 
@@ -233,7 +233,7 @@ class PostgresStudentDAOTest {
         assertArrayEquals( new String[][]{ { "3.0", "-" } }, postgresStudentDAO.getAllRecords( "2021CSB1062" ) );
 
         postgresStudentDAO.dropCourse( "HS507", "2021CSB1062", 2023, 2 );
-        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2 );
+        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, "HS" );
         facultyDAO.insertCourseOffering( "HS507", 2023, 2, "HS", "FAC38" );
         adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
 

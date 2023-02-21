@@ -4,10 +4,7 @@ import org.abhijith.dal.PostgresAdminDAO;
 import org.abhijith.daoInterfaces.AdminDAO;
 import org.abhijith.utils.Utils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,9 +15,18 @@ public class Admin extends User {
 
     public Admin( String name ) {
         super( name );
+    }
+
+    public void setAdminDAO( AdminDAO adminDAO ) {
+        this.adminDAO = adminDAO;
+    }
+
+    public void setAdminDAO() {
         try {
-            Properties databaseConfig = new Properties();
-            databaseConfig.load( new FileInputStream( "./src/main/resources/config.properties" ) );
+            Properties  databaseConfig = new Properties();
+            ClassLoader classLoader    = Admin.class.getClassLoader();
+            InputStream inputStream    = classLoader.getResourceAsStream( "config.properties" );
+            databaseConfig.load( inputStream );
 
             String connectionURL = databaseConfig.getProperty( "admin.connectionURL" );
             String username      = databaseConfig.getProperty( "admin.username" );
@@ -36,35 +42,37 @@ public class Admin extends User {
         }
     }
 
-    public void setAdminDAO( AdminDAO adminDAO ) {
-        this.adminDAO = adminDAO;
-    }
-
     public String[][] getGradesOfOffering( String courseCode, int year, int semester, String departmentID ) {
-        if ( courseCode == null || year <= 0 || semester <= 0 || departmentID == null ) return new String[][]{};
+        if ( courseCode == null || year < 0 || semester <= 0 || departmentID == null ) return new String[][]{};
         return adminDAO.getGradesOfCourse( courseCode, year, semester, departmentID );
     }
 
     public boolean insertStudent( String entryNumber, String name, String departmentID, int batch ) {
-        if ( entryNumber == null || name == null || departmentID == null || batch <= 0 ) return false;
+        if ( entryNumber == null || name == null || departmentID == null || batch < 0 ) return false;
         return adminDAO.insertStudent( entryNumber, name, departmentID, batch );
     }
 
     public boolean insertFaculty( String facultyID, String name, String departmentID ) {
+        if ( facultyID == null || name == null || departmentID == null ) return false;
         return adminDAO.insertFaculty( facultyID, name, departmentID );
     }
 
     public boolean insertCourseIntoCatalog( String courseCode, String courseTitle, double[] creditStructure, String[] prerequisites ) {
+        if ( courseCode == null || courseTitle == null || creditStructure == null || prerequisites == null )
+            return false;
         boolean allPrerequisitesFound = adminDAO.checkAllPrerequisites( prerequisites );
         if ( !allPrerequisitesFound ) return false;
         return adminDAO.insertCourse( courseCode, courseTitle, creditStructure, prerequisites );
     }
 
     public boolean dropCourseFromCatalog( String courseCode ) {
+        if ( courseCode == null ) return false;
         return adminDAO.dropCourseFromCatalog( courseCode );
     }
 
     public String[][][] getGradesOfStudent( String entryNumber ) {
+        if ( entryNumber == null ) return new String[][][]{};
+
         ArrayList<String[][]> completeStudentRecords = new ArrayList<>();
         int[]                 currentAcademicSession = adminDAO.getCurrentAcademicSession();
         int                   studentBatch           = adminDAO.getBatch( entryNumber );
@@ -84,6 +92,7 @@ public class Admin extends User {
     }
 
     public boolean createBatch( int batchYear, double[] creditRequirements ) {
+        if ( batchYear < 0 || creditRequirements == null ) return false;
         boolean createBatchStatus = adminDAO.createBatch( batchYear );
         if ( !createBatchStatus ) return false;
         return adminDAO.createCurriculum( batchYear, creditRequirements );
@@ -91,8 +100,12 @@ public class Admin extends User {
 
     public boolean insertCoreCourses( int batch, BufferedReader courseCSVFile ) {
         try {
+            if ( batch < 0 || courseCSVFile == null ) return false;
+
             boolean isCoreListRemoved = adminDAO.resetCoreCoursesList( batch );
             if ( !isCoreListRemoved ) return false;
+            boolean coursesInserted = true;
+
             String courseRecord;
             while ( ( courseRecord = courseCSVFile.readLine() ) != null ) {
                 String[] lineContents    = courseRecord.split( "," );
@@ -101,24 +114,31 @@ public class Admin extends User {
                 String[] departmentCodes = Arrays.copyOfRange( lineContents, 2, lineContents.length );
                 boolean  courseExists    = adminDAO.checkCourseCatalog( courseCode );
                 if ( !courseExists ) return false;
-                adminDAO.insertCoreCourse( courseCode, departmentCodes, batch, courseCategory );
+                coursesInserted &= adminDAO.insertCoreCourse( courseCode, departmentCodes, batch, courseCategory );
             }
-            return true;
+            return coursesInserted;
         } catch ( Exception error ) {
             return false;
         }
     }
 
     public boolean checkStudentPassStatus( String entryNumber ) {
+        if ( entryNumber == null ) return false;
+
         // Check if the entry number that has been entered exists in the database.
         // This is done because the hashmap operation is expensive
         boolean isEntryNumberValid = adminDAO.findEntryNumber( entryNumber );
         if ( !isEntryNumberValid ) return false;
 
         // We check if the student has credited all the core courses he should have done
-        int      batch             = adminDAO.getBatch( entryNumber );
-        String   studentDepartment = adminDAO.getStudentDepartment( entryNumber );
+        int batch = adminDAO.getBatch( entryNumber );
+        if ( batch == -1 ) return false;
+
+        String studentDepartment = adminDAO.getStudentDepartment( entryNumber );
+        if ( studentDepartment.equals( "" ) ) return false;
+
         String[] listOfCoreCourses = adminDAO.getCoreCourses( batch, studentDepartment );
+        if ( listOfCoreCourses == null ) return false;
 
         // Iterate through all the courses and verify that the student has passed all the courses
         for ( String courseCode : listOfCoreCourses ) {
@@ -130,6 +150,8 @@ public class Admin extends User {
 
         // Get the credit requirements that are left for this particular student
         HashMap<String, Double> creditsLeft = getRemainingCreditRequirements( entryNumber );
+        if ( creditsLeft == null ) return false;
+
         // Iterate through the UG curriculum requirements left. If all entries are 0, the student is eligible to pass
         for ( String category : creditsLeft.keySet() ) {
             if ( Double.compare( creditsLeft.get( category ), 0.0 ) != 0 ) return false;
@@ -143,10 +165,13 @@ public class Admin extends User {
         // Get the batch of the student and retrieve the UG curriculum of the corresponding batch
         int                     batch        = adminDAO.getBatch( entryNumber );
         HashMap<String, Double> ugCurriculum = adminDAO.getUGCurriculum( batch );
+        if ( ugCurriculum == null ) return null;
 
         // Now we have to fetch the course categories and the corresponding credits done by the student
         HashMap<String, Double> categoryCreditsCompleted = adminDAO.getCreditsInAllCategories( entryNumber );
-        HashMap<String, Double> categoryCreditsLeft      = new HashMap<>();
+        if ( categoryCreditsCompleted == null ) return null;
+
+        HashMap<String, Double> categoryCreditsLeft = new HashMap<>();
 
         // Additional credits in any category will count towards the open electives section
         double additionalCredits = 0;
@@ -181,13 +206,15 @@ public class Admin extends User {
 
     public boolean generateTranscripts( int batch, String department ) {
         try {
+            if ( batch < 0 || department == null ) return false;
+
             // If the batch does not exist no students will be returned by the function and so no records will be generated
             String[] listOfStudents = adminDAO.getListOfStudentsInBatch( batch, department );
+            if ( listOfStudents == null ) return false;
 
             // Create the directory where all the records will be stored
             String directoryName = "./" + batch + "-" + department;
-            boolean isDirectoryMade = new File( directoryName ).mkdirs();
-            if ( !isDirectoryMade ) return false;
+            new File( directoryName ).mkdirs();
 
             // Iterate through the list of students and generate the transcript for each student
             for ( String entryNumber : listOfStudents ) {
@@ -201,11 +228,7 @@ public class Admin extends User {
                 PrintWriter fileWriter = new PrintWriter( transcriptFile );
 
                 // Write the heading into the file
-                boolean isHeadingWritten = writeHeading( fileWriter, entryNumber );
-                if ( !isHeadingWritten ) {
-                    fileWriter.close();
-                    continue;
-                }
+                writeHeading( fileWriter, entryNumber );
 
                 // Write the records into the file
                 int year     = batch;
@@ -225,7 +248,7 @@ public class Admin extends User {
                 fileWriter.printf( "CGPA: %.2f", getCGPA( records ) );
 
                 // If the student is eligible for graduation, then there is no need to mention anything in the transcript
-                if ( !checkStudentPassStatus( entryNumber )) fileWriter.printf( "INELIGIBLE FOR GRADUATION\n" );
+                if ( !checkStudentPassStatus( entryNumber ) ) fileWriter.printf( "INELIGIBLE FOR GRADUATION\n" );
 
                 // Close the fileWriter object after use to prevent locking issues
                 fileWriter.close();
@@ -249,8 +272,8 @@ public class Admin extends User {
         if ( !isPreviousSessionOver ) return false;
 
         // If the previous session is over, we just create the new session in the database
+        int newYear     = ( currentSemester == 2 ) ? currentYear + 1 : currentYear;
         int newSemester = ( currentSemester == 1 ) ? 2 : 1;
-        int newYear     = ( newSemester == 2 ) ? currentYear : currentYear + 1;
         return adminDAO.createNewSession( newYear, newSemester );
     }
 
@@ -310,16 +333,11 @@ public class Admin extends User {
         fileWriter.println();
     }
 
-    private boolean writeHeading( PrintWriter fileWriter, String entryNumber ) {
-        try {
-            fileWriter.println( "INDIAN INSTITUTE OF TECHNOLOGY, ROPAR" );
-            fileWriter.println( "STUDENT GRADE TRANSCRIPT\n" );
-            fileWriter.println( "Entry Number: " + entryNumber );
-            fileWriter.println();
-            return true;
-        } catch ( Exception error ) {
-            return false;
-        }
+    private void writeHeading( PrintWriter fileWriter, String entryNumber ) {
+        fileWriter.println( "INDIAN INSTITUTE OF TECHNOLOGY, ROPAR" );
+        fileWriter.println( "STUDENT GRADE TRANSCRIPT\n" );
+        fileWriter.println( "Entry Number: " + entryNumber );
+        fileWriter.println();
     }
 
     private double getCGPA( String[][][] records ) {

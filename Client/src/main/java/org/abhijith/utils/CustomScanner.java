@@ -70,9 +70,9 @@ public class CustomScanner {
         }
     }
 
-    public BufferedReader openCourseCSVFile( String courseCode, int year, int semester ) {
+    public BufferedReader openCourseCSVFile( String courseCode, int year, int semester, String departmentID ) {
         try {
-            String expectedFileName = courseCode + "_" + year + "_" + semester + ".csv";
+            String expectedFileName = new StringBuilder().append( courseCode ).append( "_" ).append( year ).append( "_" ).append( semester ).append( "_" ).append( departmentID ).append( ".csv" ).toString();
             FileDialog dialog = new FileDialog( (Frame) null, "Select File to Open" );
             dialog.setMode( FileDialog.LOAD );
             dialog.setVisible( true );

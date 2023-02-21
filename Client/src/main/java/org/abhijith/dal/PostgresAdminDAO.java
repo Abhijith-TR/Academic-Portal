@@ -131,8 +131,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
         try {
             PreparedStatement createBatchQuery = databaseConnection.prepareStatement( "INSERT INTO batch VALUES(?)" );
             createBatchQuery.setInt( 1, batchYear );
-            int createBatchQueryResult = createBatchQuery.executeUpdate();
-            return createBatchQueryResult == 1;
+            createBatchQuery.executeUpdate();
+            return true;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Something went wrong" );
             return false;
@@ -253,7 +253,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             return studentsList.toArray( new String[studentsList.size()] );
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
-            return new String[]{};
+            return null;
         }
     }
 

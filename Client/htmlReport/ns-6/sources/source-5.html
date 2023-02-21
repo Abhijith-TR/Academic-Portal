@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > FacultyDAO</title>
+  <title>Coverage Report > StudentDAO</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">org.abhijith.daoInterfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: FacultyDAO (org.abhijith.daoInterfaces)</h1>
+<h1>Coverage Summary for Class: StudentDAO (org.abhijith.daoInterfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">FacultyDAO</td>
+  <td class="name">StudentDAO</td>
 </tr>
 
 </table>
@@ -40,36 +40,35 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package org.abhijith.daoInterfaces;
 &nbsp;
-&nbsp;public interface FacultyDAO extends CommonDAO {
-&nbsp;    boolean insertCourseOffering( String courseCode, int currentYear, int currentSemester, String departmentID, String facultyID );
+&nbsp;public interface StudentDAO extends CommonDAO {
 &nbsp;
-&nbsp;    String getDepartment( String facultyID );
+&nbsp;    boolean checkCourseOffering( String courseCode, int currentYear, int currentSemester, String courseDepartment );
 &nbsp;
-&nbsp;    boolean setCGCriteria( String facultyID, String courseCode, double minimumCGPA, int[] currentSession, String departmentID );
+&nbsp;    boolean checkStudentPassStatus( String courseCode, int gradeCutoff, String entryNumber );
 &nbsp;
-&nbsp;    boolean setInstructorPrerequisites( String departmentID, String courseCode, String[][] prerequisites, int[] currentSession );
+&nbsp;    String[] getCourseCatalogPrerequisites( String courseCode );
 &nbsp;
-&nbsp;    boolean dropCourseOffering( String facultyID, String courseCode, int currentYear, int currentSemester, String departmentID );
+&nbsp;    String[][] getInstructorPrerequisites( String courseCode, int year, int semester, String courseDepartment );
 &nbsp;
-&nbsp;    boolean checkIfOfferedBySelf( String facultyID, String courseCode, int currentYear, int currentSemester, String departmentID );
+&nbsp;    // The 24 is being returned to prevent you from enrolling in the course due to the exception that occurred
+&nbsp;    double getCreditsOfCourse( String courseCode );
 &nbsp;
-&nbsp;    boolean setCourseCategory( String courseCode, int currentYear, int currentSemester, String courseCategory, String department, int[] years, String offeringDepartment );
+&nbsp;    // The minimum credit limit is set to 18 and the maximum is set to 24
+&nbsp;    double getCreditsInSession( String entryNumber, int currentYear, int currentSemester );
 &nbsp;
-&nbsp;    boolean verifyCore( String courseCode, String departmentID, int year );
+&nbsp;    boolean enroll( String courseCode, String entryNumber, int currentYear, int currentSemester, String offeringDepartment, String courseCategory );
 &nbsp;
-&nbsp;    String[][] getGradesOfCourse( String courseCode, int year, int semester, String departmentID );
+&nbsp;    boolean dropCourse( String courseCode, String entryNumber, int currentYear, int currentSemester );
 &nbsp;
-&nbsp;    String[][] getCourseEnrollmentsList( String courseCode, int year, int semester, String departmentID );
+&nbsp;    String[][] getAllRecords( String entryNumber );
 &nbsp;
-&nbsp;    String[] getListOfStudents( String courseCode, int year, int semester, String departmentID );
+&nbsp;    String[][] getOfferedCourses( int currentYear, int currentSemester );
 &nbsp;
-&nbsp;    boolean isCurrentEventOffering( int currentYear, int currentSemester );
+&nbsp;    String getCourseCategory( String courseCode, int year, int semester, String courseDepartment, String studentDepartment, int batch );
 &nbsp;
-&nbsp;    boolean isCurrentEventGradeSubmission( int currentYear, int currentSemester );
+&nbsp;    boolean isCurrentEventEnrolling( int currentYear, int currentSemester );
 &nbsp;
-&nbsp;    boolean uploadCourseGrades( String courseCode, int year, int semester, String departmentID, String[] listOfStudents, String[] listOfGrades );
-&nbsp;
-&nbsp;    boolean isCourseAlreadyOffered( String courseCode, int currentYear, int currentSemester, String offeringDepartment );
+&nbsp;    double getCGPACriteria( String courseCode, int currentYear, int currentSemester, String courseDepartment );
 &nbsp;}
 </code>
 </pre>
@@ -94,7 +93,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-02-21 01:26</div>
+    <div style="float:right;">generated on 2023-02-21 11:47</div>
 </div>
 </body>
 </html>

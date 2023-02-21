@@ -17,7 +17,8 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     @Override
     public boolean checkCourseOffering( String courseCode, int currentYear, int currentSemester, String courseDepartment ) {
         try {
-            if ( currentYear <= 0 || currentSemester <= 0 || courseCode == null || courseDepartment == null ) return false;
+            if ( currentYear <= 0 || currentSemester <= 0 || courseCode == null || courseDepartment == null )
+                return false;
             courseCode = courseCode.toUpperCase();
             courseDepartment = courseDepartment.toUpperCase();
 
@@ -85,7 +86,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     @Override
     public String[][] getInstructorPrerequisites( String courseCode, int year, int semester, String courseDepartment ) {
         try {
-            if ( courseCode == null || year <= 0 || semester <= 0 || courseDepartment == null) return null;
+            if ( courseCode == null || year <= 0 || semester <= 0 || courseDepartment == null ) return null;
             courseCode = courseCode.toUpperCase();
             courseDepartment = courseDepartment.toUpperCase();
 
@@ -141,7 +142,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     @Override
     public double getCreditsInSession( String entryNumber, int currentYear, int currentSemester ) {
         try {
-            if ( entryNumber == null || currentSemester <= 0 || currentYear <= 0) return 25;
+            if ( entryNumber == null || currentSemester <= 0 || currentYear <= 0 ) return 25;
             entryNumber = entryNumber.toUpperCase();
 
             PreparedStatement creditQuery = databaseConnection.prepareStatement( "SELECT SUM(credits) FROM course_catalog WHERE course_code IN (SELECT course_code FROM student_course_registration WHERE entry_number = ? AND year = ? AND semester = ?)" );
@@ -160,12 +161,13 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     }
 
     @Override
-    public boolean enroll( String courseCode, String entryNumber, int currentYear, int currentSemester, String departmentID, String courseCategory ) {
+    public boolean enroll( String courseCode, String entryNumber, int currentYear, int currentSemester, String offeringDepartment, String courseCategory ) {
         try {
-            if ( courseCode == null || entryNumber == null || currentSemester <= 0 || currentYear <= 0 || departmentID == null || courseCategory == null) return false;
+            if ( courseCode == null || entryNumber == null || currentSemester <= 0 || currentYear <= 0 || offeringDepartment == null || courseCategory == null )
+                return false;
             courseCode = courseCode.toUpperCase();
             entryNumber = entryNumber.toUpperCase();
-            departmentID = departmentID.toUpperCase();
+            offeringDepartment = offeringDepartment.toUpperCase();
             courseCategory = courseCategory.toUpperCase();
 
             PreparedStatement enrollmentQuery = databaseConnection.prepareStatement( "INSERT INTO student_course_registration(entry_number, course_code, year, semester, department_id, category) VALUES (?, ?, ?, ?, ?, ?)" );
@@ -173,7 +175,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             enrollmentQuery.setString( 2, courseCode );
             enrollmentQuery.setInt( 3, currentYear );
             enrollmentQuery.setInt( 4, currentSemester );
-            enrollmentQuery.setString( 5, departmentID );
+            enrollmentQuery.setString( 5, offeringDepartment );
             enrollmentQuery.setString( 6, courseCategory );
             // Maybe parameterize the default grade later on? Currently, the database will set the default grade by itself if you don't give it anything
             // Do I just assume that the call to insert was successful?
@@ -188,7 +190,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     @Override
     public boolean dropCourse( String courseCode, String entryNumber, int currentYear, int currentSemester ) {
         try {
-            if ( courseCode == null || entryNumber == null || currentYear <= 0 || currentSemester <= 0) return false;
+            if ( courseCode == null || entryNumber == null || currentYear <= 0 || currentSemester <= 0 ) return false;
             courseCode = courseCode.toUpperCase();
             entryNumber = entryNumber.toUpperCase();
 
@@ -231,7 +233,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     @Override
     public String[][] getOfferedCourses( int currentYear, int currentSemester ) {
         try {
-            if ( currentYear <= 0 || currentSemester <= 0) return new String[][]{};
+            if ( currentYear <= 0 || currentSemester <= 0 ) return new String[][]{};
 
             PreparedStatement getCoursesQuery = databaseConnection.prepareStatement( "SELECT course_code, course_title, name, pre_requisites, department_id FROM course_offerings NATURAL JOIN course_catalog NATURAL JOIN faculty WHERE year = ? AND semester = ?" );
             getCoursesQuery.setInt( 1, currentYear );
@@ -296,7 +298,8 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     @Override
     public String getCourseCategory( String courseCode, int year, int semester, String courseDepartment, String studentDepartment, int batch ) {
         try {
-            if ( courseCode == null || year <= 0 || semester <= 0 || courseDepartment == null || studentDepartment == null || batch <= 0) return "";
+            if ( courseCode == null || year <= 0 || semester <= 0 || courseDepartment == null || studentDepartment == null || batch <= 0 )
+                return "";
 
             // SQL query to fetch the course category for this particular student from the database
             PreparedStatement getCategoryQuery = databaseConnection.prepareStatement( "SELECT category FROM course_category WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ? AND batch = ? AND department = ?" );

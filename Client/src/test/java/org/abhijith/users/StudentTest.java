@@ -79,7 +79,7 @@ class StudentTest {
         // Fails because the student is already enrolled in this course
         assertFalse( student.enroll( "HS507", "HS" ) );
         student.drop( "HS507" );
-        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2 );
+        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, "HS" );
         facultyDAO.insertCourseOffering( "HS507", 2023, 2, "HS", "FAC38" );
         adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
     }
@@ -98,7 +98,7 @@ class StudentTest {
         facultyDAO.setCourseCategory( "HS507", 2023, 2, "HE", "CS", new int[]{ 2021 }, "HS" );
         student.enroll( "HS507", "HS" );
         assertTrue( student.drop( "HS507" ) );
-        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2 );
+        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, "HS");
         facultyDAO.insertCourseOffering( "HS507", 2023, 2, "HS", "FAC38" );
         adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
     }
@@ -115,7 +115,7 @@ class StudentTest {
 
         assertArrayEquals( new String[][][]{ {}, {}, {}, {}, {}, { { "HS507", "POSITIVE PSYCHOLOGY AND WELL-BEING", "-", "3.0" } } }, student.getGradesForCourse() );
         student.drop( "HS507" );
-        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2 );
+        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, "HS" );
         facultyDAO.insertCourseOffering( "HS507", 2023, 2, "HS", "FAC38" );
         adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
     }
@@ -138,7 +138,7 @@ class StudentTest {
         student.enroll( "HS507", "HS" );
         assertArrayEquals( new String[][]{ { "HS507", "POSITIVE PSYCHOLOGY AND WELL-BEING", "-", "3.0" } }, student.getGrades( 2023, 2 ) );
         student.drop( "HS507" );
-        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2 );
+        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, "HS" );
         facultyDAO.insertCourseOffering( "HS507", 2023, 2, "HS", "FAC38" );
         adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
     }

@@ -1,0 +1,10 @@
+INDIAN INSTITUTE OF TECHNOLOGY, ROPAR
+STUDENT GRADE TRANSCRIPT
+
+Entry Number: 2023CSB1062
+
+Year: 2023    Semester: 1     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+CS101          DISCRETE MATHEMATICS                                        A         4.0       
+
+CGPA: 10.00

@@ -3,6 +3,7 @@ package org.abhijith.dal;
 import org.abhijith.daoInterfaces.PasswordDAO;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Properties;
@@ -13,7 +14,9 @@ public class PasswordDatabase implements PasswordDAO {
     public PasswordDatabase() {
         try {
             Properties databaseConfig = new Properties();
-            databaseConfig.load( new FileInputStream( "./src/main/resources/config.properties" ) );
+            ClassLoader classLoader = PasswordDatabase.class.getClassLoader();
+            InputStream inputStream = classLoader.getResourceAsStream( "config.properties" );
+            databaseConfig.load( inputStream );
 
             String connectionURL = databaseConfig.getProperty( "connectionURL" );
             String username      = databaseConfig.getProperty( "username" );
@@ -24,6 +27,7 @@ public class PasswordDatabase implements PasswordDAO {
                     password
             );
         } catch ( Exception error ) {
+            System.out.println( error.getMessage() );
             System.err.println( "Configuration Error. Could not connect to database. Shutting down." );
             System.exit( 0 );
         }
