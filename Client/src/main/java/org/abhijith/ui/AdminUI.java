@@ -37,7 +37,6 @@ public class AdminUI {
         Admin         admin         = new Admin( id );
 
         // Uses the default database connection
-        admin.setAdminDAO();
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );

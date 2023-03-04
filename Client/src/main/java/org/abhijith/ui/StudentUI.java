@@ -60,7 +60,7 @@ public class StudentUI {
             }
 
             else if ( studentChoice == 3 ) {
-                String[][][] completeStudentRecords = student.getGradesForCourse();
+                String[][][] completeStudentRecords = student.getGradesForDegree();
                 int          year                   = student.getBatch();
                 int          semester               = 1;
                 int          i                      = 0;

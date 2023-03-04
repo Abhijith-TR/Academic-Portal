@@ -15,13 +15,6 @@ public class Admin extends User {
 
     public Admin( String name ) {
         super( name );
-    }
-
-    public void setAdminDAO( AdminDAO adminDAO ) {
-        this.adminDAO = adminDAO;
-    }
-
-    public void setAdminDAO() {
         try {
             Properties  databaseConfig = new Properties();
             ClassLoader classLoader    = Admin.class.getClassLoader();
@@ -40,6 +33,10 @@ public class Admin extends User {
         } catch ( Exception error ) {
             System.out.println( "Could not connect to database" );
         }
+    }
+
+    public void setAdminDAO( AdminDAO adminDAO ) {
+        this.adminDAO = adminDAO;
     }
 
     public String[][] getGradesOfOffering( String courseCode, int year, int semester, String departmentID ) {
@@ -164,6 +161,8 @@ public class Admin extends User {
     private HashMap<String, Double> getRemainingCreditRequirements( String entryNumber ) {
         // Get the batch of the student and retrieve the UG curriculum of the corresponding batch
         int                     batch        = adminDAO.getBatch( entryNumber );
+        if ( batch == -1 ) return null;
+
         HashMap<String, Double> ugCurriculum = adminDAO.getUGCurriculum( batch );
         if ( ugCurriculum == null ) return null;
 

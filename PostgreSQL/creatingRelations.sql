@@ -140,7 +140,8 @@ CREATE TABLE common_user_details
     phone    TEXT,
     email    TEXT,
     CHECK ( role in ('ADMIN', 'STUDENT', 'FACULTY')),
-    CHECK ( length(password) >= 8 )
+    CHECK ( length(password) >= 8 ),
+    PRIMARY KEY (id)
 );
 
 -- A table that stores the current year and semester to ensure that students can only enroll in courses that have been offered in the current semester

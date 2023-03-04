@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.dal.PostgresAdminDAOTest" tests="17" skipped="0" failures="0" errors="0" timestamp="2023-03-04T10:20:32" hostname="ADMIN" time="0.896">
+  <properties/>
+  <testcase name="dropCourseFromCatalog()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.092"/>
+  <testcase name="insertFaculty()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.079"/>
+  <testcase name="getGradesOfCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.142"/>
+  <testcase name="resetCoreCoursesList()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.044"/>
+  <testcase name="createBatch()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.037"/>
+  <testcase name="getCoreCourses()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.041"/>
+  <testcase name="findEntryNumber()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.045"/>
+  <testcase name="createNewSession()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.045"/>
+  <testcase name="checkAllPrerequisites()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.039"/>
+  <testcase name="checkIfSessionCompleted()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.037"/>
+  <testcase name="insertCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.037"/>
+  <testcase name="createCurriculum()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.034"/>
+  <testcase name="verifyNoMissingGrades()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.037"/>
+  <testcase name="insertCoreCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.034"/>
+  <testcase name="setSessionEvent()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.037"/>
+  <testcase name="insertStudent()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.061"/>
+  <testcase name="getListOfStudentsInBatch()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.044"/>
+  <system-out><![CDATA[Database Error. Please try again later
+Database Error. Please try again later
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

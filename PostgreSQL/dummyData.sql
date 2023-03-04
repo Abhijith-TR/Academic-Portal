@@ -214,7 +214,7 @@ INSERT into course_offerings VALUES ('CS999', 'FAC39', 2023, 2, 'CS', 0);
 
 -- Inserting a batch and a curriculum corresponding to that batch
 INSERT INTO batch VALUES (2020);
-INSERT INTO batch VALUES (2021); 
+INSERT INTO batch VALUES (2021);
 INSERT INTO ug_curriculum VALUES(2020, 24, 6, 23.5, 36, 12, 15, 6, 9, 3.5, 4, 6);
 INSERT INTO ug_curriculum VALUES(2021, 24, 6, 23.5, 36, 12, 15, 6, 9, 3.5, 4, 6);
 

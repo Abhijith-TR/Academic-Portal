@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.security.InvalidParameterException;
@@ -329,6 +330,10 @@ class AdminTest {
         when( mockDAO.getCreditsInAllCategories( entryNumber ) ).thenReturn( new HashMap<>() );
         when( mockDAO.getListOfStudentsInBatch( batch, department ) ).thenReturn( listOfStudents );
         assertTrue( admin.generateTranscripts( batch, department ) );
+
+        // False because of an exception
+        when( mockDAO.getCurrentAcademicSession() ).thenThrow( new RuntimeException() );
+        assertFalse( admin.generateTranscripts( batch, department ) );
     }
 
     @Test

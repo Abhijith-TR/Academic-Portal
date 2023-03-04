@@ -11,20 +11,29 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
         super( connectionURL, username, password );
     }
 
-    public String[][] getGradesOfCourse( String courseCode, int year, int semester, String departmentID ) {
+    public String[][] getGradesOfCourse( String courseCode, int year, int semester, String offeringDepartment ) {
         try {
-            PreparedStatement getGradesQuery = databaseConnection.prepareStatement( "SELECT entry_number, grade FROM student_course_registration WHERE course_code = ? AND year = ? AND semester = ? ORDER BY entry_number" );
+            if ( courseCode == null || offeringDepartment == null || year < 0 || semester <= 0 ) return new String[][]{};
+            courseCode = courseCode.toUpperCase();
+            offeringDepartment = offeringDepartment.toUpperCase();
+
+            // SQL query to fetch the records for a student from the database
+            PreparedStatement getGradesQuery = databaseConnection.prepareStatement( "SELECT entry_number, grade FROM student_course_registration WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ? ORDER BY entry_number" );
             getGradesQuery.setString( 1, courseCode );
             getGradesQuery.setInt( 2, year );
             getGradesQuery.setInt( 3, semester );
+            getGradesQuery.setString( 4, offeringDepartment );
             ResultSet getGradesQueryResult = getGradesQuery.executeQuery();
 
+            // Get the records from the ResultSet and put them into the required format
             ArrayList<String[]> records = new ArrayList<>();
             while ( getGradesQueryResult.next() ) {
                 String entry_number = getGradesQueryResult.getString( 1 );
                 String grade        = getGradesQueryResult.getString( 2 );
                 records.add( new String[]{ entry_number, grade } );
             }
+
+            // Convert the ArrayList into an array before returning
             return records.toArray( new String[records.size()][] );
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
@@ -34,7 +43,15 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
 
     public boolean insertStudent( String entryNumber, String name, String departmentID, int batch ) {
         try {
-            // You should probably set autocommit to false and execute both of the below statements together.
+            if ( entryNumber == null || name == null || departmentID == null || batch < 0 ) return false;
+            entryNumber = entryNumber.toUpperCase();
+            name = name.toUpperCase();
+            departmentID = departmentID.toUpperCase();
+
+            final String DEFAULT_PASSWORD = "iitropar";
+            final String STUDENT_ROLE = "STUDENT";
+
+            // SQL query to insert a student into the student relation which would allow him to enroll in various courses
             PreparedStatement insertStudentQuery = databaseConnection.prepareStatement( "INSERT INTO student(entry_number, name, department_id, batch) VALUES (?, ?, ?, ?)" );
             insertStudentQuery.setString( 1, entryNumber );
             insertStudentQuery.setString( 2, name );
@@ -42,11 +59,12 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             insertStudentQuery.setInt( 4, batch );
             int successStatus = insertStudentQuery.executeUpdate();
 
+            // SQL query to insert the student into the common_user_details relation to allow him to log into the database
             PreparedStatement insertPasswordQuery = databaseConnection.prepareStatement( "INSERT INTO common_user_details VALUES (?, ?, ?)" );
             insertPasswordQuery.setString( 1, entryNumber );
             // the default password is set here
-            insertPasswordQuery.setString( 2, "iitropar" );
-            insertPasswordQuery.setString( 3, "student" );
+            insertPasswordQuery.setString( 2, DEFAULT_PASSWORD );
+            insertPasswordQuery.setString( 3, STUDENT_ROLE );
             successStatus &= insertPasswordQuery.executeUpdate();
 
             return successStatus == 1;
@@ -58,6 +76,14 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
 
     public boolean insertFaculty( String facultyID, String name, String departmentID ) {
         try {
+            if ( facultyID == null || name == null || departmentID == null ) return false;
+            facultyID = facultyID.toUpperCase();
+            name = name.toUpperCase();
+            departmentID = departmentID.toUpperCase();
+
+            final String DEFAULT_PASSWORD = "iitropar";
+            final String FACULTY_ROLE = "FACULTY";
+
             PreparedStatement insertFacultyQuery = databaseConnection.prepareStatement( "INSERT INTO faculty(faculty_id, name, department_id) VALUES (?, ?, ?)" );
             insertFacultyQuery.setString( 1, facultyID );
             insertFacultyQuery.setString( 2, name );
@@ -68,7 +94,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             insertPasswordQuery.setString( 1, facultyID );
             // the default password is set here
             insertPasswordQuery.setString( 2, "iitropar" );
-            insertPasswordQuery.setString( 3, "faculty" );
+            insertPasswordQuery.setString( 3, "FACULTY" );
             successStatus &= insertPasswordQuery.executeUpdate();
             return successStatus == 1;
         } catch ( Exception error ) {
@@ -196,7 +222,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     public boolean findEntryNumber( String entryNumber ) {
         try {
             // Generate the SQL query that will check if the student exists
-            PreparedStatement findEntryNumberQuery = databaseConnection.prepareStatement("SELECT name FROM student WHERE entry_number = ?");
+            PreparedStatement findEntryNumberQuery = databaseConnection.prepareStatement( "SELECT name FROM student WHERE entry_number = ?" );
             findEntryNumberQuery.setString( 1, entryNumber );
             ResultSet findEntryNumberQueryResult = findEntryNumberQuery.executeQuery();
 
@@ -212,7 +238,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     public String[] getCoreCourses( int batch, String studentDepartment ) {
         try {
             // Execute the SQL statement that will get all the core courses of a particular department in a particular year
-            PreparedStatement getCoreCoursesQuery = databaseConnection.prepareStatement("SELECT course_code FROM core_courses WHERE batch = ? AND department_id = ?");
+            PreparedStatement getCoreCoursesQuery = databaseConnection.prepareStatement( "SELECT course_code FROM core_courses WHERE batch = ? AND department_id = ?" );
             getCoreCoursesQuery.setInt( 1, batch );
             getCoreCoursesQuery.setString( 2, studentDepartment );
             ResultSet getCoreCoursesQueryResult = getCoreCoursesQuery.executeQuery();
@@ -224,7 +250,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
                 coreCourses.add( courseCode );
             }
             // Return the array list converted to a string array
-            return coreCourses.toArray(new String[coreCourses.size()]);
+            return coreCourses.toArray( new String[coreCourses.size()] );
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return null;
@@ -235,7 +261,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     public String[] getListOfStudentsInBatch( int batch, String department ) {
         try {
             // Execute the SQL query to fetch all the students of this department from this batch
-            PreparedStatement getStudentsQuery = databaseConnection.prepareStatement("SELECT entry_number FROM student WHERE batch = ? AND department_id = ?");
+            PreparedStatement getStudentsQuery = databaseConnection.prepareStatement( "SELECT entry_number FROM student WHERE batch = ? AND department_id = ?" );
             getStudentsQuery.setInt( 1, batch );
             getStudentsQuery.setString( 2, department );
             ResultSet getStudentsQueryResult = getStudentsQuery.executeQuery();
@@ -259,7 +285,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
 
     @Override
     public boolean checkIfSessionCompleted( int year, int semester ) {
-        try  {
+        try {
             // Get the status of the session that was provided
             PreparedStatement getSessionQuery = databaseConnection.prepareStatement( "SELECT current_event FROM current_year_and_semester WHERE year = ? AND semester = ?" );
             getSessionQuery.setInt( 1, year );
@@ -309,7 +335,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             if ( !stringFound ) return false;
 
             // SQL query to update the event in the database
-            PreparedStatement setStatusQuery = databaseConnection.prepareStatement("UPDATE current_year_and_semester SET current_event = ? WHERE year = ? AND semester = ?");
+            PreparedStatement setStatusQuery = databaseConnection.prepareStatement( "UPDATE current_year_and_semester SET current_event = ? WHERE year = ? AND semester = ?" );
             setStatusQuery.setString( 1, event );
             setStatusQuery.setInt( 2, currentYear );
             setStatusQuery.setInt( 3, currentSemester );
@@ -328,7 +354,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
         try {
             // SQL query to check if there are any students in the previous semester who have not had their grades entered
             // '-' is used in the database to indicate that an entry has not yet been inserted
-            PreparedStatement missingGradeQuery = databaseConnection.prepareStatement("SELECT * FROM student_course_registration WHERE year = ? AND semester = ? AND grade = '-'");
+            PreparedStatement missingGradeQuery = databaseConnection.prepareStatement( "SELECT * FROM student_course_registration WHERE year = ? AND semester = ? AND grade = '-'" );
             missingGradeQuery.setInt( 1, currentYear );
             missingGradeQuery.setInt( 2, currentSemester );
             ResultSet missingGradeQueryResult = missingGradeQuery.executeQuery();

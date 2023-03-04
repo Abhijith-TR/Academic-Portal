@@ -1,7 +1,7 @@
 package org.abhijith.daoInterfaces;
 
 public interface AdminDAO extends CommonDAO {
-    String[][] getGradesOfCourse(String courseCode, int year, int semester, String departmentID);
+    String[][] getGradesOfCourse(String courseCode, int year, int semester, String offeringDepartment );
 
     boolean insertFaculty(String facultyID, String name, String departmentID);
     boolean insertStudent(String entryNumber, String name, String departmentID, int batch);

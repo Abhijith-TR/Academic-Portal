@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.users.FacultyTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2023-02-21T06:17:23" hostname="ADMIN" time="0.803">
+<testsuite name="org.abhijith.users.FacultyTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2023-03-04T10:20:38" hostname="ADMIN" time="0.34">
   <properties/>
-  <testcase name="uploadGrades()" classname="org.abhijith.users.FacultyTest" time="0.102"/>
-  <testcase name="setCourseCategory()" classname="org.abhijith.users.FacultyTest" time="0.118"/>
-  <testcase name="getGradesOfStudent()" classname="org.abhijith.users.FacultyTest" time="0.099"/>
-  <testcase name="setCGAndPrerequisites()" classname="org.abhijith.users.FacultyTest" time="0.116"/>
-  <testcase name="offerCourse()" classname="org.abhijith.users.FacultyTest" time="0.099"/>
-  <testcase name="dropCourseOffering()" classname="org.abhijith.users.FacultyTest" time="0.102"/>
-  <testcase name="getGradesOfOffering()" classname="org.abhijith.users.FacultyTest" time="0.084"/>
-  <testcase name="generateGradeCSV()" classname="org.abhijith.users.FacultyTest" time="0.078"/>
-  <system-out><![CDATA[]]></system-out>
+  <testcase name="uploadGrades()" classname="org.abhijith.users.FacultyTest" time="0.077"/>
+  <testcase name="setCourseCategory()" classname="org.abhijith.users.FacultyTest" time="0.004"/>
+  <testcase name="getGradesOfStudent()" classname="org.abhijith.users.FacultyTest" time="0.002"/>
+  <testcase name="setCGAndPrerequisites()" classname="org.abhijith.users.FacultyTest" time="0.004"/>
+  <testcase name="offerCourse()" classname="org.abhijith.users.FacultyTest" time="0.002"/>
+  <testcase name="dropCourseOffering()" classname="org.abhijith.users.FacultyTest" time="0.002"/>
+  <testcase name="getGradesOfOffering()" classname="org.abhijith.users.FacultyTest" time="0.001"/>
+  <testcase name="generateGradeCSV()" classname="org.abhijith.users.FacultyTest" time="0.015"/>
+  <system-out><![CDATA[1 0
+1 1
+1 1
+CS301 CS
+false
+CS301 CS
+true
+]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

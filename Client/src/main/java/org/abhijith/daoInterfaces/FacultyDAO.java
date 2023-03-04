@@ -19,9 +19,9 @@ public interface FacultyDAO extends CommonDAO {
 
     String[][] getGradesOfCourse( String courseCode, int year, int semester, String departmentID );
 
-    String[][] getCourseEnrollmentsList( String courseCode, int year, int semester, String departmentID );
+    String[][] getCourseEnrollmentsList( String courseCode, int year, int semester, String offeringDepartment );
 
-    String[] getListOfStudents( String courseCode, int year, int semester, String departmentID );
+    String[] getListOfStudents( String courseCode, int year, int semester, String offeringDepartment );
 
     boolean isCurrentEventOffering( int currentYear, int currentSemester );
 

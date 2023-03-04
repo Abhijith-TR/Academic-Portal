@@ -11,3 +11,5 @@ Ensure that every sql query is doing what it is supposed to be doing
 Change the exception return value of getCurrentAcademicSession() to null
 
 Note that the Main-Class: org.abhijith.Main has to be added to get the file to run
+
+Maybe put a try catch in checkInstructorPrerequisites, getCGPA, getSGPA

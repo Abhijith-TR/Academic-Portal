@@ -4,7 +4,6 @@ import org.abhijith.dal.PostgresStudentDAO;
 import org.abhijith.daoInterfaces.StudentDAO;
 import org.abhijith.utils.Utils;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,9 +15,9 @@ public class Student extends User {
     public Student( String id ) {
         super( id );
         try {
-            Properties databaseConfig = new Properties();
-            ClassLoader classLoader = Student.class.getClassLoader();
-            InputStream inputStream = classLoader.getResourceAsStream( "config.properties" );
+            Properties  databaseConfig = new Properties();
+            ClassLoader classLoader    = Student.class.getClassLoader();
+            InputStream inputStream    = classLoader.getResourceAsStream( "config.properties" );
             databaseConfig.load( inputStream );
 
             String connectionURL = databaseConfig.getProperty( "student.connectionURL" );
@@ -105,7 +104,6 @@ public class Student extends User {
         creditLimit = Math.min( creditLimit, maximumCreditLimit );
 
         double creditsOfCourse = studentDAO.getCreditsOfCourse( courseCode );
-
         return ( creditsInCurrentSemester + creditsOfCourse ) > creditLimit;
     }
 
@@ -150,6 +148,7 @@ public class Student extends User {
 
         // Getting the batch of the student
         int batch = studentDAO.getBatch( this.id );
+        if ( batch == -1 ) return false;
 
         // Getting the course category. If the batch and department combination does not exist, the student is not eligible for the offering
         String courseCategory = studentDAO.getCourseCategory( courseCode, currentYear, currentSemester, courseDepartment, studentDepartment, batch );
@@ -177,7 +176,9 @@ public class Student extends User {
         return studentDAO.dropCourse( courseCode, id, currentYear, currentSemester );
     }
 
-    public String[][][] getGradesForCourse() {
+    // Return format: { { { courseCode, courseTitle, grade, credits } } }
+    // The inner array will contain all the records of a particular semester
+    public String[][][] getGradesForDegree() {
         // Array to store the records
         ArrayList<String[][]> studentCourseRecords = new ArrayList<>();
 
@@ -188,6 +189,7 @@ public class Student extends User {
 
         // Getting the batch of the student. We start from batch - 1 as the first session
         int studentBatch = studentDAO.getBatch( this.id );
+        if ( studentBatch == -1 ) return new String[][][]{};
 
         // We go through all years and semesters upto the current session
         for ( int year = studentBatch; year <= currentYear; year++ ) {
@@ -203,6 +205,7 @@ public class Student extends User {
         return studentCourseRecords.toArray( new String[studentCourseRecords.size()][][] );
     }
 
+    // Return format: { { courseCode, courseTitle, grade, credits } }
     public String[][] getGrades( int year, int semester ) {
         // Checking input parameters
         if ( year <= 0 || semester <= 0 ) return new String[][]{};
@@ -214,6 +217,8 @@ public class Student extends User {
         return studentDAO.getBatch( this.id );
     }
 
+    // The record format expected is { { courseCode, courseTitle, grade, credits } }
+    // Note that all of the above are expected to be strings and parsable to double
     public double getSGPA( String[][] records ) {
         // Checking input parameters
         if ( records == null ) return 0.0;
@@ -269,8 +274,10 @@ public class Student extends User {
         int[]  currentSession    = studentDAO.getCurrentAcademicSession();
         int    currentYear       = currentSession[0];
         int    currentSemester   = currentSession[1];
+
         String studentDepartment = studentDAO.getStudentDepartment( this.id );
-        int studentBatch = studentDAO.getBatch( this.id );
+        int    studentBatch      = studentDAO.getBatch( this.id );
+        if ( studentDepartment.equals( "" ) || studentBatch == -1 ) return new String[][]{};
 
         // Getting the courses that were offered in the current session
         String[][] coursesOffered = studentDAO.getOfferedCourses( currentYear, currentSemester );
@@ -283,10 +290,15 @@ public class Student extends User {
     public HashMap<String, Double> getRemainingCreditRequirements() {
         // Get the batch of the student and retrieve the UG curriculum of the corresponding batch
         int                     batch        = studentDAO.getBatch( this.id );
+        if ( batch == -1 ) return new HashMap<>();
+
         HashMap<String, Double> ugCurriculum = studentDAO.getUGCurriculum( batch );
+        if ( ugCurriculum == null ) return new HashMap<>();
 
         // Now we have to fetch the course categories and the corresponding credits done by the student
         HashMap<String, Double> categoryCreditsCompleted = studentDAO.getCreditsInAllCategories( this.id );
+        if ( categoryCreditsCompleted == null ) return new HashMap<>();
+
         HashMap<String, Double> categoryCreditsLeft      = new HashMap<>();
 
         // Additional credits in any category will count towards the open electives section

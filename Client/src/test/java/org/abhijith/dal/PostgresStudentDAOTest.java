@@ -38,23 +38,29 @@ class PostgresStudentDAOTest {
 
     @Test
     void checkCourseOffering() {
+        String courseCode       = "HS507";
+        String courseDepartment = "HS";
+        int    currentYear      = 2023;
+        int    currentSemester  = 2;
+        int    previousYear     = 2022;
+
         // Successful because course exists from this department in this particular session
-        assertTrue( postgresStudentDAO.checkCourseOffering( "HS507", 2023, 2, "HS" ) );
+        assertTrue( postgresStudentDAO.checkCourseOffering( courseCode, currentYear, currentSemester, courseDepartment ) );
 
         // Fails because this course does not exist in this particular year and semester
-        assertFalse( postgresStudentDAO.checkCourseOffering( "CS101", 2022, 2, "CS" ) );
+        assertFalse( postgresStudentDAO.checkCourseOffering( "CS101", previousYear, currentSemester, "CS" ) );
 
         // Fails because of invalid year and semester and strings being null
-        assertFalse( postgresStudentDAO.checkCourseOffering( "HS507", 0, 2, "HS" ) );
-        assertFalse( postgresStudentDAO.checkCourseOffering( "HS507", 2022, 0, "HS" ) );
-        assertFalse( postgresStudentDAO.checkCourseOffering( null, 2023, 2, "HS" ) );
-        assertFalse( postgresStudentDAO.checkCourseOffering( "HS507", 2023, 2, null ) );
+        assertFalse( postgresStudentDAO.checkCourseOffering( courseCode, -1, currentSemester, courseDepartment ) );
+        assertFalse( postgresStudentDAO.checkCourseOffering( courseCode, previousYear, -1, courseDepartment ) );
+        assertFalse( postgresStudentDAO.checkCourseOffering( null, currentYear, currentSemester, courseDepartment ) );
+        assertFalse( postgresStudentDAO.checkCourseOffering( courseCode, currentYear, currentSemester, null ) );
 
 
         try {
             Connection conn = postgresStudentDAO.getDatabaseConnection();
             conn.close();
-            assertFalse( postgresStudentDAO.checkCourseOffering( "HS507", 2023, 2, "HS" ) );
+            assertFalse( postgresStudentDAO.checkCourseOffering( courseCode, currentYear, currentSemester, courseDepartment ) );
         } catch ( Exception error ) {
             System.out.println( error.getMessage() );
             fail( "Database connection could not be closed" );
@@ -63,25 +69,32 @@ class PostgresStudentDAOTest {
 
     @Test
     void checkStudentPassStatus() {
+        String completedCourse = "CS101";
+        String failedCourse    = "CS999";
+        String invalidCourse   = "ZZ123";
+        String courseCode      = "CS555";
+        String entryNumber     = "2020CSB1062";
+        int    gradeCutoff     = 8;
+
         // Successful because this particular student has done and passed this course before
-        assertTrue( postgresStudentDAO.checkStudentPassStatus( "CS101", 8, "2020CSB1062" ) );
+        assertTrue( postgresStudentDAO.checkStudentPassStatus( completedCourse, gradeCutoff, entryNumber ) );
 
         // False because the student has failed in the course
-        assertFalse( postgresStudentDAO.checkStudentPassStatus( "CS999", 8, "2020CSB1062" ) );
+        assertFalse( postgresStudentDAO.checkStudentPassStatus( failedCourse, gradeCutoff, entryNumber ) );
 
         // False because no such course exists
-        assertFalse( postgresStudentDAO.checkStudentPassStatus( "ZZ123", 8, "2020CSB1062" ) );
+        assertFalse( postgresStudentDAO.checkStudentPassStatus( invalidCourse, gradeCutoff, entryNumber ) );
 
         // False because of invalid input parameters
-        assertFalse( postgresStudentDAO.checkStudentPassStatus( null, 8, "2020CSB1062" ) );
-        assertFalse( postgresStudentDAO.checkStudentPassStatus( "ZZ123", 11, "2020CSB1062" ) );
-        assertFalse( postgresStudentDAO.checkStudentPassStatus( "ZZ123", -1, "2020CSB1062" ) );
-        assertFalse( postgresStudentDAO.checkStudentPassStatus( "ZZ123", 8, null ) );
+        assertFalse( postgresStudentDAO.checkStudentPassStatus( null, gradeCutoff, entryNumber ) );
+        assertFalse( postgresStudentDAO.checkStudentPassStatus( invalidCourse, 11, entryNumber ) );
+        assertFalse( postgresStudentDAO.checkStudentPassStatus( invalidCourse, -1, entryNumber ) );
+        assertFalse( postgresStudentDAO.checkStudentPassStatus( invalidCourse, gradeCutoff, null ) );
 
         try {
             Connection conn = postgresStudentDAO.getDatabaseConnection();
             conn.close();
-            assertFalse( postgresStudentDAO.checkStudentPassStatus( "CS555", 8, "2020CSB1062" ) );
+            assertFalse( postgresStudentDAO.checkStudentPassStatus( courseCode, gradeCutoff, entryNumber ) );
         } catch ( Exception error ) {
             fail( "Database connection could not be closed" );
         }
@@ -89,11 +102,15 @@ class PostgresStudentDAOTest {
 
     @Test
     void getCourseCatalogPrerequisites() {
+        String   invalidCourse = "CS777";
+        String   courseCode    = "CS202";
+        String[] prerequisites = new String[]{ "CS201" };
+
         // Null because such a course does not exist
-        assertNull( postgresStudentDAO.getCourseCatalogPrerequisites( "CS777" ) );
+        assertNull( postgresStudentDAO.getCourseCatalogPrerequisites( invalidCourse ) );
 
         // Prerequisites exist
-        assertArrayEquals( new String[]{ "CS201" }, postgresStudentDAO.getCourseCatalogPrerequisites( "CS202" ) );
+        assertArrayEquals( prerequisites, postgresStudentDAO.getCourseCatalogPrerequisites( courseCode ) );
 
         // False because of invalid input parameters
         assertNull( postgresStudentDAO.getCourseCatalogPrerequisites( null ) );
@@ -101,7 +118,7 @@ class PostgresStudentDAOTest {
         try {
             Connection conn = postgresStudentDAO.getDatabaseConnection();
             conn.close();
-            assertNull( postgresStudentDAO.getCourseCatalogPrerequisites( "CS301" ) );
+            assertNull( postgresStudentDAO.getCourseCatalogPrerequisites( courseCode ) );
         } catch ( Exception error ) {
             fail( "Database connection could not be closed" );
         }
@@ -110,19 +127,25 @@ class PostgresStudentDAOTest {
 
     @Test
     void getInstructorPrerequisites() {
+        String     courseCode             = "CS539";
+        String     department             = "CS";
+        int        year                   = 2023;
+        int        semester               = 2;
+        String[][] instructorPrerequisite = new String[][]{ { "CS303", "8" } };
+
         // null because of invalid input parameters
-        assertNull( postgresStudentDAO.getInstructorPrerequisites( null, 2023, 2, "CS" ) );
-        assertNull( postgresStudentDAO.getInstructorPrerequisites( "CS539", 0, 2, "CS" ) );
-        assertNull( postgresStudentDAO.getInstructorPrerequisites( "CS539", 2023, 0, "CS" ) );
-        assertNull( postgresStudentDAO.getInstructorPrerequisites( "CS539", 2023, 2, null ) );
+        assertNull( postgresStudentDAO.getInstructorPrerequisites( null, year, semester, department ) );
+        assertNull( postgresStudentDAO.getInstructorPrerequisites( courseCode, -1, semester, department ) );
+        assertNull( postgresStudentDAO.getInstructorPrerequisites( courseCode, year, -1, department ) );
+        assertNull( postgresStudentDAO.getInstructorPrerequisites( courseCode, year, semester, null ) );
 
         // Instructor prerequisites exist
-        assertArrayEquals( new String[][]{ { "CS303", "8" } }, postgresStudentDAO.getInstructorPrerequisites( "CS539", 2023, 2, "CS" ) );
+        assertArrayEquals( instructorPrerequisite, postgresStudentDAO.getInstructorPrerequisites( courseCode, year, semester, department ) );
 
         try {
             Connection conn = postgresStudentDAO.getDatabaseConnection();
             conn.close();
-            assertArrayEquals( null, postgresStudentDAO.getInstructorPrerequisites( "CS301", 2022, 1, "CS" ) );
+            assertArrayEquals( null, postgresStudentDAO.getInstructorPrerequisites( courseCode, year, semester, department ) );
         } catch ( Exception error ) {
             fail( "Database connection could not be closed" );
         }
@@ -130,16 +153,20 @@ class PostgresStudentDAOTest {
 
     @Test
     void getCreditsOfCourse() {
+        String courseCode      = "CS302";
+        int    maximumCredits  = 24;
+        int    expectedCredits = 3;
+
         // 24 because of invalid input
-        assertEquals( 24, postgresStudentDAO.getCreditsOfCourse( null ) );
+        assertEquals( maximumCredits, postgresStudentDAO.getCreditsOfCourse( null ) );
 
         // Actual credits of course
-        assertEquals( 3, postgresStudentDAO.getCreditsOfCourse( "CS302" ) );
+        assertEquals( expectedCredits, postgresStudentDAO.getCreditsOfCourse( courseCode ) );
 
         try {
             Connection conn = postgresStudentDAO.getDatabaseConnection();
             conn.close();
-            assertEquals( 24, postgresStudentDAO.getCreditsOfCourse( "CS301" ) );
+            assertEquals( maximumCredits, postgresStudentDAO.getCreditsOfCourse( courseCode ) );
         } catch ( Exception error ) {
             fail( "Database connection could not be closed" );
         }
@@ -148,18 +175,26 @@ class PostgresStudentDAOTest {
 
     @Test
     void getCreditsInSession() {
+        String entryNumber        = "2020CSB1062";
+        int    currentYear        = 2023;
+        int    currentSemester    = 2;
+        int    previousYear       = 2022;
+        int    previousSemester   = 2;
+        int    creditsInSession   = 21;
+        int    creditLimitPlusOne = 25;
+
         // 25 due to invalid input parameters
-        assertEquals( 25, postgresStudentDAO.getCreditsInSession( null, 2023, 2 ) );
-        assertEquals( 25, postgresStudentDAO.getCreditsInSession( "2020CSB1062", 0, 2 ) );
-        assertEquals( 25, postgresStudentDAO.getCreditsInSession( "2020CSB1062", 2023, 0 ) );
+        assertEquals( creditLimitPlusOne, postgresStudentDAO.getCreditsInSession( null, currentYear, currentSemester ) );
+        assertEquals( creditLimitPlusOne, postgresStudentDAO.getCreditsInSession( entryNumber, -1, currentSemester ) );
+        assertEquals( creditLimitPlusOne, postgresStudentDAO.getCreditsInSession( entryNumber, currentYear, -1 ) );
 
         // Successful
-        assertEquals( 21, postgresStudentDAO.getCreditsInSession( "2020CSB1062", 2022, 2 ) );
+        assertEquals( creditsInSession, postgresStudentDAO.getCreditsInSession( entryNumber, previousYear, previousSemester ) );
 
         try {
             Connection conn = postgresStudentDAO.getDatabaseConnection();
             conn.close();
-            assertEquals( 25, postgresStudentDAO.getCreditsInSession( "2020CSB1062", 2023, 2 ) );
+            assertEquals( creditLimitPlusOne, postgresStudentDAO.getCreditsInSession( entryNumber, currentYear, currentSemester ) );
         } catch ( Exception error ) {
             fail( "Database connection could not be closed" );
         }
@@ -167,27 +202,40 @@ class PostgresStudentDAOTest {
 
     @Test
     void enroll() {
+        String courseCode           = "HS507";
+        String entryNumber          = "2020CSB1062";
+        String enrollingEntryNumber = "2021CSB1062";
+        String offeringDepartment   = "HS";
+        String enrollingDepartment  = "CS";
+        String courseCategory       = "HE";
+        String enrollingEvent       = "ENROLLING";
+        String runningEvent         = "RUNNING";
+        String facultyID            = "FAC38";
+        int    currentYear          = 2023;
+        int    currentSemester      = 2;
+        int[]  eligibleBatches      = new int[]{ 2021 };
+
         // False because of invalid input parameters
-        assertFalse( postgresStudentDAO.enroll( null, "2020CSB1062", 2023, 2, "HS", "HE" ) );
-        assertFalse( postgresStudentDAO.enroll( "HS507", null, 2023, 2, "HS", "HE" ) );
-        assertFalse( postgresStudentDAO.enroll( "HS507", "2020CSB1062", 0, 2, "HS", "HE" ) );
-        assertFalse( postgresStudentDAO.enroll( "HS507", "2020CSB1062", 2023, 0, "HS", "HE" ) );
-        assertFalse( postgresStudentDAO.enroll( "HS507", "2020CSB1062", 2023, 2, null, "HE" ) );
-        assertFalse( postgresStudentDAO.enroll( "HS507", "2020CSB1062", 2023, 2, "HS", null ) );
+        assertFalse( postgresStudentDAO.enroll( null, entryNumber, currentYear, currentSemester, offeringDepartment, courseCategory ) );
+        assertFalse( postgresStudentDAO.enroll( courseCode, null, currentYear, currentSemester, offeringDepartment, courseCategory ) );
+        assertFalse( postgresStudentDAO.enroll( courseCode, entryNumber, -1, currentSemester, offeringDepartment, courseCategory ) );
+        assertFalse( postgresStudentDAO.enroll( courseCode, entryNumber, currentYear, -1, offeringDepartment, courseCategory ) );
+        assertFalse( postgresStudentDAO.enroll( courseCode, entryNumber, currentYear, currentSemester, null, courseCategory ) );
+        assertFalse( postgresStudentDAO.enroll( courseCode, entryNumber, currentYear, currentSemester, offeringDepartment, null ) );
 
         // Successful enrollment
-        adminDAO.setSessionEvent( "ENROLLING", 2023, 2 );
-        facultyDAO.setCourseCategory( "HS507", 2023, 2, "HE", "CS", new int[]{ 2021 }, "HS" );
-        assertTrue( postgresStudentDAO.enroll( "HS507", "2021CSB1062", 2023, 2, "HS", "HE" ) );
-        postgresStudentDAO.dropCourse( "HS507", "2021CSB1062", 2023, 2 );
-        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, "HS" );
-        facultyDAO.insertCourseOffering( "HS507", 2023, 2, "HS", "FAC38" );
-        adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
+        adminDAO.setSessionEvent( enrollingEvent, currentYear, currentSemester );
+        facultyDAO.setCourseCategory( courseCode, currentYear, currentSemester, courseCategory, enrollingDepartment, eligibleBatches, offeringDepartment );
+        assertTrue( postgresStudentDAO.enroll( courseCode, enrollingEntryNumber, currentYear, currentSemester, offeringDepartment, courseCategory ) );
+        postgresStudentDAO.dropCourse( courseCode, enrollingEntryNumber, currentYear, currentSemester );
+        facultyDAO.dropCourseOffering( facultyID, courseCode, currentYear, currentSemester, offeringDepartment );
+        facultyDAO.insertCourseOffering( courseCode, currentYear, currentSemester, offeringDepartment, facultyID );
+        adminDAO.setSessionEvent( runningEvent, currentYear, currentSemester );
 
         try {
             Connection conn = postgresStudentDAO.getDatabaseConnection();
             conn.close();
-            assertFalse( postgresStudentDAO.enroll( "HS507", "2020CSB1062", 2023, 2, "HS", "HE" ) );
+            assertFalse( postgresStudentDAO.enroll( courseCode, entryNumber, currentYear, 2, offeringDepartment, courseCategory ) );
         } catch ( Exception error ) {
             fail( "Database connection could not be closed" );
         }
@@ -195,25 +243,38 @@ class PostgresStudentDAOTest {
 
     @Test
     void dropCourse() {
+        String entryNumber          = "2020CSB1062";
+        String enrollingEntryNumber = "2021CSB1062";
+        String courseCode           = "HS507";
+        String enrollingEvent       = "ENROLLING";
+        String runningEvent         = "RUNNING";
+        String facultyID            = "FAC38";
+        String courseCategory       = "HE";
+        String offeringDepartment   = "HS";
+        String offeredDepartment    = "CS";
+        int    currentYear          = 2023;
+        int    currentSemester      = 2;
+        int[]  offeredBatches       = new int[]{ 2021 };
+
         // False because of invalid arguments
-        assertFalse( postgresStudentDAO.dropCourse( null, "2020CSB1062", 2023, 2 ) );
-        assertFalse( postgresStudentDAO.dropCourse( "HS507", null, 2023, 2 ) );
-        assertFalse( postgresStudentDAO.dropCourse( "HS507", "2020CSB1062", 0, 2 ) );
-        assertFalse( postgresStudentDAO.dropCourse( "HS507", "2020CSB1062", 2023, 0 ) );
+        assertFalse( postgresStudentDAO.dropCourse( null, entryNumber, currentYear, currentSemester ) );
+        assertFalse( postgresStudentDAO.dropCourse( courseCode, null, currentYear, currentSemester ) );
+        assertFalse( postgresStudentDAO.dropCourse( courseCode, entryNumber, -1, currentSemester ) );
+        assertFalse( postgresStudentDAO.dropCourse( courseCode, entryNumber, currentYear, -1 ) );
 
         // Successful drop
-        adminDAO.setSessionEvent( "ENROLLING", 2023, 2 );
-        facultyDAO.setCourseCategory( "HS507", 2023, 2, "HE", "CS", new int[]{ 2021 }, "HS" );
-        postgresStudentDAO.enroll( "HS507", "2021CSB1062", 2023, 2, "HS", "HE" );
-        assertTrue( postgresStudentDAO.dropCourse( "HS507", "2021CSB1062", 2023, 2 ) );
-        facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, "HS" );
-        facultyDAO.insertCourseOffering( "HS507", 2023, 2, "HS", "FAC38" );
-        adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
+        adminDAO.setSessionEvent( enrollingEvent, currentYear, currentSemester );
+        facultyDAO.setCourseCategory( courseCode, currentYear, currentSemester, courseCategory, offeredDepartment, offeredBatches, offeringDepartment );
+        postgresStudentDAO.enroll( courseCode, enrollingEntryNumber, currentYear, currentSemester, offeringDepartment, courseCategory );
+        assertTrue( postgresStudentDAO.dropCourse( courseCode, enrollingEntryNumber, currentYear, currentSemester ) );
+        facultyDAO.dropCourseOffering( facultyID, courseCode, currentYear, currentSemester, offeringDepartment );
+        facultyDAO.insertCourseOffering( courseCode, currentYear, currentSemester, offeringDepartment, facultyID );
+        adminDAO.setSessionEvent( runningEvent, currentYear, currentSemester );
 
         try {
             Connection conn = postgresStudentDAO.getDatabaseConnection();
             conn.close();
-            assertFalse( postgresStudentDAO.dropCourse( "HS507", "2020CSB1062", 2023, 2 ) );
+            assertFalse( postgresStudentDAO.dropCourse( courseCode, entryNumber, currentYear, currentSemester ) );
         } catch ( Exception error ) {
             fail( "Database connection could not be closed" );
         }

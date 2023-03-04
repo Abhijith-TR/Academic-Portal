@@ -290,7 +290,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
     }
 
     @Override
-    public String[][] getCourseEnrollmentsList( String courseCode, int year, int semester, String departmentID ) {
+    public String[][] getCourseEnrollmentsList( String courseCode, int year, int semester, String offeringDepartment ) {
         try {
             if ( courseCode == null || year < 0 || semester <= 0 ) return new String[][]{};
             courseCode = courseCode.toUpperCase();
@@ -300,7 +300,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
             getEnrollmentsQuery.setString( 1, courseCode );
             getEnrollmentsQuery.setInt( 2, year );
             getEnrollmentsQuery.setInt( 3, semester );
-            getEnrollmentsQuery.setString( 4, departmentID );
+            getEnrollmentsQuery.setString( 4, offeringDepartment );
             ResultSet getEnrollmentsQueryResult = getEnrollmentsQuery.executeQuery();
 
             // Converting the result set that was obtained
@@ -318,11 +318,11 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
     }
 
     @Override
-    public String[] getListOfStudents( String courseCode, int year, int semester, String departmentID ) {
+    public String[] getListOfStudents( String courseCode, int year, int semester, String offeringDepartment ) {
         try {
-            if ( courseCode == null || year < 0 || semester <= 0 || departmentID == null ) return new String[]{};
+            if ( courseCode == null || year < 0 || semester <= 0 || offeringDepartment == null ) return new String[]{};
             courseCode = courseCode.toUpperCase();
-            departmentID = departmentID.toUpperCase();
+            offeringDepartment = offeringDepartment.toUpperCase();
 
             // A list to store all the students enrolled in this course
             ArrayList<String> listOfStudents = new ArrayList<>();
@@ -332,7 +332,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
             getStudentsQuery.setString( 1, courseCode );
             getStudentsQuery.setInt( 2, year );
             getStudentsQuery.setInt( 3, semester );
-            getStudentsQuery.setString( 4, departmentID );
+            getStudentsQuery.setString( 4, offeringDepartment );
             ResultSet getStudentsQueryResult = getStudentsQuery.executeQuery();
 
             // Now get all the students from the result set into the array that was created above

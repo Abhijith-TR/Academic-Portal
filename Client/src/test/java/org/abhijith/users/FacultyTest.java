@@ -1,33 +1,40 @@
 package org.abhijith.users;
 
-import org.abhijith.dal.PostgresAdminDAO;
-import org.abhijith.dal.PostgresStudentDAO;
-import org.abhijith.daoInterfaces.AdminDAO;
-import org.abhijith.daoInterfaces.StudentDAO;
+import org.abhijith.dal.PostgresFacultyDAO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.StringReader;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 class FacultyTest {
-    Faculty    faculty;
-    StudentDAO studentDAO;
-    AdminDAO   adminDAO;
+    String             facultyID              = "FAC38";
+    String             courseCode             = "CS301";
+    String             offeringDepartment     = "CS";
+    String             departmentID           = "CS";
+    String             courseCategory         = "PC";
+    int                currentYear            = 2023;
+    int                currentSemester        = 2;
+    int[]              currentAcademicSession = new int[]{ currentYear, currentSemester };
+    double             minimumCGPA            = 8.0;
+    String[][]         prerequisites          = new String[][]{ { courseCode, Double.toString( minimumCGPA ) } };
+    Faculty            faculty                = new Faculty( facultyID );
+    int                offeredYear            = 2021;
+    int[]              offeredYears           = new int[]{ offeredYear };
+    String             entryNumber            = "2020CSB1062";
+    int                batch                  = 2023;
+    PostgresFacultyDAO facultyDAO;
 
     @BeforeEach
     void setUp() {
-        adminDAO = new PostgresAdminDAO(
-                "jdbc:postgresql://localhost:5432/mini_project",
-                "postgres",
-                "admin"
-        );
-        studentDAO = new PostgresStudentDAO(
-                "jdbc:postgresql://localhost:5432/mini_project",
-                "postgres",
-                "admin"
-        );
-        faculty = new Faculty( "FAC38" );
+        facultyDAO = Mockito.mock( PostgresFacultyDAO.class );
+        faculty.setFacultyDAO( facultyDAO );
     }
 
     @AfterEach
@@ -37,110 +44,237 @@ class FacultyTest {
     @Test
     void offerCourse() {
         // Fails because of null
-        assertFalse( faculty.offerCourse( null, "CS" ) );
-        assertFalse( faculty.offerCourse( "CS301", null ) );
+        assertFalse( faculty.offerCourse( null, offeringDepartment ) );
+        assertFalse( faculty.offerCourse( courseCode, null ) );
 
         // Fails because the course code does not exist
-        assertFalse( faculty.offerCourse( "AAAAA", "CS" ) );
-        // Fails because it is not the offering event
-        assertFalse( faculty.offerCourse( "CS101", "CS" ) );
+        when( facultyDAO.checkCourseCatalog( courseCode ) ).thenReturn( false );
+        assertFalse( faculty.offerCourse( courseCode, offeringDepartment ) );
 
-        // Course is offered successfully
-        adminDAO.setSessionEvent( "OFFERING", 2023, 2 );
-        assertTrue( faculty.offerCourse( "CS101", "CS" ) );
-        faculty.dropCourseOffering( "CS101", "CS" );
-        adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
+        // Fails because it is not the offering event
+        when( facultyDAO.checkCourseCatalog( courseCode ) ).thenReturn( true );
+        when( facultyDAO.getCurrentAcademicSession() ).thenReturn( currentAcademicSession );
+        when( facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ).thenReturn( false );
+        assertFalse( faculty.offerCourse( courseCode, offeringDepartment ) );
+
+        // Course has already been offered
+        when( facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ).thenReturn( true );
+        when( facultyDAO.isCourseAlreadyOffered( courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( true );
+        assertFalse( faculty.offerCourse( courseCode, offeringDepartment ) );
+
+        // Course successfully inserted
+        when( facultyDAO.isCourseAlreadyOffered( courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( false );
+        when( facultyDAO.insertCourseOffering( courseCode, currentYear, currentSemester, offeringDepartment, facultyID ) ).thenReturn( true );
+        assertTrue( faculty.offerCourse( courseCode, offeringDepartment ) );
     }
 
     @Test
     void setCGAndPrerequisites() {
         // First 3 fail due to null arguments
-        assertFalse( faculty.setCGAndPrerequisites( null, "CS", 0.0, new String[][]{} ) );
-        assertFalse( faculty.setCGAndPrerequisites( "CS101", "CS", -1, new String[][]{} ) );
-        assertFalse( faculty.setCGAndPrerequisites( "CS101", "CS", 0.0, null ) );
-        assertFalse( faculty.setCGAndPrerequisites( "CS101", null, 0.0, new String[][]{} ) );
+        assertFalse( faculty.setCGAndPrerequisites( null, offeringDepartment, minimumCGPA, prerequisites ) );
+        assertFalse( faculty.setCGAndPrerequisites( courseCode, offeringDepartment, -1, prerequisites ) );
+        assertFalse( faculty.setCGAndPrerequisites( courseCode, offeringDepartment, minimumCGPA, null ) );
+        assertFalse( faculty.setCGAndPrerequisites( courseCode, null, minimumCGPA, prerequisites ) );
 
         // Fails because it is not the offering event right now
-        assertFalse( faculty.setCGAndPrerequisites( "CS101", "CS", 8.0, new String[][]{} ) );
-
-        adminDAO.setSessionEvent( "OFFERING", 2023, 2 );
+        when( facultyDAO.getCurrentAcademicSession() ).thenReturn( currentAcademicSession );
+        when( facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ).thenReturn( false );
+        assertFalse( faculty.setCGAndPrerequisites( courseCode, offeringDepartment, minimumCGPA, prerequisites ) );
 
         // Fails because the course has not been offered by the instructor
-        assertFalse( faculty.setCGAndPrerequisites( "CS101", "CS", 8.0, new String[][]{} ) );
+        when( facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ).thenReturn( true );
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( false );
+        assertFalse( faculty.setCGAndPrerequisites( courseCode, offeringDepartment, minimumCGPA, prerequisites ) );
 
-        // Successfully executed
-        assertTrue( faculty.setCGAndPrerequisites( "HS507", "HS", 8.0, new String[][]{} ) );
-        assertTrue( faculty.setCGAndPrerequisites( "HS507", "HS", 9.0, new String[][]{ { "CS101", "8" } } ) );
+        // Fails because the CGPA was not successfully updated
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( true );
+        when( facultyDAO.setCGCriteria( facultyID, courseCode, minimumCGPA, currentAcademicSession, offeringDepartment ) ).thenReturn( false );
+        assertFalse( faculty.setCGAndPrerequisites( courseCode, offeringDepartment, minimumCGPA, prerequisites ) );
 
-        faculty.dropCourseOffering( "HS507", "HS" );
-        faculty.offerCourse( "HS507", "HS" );
-        adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
+        // Course not found in the catalog
+        when( facultyDAO.setCGCriteria( facultyID, courseCode, minimumCGPA, currentAcademicSession, offeringDepartment ) ).thenReturn( true );
+        when( facultyDAO.checkCourseCatalog( prerequisites[0][0] ) ).thenReturn( false );
+        assertFalse( faculty.setCGAndPrerequisites( courseCode, offeringDepartment, minimumCGPA, prerequisites ) );
+
+        // Successfully inserted
+        when( facultyDAO.checkCourseCatalog( prerequisites[0][0] ) ).thenReturn( true );
+        when( facultyDAO.setInstructorPrerequisites( offeringDepartment, courseCode, prerequisites, currentAcademicSession ) ).thenReturn( true );
+        assertTrue( faculty.setCGAndPrerequisites( courseCode, offeringDepartment, minimumCGPA, prerequisites ) );
+
+        // Testing the exception
+        when( facultyDAO.getCurrentAcademicSession() ).thenThrow( new RuntimeException() );
+        assertFalse( faculty.setCGAndPrerequisites( courseCode, offeringDepartment, minimumCGPA, prerequisites ) );
     }
 
     @Test
     void dropCourseOffering() {
         // Fails because of null
-        assertFalse( faculty.dropCourseOffering( null, "CS" ) );
-        assertFalse( faculty.dropCourseOffering( "CS539", null ) );
+        assertFalse( faculty.dropCourseOffering( null, offeringDepartment ) );
+        assertFalse( faculty.dropCourseOffering( courseCode, null ) );
 
         // Fails because it is not the offering event right now
-        assertFalse( faculty.dropCourseOffering( "HS507", "HS" ) );
+        when( facultyDAO.getCurrentAcademicSession() ).thenReturn( currentAcademicSession );
+        when( facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ).thenReturn( false );
+        assertFalse( faculty.dropCourseOffering( courseCode, offeringDepartment ) );
 
-        adminDAO.setSessionEvent( "OFFERING", 2023, 2 );
         // Fails because no such course has been offered by the instructor
-        assertFalse( faculty.dropCourseOffering( "CS539", "CS" ) );
+        when( facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ).thenReturn( true );
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( false );
+        assertFalse( faculty.dropCourseOffering( courseCode, offeringDepartment ) );
 
         // Successfully executed
-        assertTrue( faculty.dropCourseOffering( "HS507", "HS" ) );
-
-        faculty.offerCourse( "HS507", "HS" );
-        adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( true );
+        when( facultyDAO.dropCourseOffering( facultyID, courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( true );
+        assertTrue( faculty.dropCourseOffering( courseCode, offeringDepartment ) );
     }
 
     @Test
     void setCourseCategory() {
         // Failures due to null
-        assertFalse( faculty.setCourseCategory( null, "HS", "HE", "HS", new int[]{ 2021 } ) );
-        assertFalse( faculty.setCourseCategory( "HS507", "HS", null, "HS", new int[]{ 2021 } ) );
-        assertFalse( faculty.setCourseCategory( "HS507", "HS", "HE", null, new int[]{ 2021 } ) );
-        assertFalse( faculty.setCourseCategory( "HS507", "HS", "HE", "HS", null ) );
-        assertFalse( faculty.setCourseCategory( "HS507", null, "HE", "HS", new int[]{ 2021 } ) );
+        assertFalse( faculty.setCourseCategory( null, offeringDepartment, courseCategory, departmentID, offeredYears ) );
+        assertFalse( faculty.setCourseCategory( courseCode, offeringDepartment, null, departmentID, offeredYears ) );
+        assertFalse( faculty.setCourseCategory( courseCode, offeringDepartment, courseCategory, null, offeredYears ) );
+        assertFalse( faculty.setCourseCategory( courseCode, offeringDepartment, courseCategory, departmentID, null ) );
+        assertFalse( faculty.setCourseCategory( courseCode, null, courseCategory, departmentID, offeredYears ) );
 
         // Fails because it is not the offering event
-        assertFalse( faculty.setCourseCategory( "HS507", "HS", "HE", "CS", new int[]{ 2021 } ) );
+        when( facultyDAO.getCurrentAcademicSession() ).thenReturn( currentAcademicSession );
+        when( facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ).thenReturn( false );
+        assertFalse( faculty.setCourseCategory( courseCode, offeringDepartment, courseCategory, departmentID, offeredYears ) );
 
-        adminDAO.setSessionEvent( "OFFERING", 2023, 2 );
         // Fails because this has not been offered by the instructor
-        assertFalse( faculty.setCourseCategory( "CS539", "HS", "PE", "CS", new int[]{ 2021 } ) );
+        when( facultyDAO.isCurrentEventOffering( currentYear, currentSemester ) ).thenReturn( true );
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( false );
+        assertFalse( faculty.setCourseCategory( courseCode, offeringDepartment, courseCategory, departmentID, offeredYears ) );
 
         // Fails because this particular course is not program core and hence cannot be made offered as program core
-        assertFalse( faculty.setCourseCategory( "HS507", "HS", "PC", "CS", new int[]{ 2021 } ) );
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( true );
+        when( facultyDAO.verifyCore( courseCode, departmentID, offeredYear ) ).thenReturn( false );
+        assertFalse( faculty.setCourseCategory( courseCode, offeringDepartment, courseCategory, departmentID, offeredYears ) );
 
         // Successful as all parts of the query are valid
-        faculty.offerCourse( "HS301", "HS" );
-        assertTrue( faculty.setCourseCategory( "HS301", "HS", "PC", "CS", new int[]{ 2020 } ) );
-        faculty.dropCourseOffering( "HS301", "HS" );
-        adminDAO.setSessionEvent( "RUNNING", 2023, 2 );
+        when( facultyDAO.verifyCore( courseCode, departmentID, offeredYear ) ).thenReturn( true );
+        when( facultyDAO.setCourseCategory( courseCode, currentYear, currentSemester, courseCategory, departmentID, offeredYears, offeringDepartment ) ).thenReturn( true );
+        assertTrue( faculty.setCourseCategory( courseCode, offeringDepartment, courseCategory, departmentID, offeredYears ) );
     }
 
     @Test
     void getGradesOfStudent() {
-        assertArrayEquals( new String[][][]{ {}, {}, {}, {}, {}, {} }, faculty.getGradesOfStudent( "2021CSB1062" ) );
+        // Invalid input parameters
+        assertArrayEquals( new String[][][]{}, faculty.getGradesOfStudent( null ) );
+
+        // The batch function fails
+        when( facultyDAO.getCurrentAcademicSession() ).thenReturn( currentAcademicSession );
+        when( facultyDAO.getBatch( entryNumber ) ).thenReturn( -1 );
+        assertArrayEquals( new String[][][]{}, faculty.getGradesOfStudent( entryNumber ) );
+
+        // Successful
+        when( facultyDAO.getBatch( entryNumber ) ).thenReturn( batch );
+        when( facultyDAO.getStudentGradesForSemester( entryNumber, batch, 1 ) ).thenReturn( new String[][]{} );
+        when( facultyDAO.getStudentGradesForSemester( entryNumber, batch, 2 ) ).thenReturn( new String[][]{ { "CS101", "8" } } );
+        assertArrayEquals( new String[][][]{ {}, { { "CS101", "8" } } }, faculty.getGradesOfStudent( entryNumber ) );
     }
 
     @Test
     void getGradesOfOffering() {
-        assertArrayEquals( new String[][]{}, faculty.getGradesOfOffering( "HS507", 2023, 2, "HS" ) );
-        assertArrayEquals( new String[][]{ { "2020CSB1062", "A" } }, faculty.getGradesOfOffering( "CS101", 2020, 1, "CS" ) );
+        String[][] emptyArray  = new String[][]{};
+        String[][] returnValue = new String[][]{ { "2020CSB1062", "A" } };
+
+        // [][] because of invalid input parameters
+        assertArrayEquals( emptyArray, faculty.getGradesOfOffering( null, currentYear, currentSemester, offeringDepartment ) );
+        assertArrayEquals( emptyArray, faculty.getGradesOfOffering( courseCode, -1, currentSemester, offeringDepartment ) );
+        assertArrayEquals( emptyArray, faculty.getGradesOfOffering( courseCode, currentYear, -1, offeringDepartment ) );
+        assertArrayEquals( emptyArray, faculty.getGradesOfOffering( courseCode, currentYear, currentSemester, null ) );
+
+        // Returns the expected value
+        when( faculty.getGradesOfOffering( courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( returnValue );
+        assertArrayEquals( returnValue, faculty.getGradesOfOffering( courseCode, currentYear, currentSemester, offeringDepartment ) );
     }
 
     @Test
     void generateGradeCSV() {
-        // Fails because it is not his own course
-        assertFalse( faculty.generateGradeCSV( "CS539", 2023, 2, "CS" ) );
+        String[][] listOfStudents = new String[][]{ { "ABHIJITH", entryNumber } };
+
+        // False because of invalid input parameters
+        assertFalse( faculty.generateGradeCSV( null, currentYear, currentSemester, offeringDepartment ) );
+        assertFalse( faculty.generateGradeCSV( courseCode, -1, currentSemester, offeringDepartment ) );
+        assertFalse( faculty.generateGradeCSV( courseCode, currentYear, -1, offeringDepartment ) );
+        assertFalse( faculty.generateGradeCSV( courseCode, currentYear, currentSemester, null ) );
+
+        // False because the course is not offered by this instructor
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, departmentID ) ).thenReturn( false );
+        assertFalse( faculty.generateGradeCSV( courseCode, currentYear, currentSemester, offeringDepartment ) );
+
+        // Successful
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, departmentID ) ).thenReturn( true );
+        when( facultyDAO.getCourseEnrollmentsList( courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( listOfStudents );
+        assertTrue( faculty.generateGradeCSV( courseCode, currentYear, currentSemester, offeringDepartment ) );
+
+        // Note: The following test will fail if you decide to rename the file that is generated on a successful generateGradeCSV call
+        try {
+            String         fileName     = courseCode + "_" + currentYear + "_" + currentSemester + "_" + offeringDepartment + ".csv";
+            BufferedReader outputFile   = new BufferedReader( new FileReader( fileName ) );
+            String         line;
+            String         expectedLine = listOfStudents[0][0] + "," + listOfStudents[0][1] + ",";
+            while ( ( line = outputFile.readLine() ) != null ) {
+                assertEquals( expectedLine, line );
+            }
+            outputFile.close();
+        } catch ( Exception error ) {
+            fail( "Could not open file" );
+        }
+
+        // False due to the exception
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, departmentID ) ).thenThrow( new RuntimeException() );
+        assertFalse( faculty.generateGradeCSV( courseCode, currentYear, currentSemester, offeringDepartment ) );
     }
 
     @Test
     void uploadGrades() {
+        String         gradeString    = "ABHIJITH," + entryNumber + ",A\n";
+        String[]       listOfStudents = new String[]{ entryNumber };
+        String[]       listOfGrades   = new String[]{ "A" };
+        BufferedReader gradeFile      = new BufferedReader( new StringReader( gradeString ) );
+
+        // False due to invalid input parameters
+        assertFalse( faculty.uploadGrades( null, currentYear, currentSemester, gradeFile, offeringDepartment ) );
+        assertFalse( faculty.uploadGrades( courseCode, -1, currentSemester, gradeFile, offeringDepartment ) );
+        assertFalse( faculty.uploadGrades( courseCode, currentYear, -1, gradeFile, offeringDepartment ) );
+        assertFalse( faculty.uploadGrades( courseCode, currentYear, currentSemester, null, offeringDepartment ) );
+        assertFalse( faculty.uploadGrades( courseCode, currentYear, currentSemester, gradeFile, null ) );
+
+        // False because of the wrong year and semester
+        when( facultyDAO.getCurrentAcademicSession() ).thenReturn( new int[]{ 2022, 2 } );
+        assertFalse( faculty.uploadGrades( courseCode, currentYear, currentSemester, gradeFile, offeringDepartment ) );
+
+        // False because it is not the grade submission event
+        when( facultyDAO.getCurrentAcademicSession() ).thenReturn( currentAcademicSession );
+        when( facultyDAO.isCurrentEventGradeSubmission( currentYear, currentSemester ) ).thenReturn( false );
+        assertFalse( faculty.uploadGrades( courseCode, currentYear, currentSemester, gradeFile, offeringDepartment ) );
+
+        // False because the instructor has not offered this course
+        when( facultyDAO.isCurrentEventGradeSubmission( currentYear, currentSemester ) ).thenReturn( true );
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, departmentID ) ).thenReturn( false );
+        assertFalse( faculty.uploadGrades( courseCode, currentYear, currentSemester, gradeFile, offeringDepartment ) );
+
+        // False because the size of the list of students is different
+        when( facultyDAO.checkIfOfferedBySelf( facultyID, courseCode, currentYear, currentSemester, departmentID ) ).thenReturn( true );
+        when( facultyDAO.getListOfStudents( courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( new String[]{} );
+        assertFalse( faculty.uploadGrades( courseCode, currentYear, currentSemester, gradeFile, offeringDepartment ) );
+
+        // False because the list of students itself is different
+        gradeFile      = new BufferedReader( new StringReader( gradeString ) );
+        when( facultyDAO.getListOfStudents( courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( new String[]{ "2020CSB" } );
+        assertFalse( faculty.uploadGrades( courseCode, currentYear, currentSemester, gradeFile, offeringDepartment ) );
+
+        // Successful because all conditions have been satisfied
+        gradeFile      = new BufferedReader( new StringReader( gradeString ) );
+        when( facultyDAO.getListOfStudents( courseCode, currentYear, currentSemester, offeringDepartment ) ).thenReturn( new String[]{ entryNumber } );
+        when( facultyDAO.uploadCourseGrades( courseCode, currentYear, currentSemester, offeringDepartment, listOfStudents, listOfGrades) ).thenReturn( true );
+        assertTrue( faculty.uploadGrades( courseCode, currentYear, currentSemester, gradeFile, offeringDepartment ) );
+
+        // Failure because an exception is called
+        when( facultyDAO.getCurrentAcademicSession()).thenThrow( new RuntimeException() );
+        assertFalse( faculty.uploadGrades( courseCode, currentYear, currentSemester, gradeFile, offeringDepartment ) );
     }
 }
