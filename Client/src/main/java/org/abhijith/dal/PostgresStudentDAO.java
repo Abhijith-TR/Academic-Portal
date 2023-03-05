@@ -86,7 +86,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     @Override
     public String[][] getInstructorPrerequisites( String courseCode, int year, int semester, String courseDepartment ) {
         try {
-            if ( courseCode == null || year <= 0 || semester <= 0 || courseDepartment == null ) return null;
+            if ( courseCode == null || year < 0 || semester < 0 || courseDepartment == null ) return null;
             courseCode = courseCode.toUpperCase();
             courseDepartment = courseDepartment.toUpperCase();
 
@@ -298,7 +298,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     @Override
     public String getCourseCategory( String courseCode, int year, int semester, String courseDepartment, String studentDepartment, int batch ) {
         try {
-            if ( courseCode == null || year <= 0 || semester <= 0 || courseDepartment == null || studentDepartment == null || batch <= 0 )
+            if ( courseCode == null || year < 0 || semester < 0 || courseDepartment == null || studentDepartment == null || batch <= 0 )
                 return "";
 
             // SQL query to fetch the course category for this particular student from the database

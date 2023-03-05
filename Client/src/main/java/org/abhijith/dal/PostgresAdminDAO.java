@@ -13,7 +13,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
 
     public String[][] getGradesOfCourse( String courseCode, int year, int semester, String offeringDepartment ) {
         try {
-            if ( courseCode == null || offeringDepartment == null || year < 0 || semester <= 0 ) return new String[][]{};
+            if ( courseCode == null || offeringDepartment == null || year < 0 || semester < 0 )
+                return new String[][]{};
             courseCode = courseCode.toUpperCase();
             offeringDepartment = offeringDepartment.toUpperCase();
 
@@ -49,7 +50,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             departmentID = departmentID.toUpperCase();
 
             final String DEFAULT_PASSWORD = "iitropar";
-            final String STUDENT_ROLE = "STUDENT";
+            final String STUDENT_ROLE     = "STUDENT";
 
             // SQL query to insert a student into the student relation which would allow him to enroll in various courses
             PreparedStatement insertStudentQuery = databaseConnection.prepareStatement( "INSERT INTO student(entry_number, name, department_id, batch) VALUES (?, ?, ?, ?)" );
@@ -82,7 +83,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             departmentID = departmentID.toUpperCase();
 
             final String DEFAULT_PASSWORD = "iitropar";
-            final String FACULTY_ROLE = "FACULTY";
+            final String FACULTY_ROLE     = "FACULTY";
 
             PreparedStatement insertFacultyQuery = databaseConnection.prepareStatement( "INSERT INTO faculty(faculty_id, name, department_id) VALUES (?, ?, ?)" );
             insertFacultyQuery.setString( 1, facultyID );
@@ -105,6 +106,16 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
 
     public boolean insertCourse( String courseCode, String courseTitle, double[] creditStructure, String[] prerequisites ) {
         try {
+            if ( courseCode == null || courseTitle == null || creditStructure == null || creditStructure.length != 5 || prerequisites == null )
+                return false;
+            for ( int i = 0; i < creditStructure.length; i++ ) if ( creditStructure[i] < 0 ) return false;
+            for ( int i = 0; i < prerequisites.length; i++ ) {
+                if ( prerequisites[i] == null ) return false;
+                prerequisites[i] = prerequisites[i].toUpperCase();
+            }
+            courseCode = courseCode.toUpperCase();
+            courseTitle = courseTitle.toUpperCase();
+
             PreparedStatement insertCourseQuery = databaseConnection.prepareStatement( "INSERT INTO course_catalog VALUES(?, ?, ?, ?, ?, ?, ?, ?)" );
             insertCourseQuery.setString( 1, courseCode );
             insertCourseQuery.setString( 2, courseTitle );
@@ -125,6 +136,12 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean checkAllPrerequisites( String[] prerequisites ) {
         try {
+            if ( prerequisites == null ) return false;
+            for ( int i = 0; i < prerequisites.length; i++ ) {
+                if ( prerequisites[i] == null ) return false;
+                prerequisites[i] = prerequisites[i].toUpperCase();
+            }
+
             boolean coursesFound = true;
             for ( String course : prerequisites ) {
                 PreparedStatement findCourseQuery = databaseConnection.prepareStatement( "SELECT course_code FROM course_catalog WHERE course_code = ?" );
@@ -142,6 +159,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean dropCourseFromCatalog( String courseCode ) {
         try {
+            if ( courseCode == null ) return false;
+
             PreparedStatement dropCourseQuery = databaseConnection.prepareStatement( "DELETE FROM course_catalog WHERE course_code = ?" );
             dropCourseQuery.setString( 1, courseCode );
             int dropCourseQueryResult = dropCourseQuery.executeUpdate();
@@ -155,6 +174,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean createBatch( int batchYear ) {
         try {
+            if ( batchYear < 0 ) return false;
+
             PreparedStatement createBatchQuery = databaseConnection.prepareStatement( "INSERT INTO batch VALUES(?)" );
             createBatchQuery.setInt( 1, batchYear );
             createBatchQuery.executeUpdate();
@@ -168,6 +189,9 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean createCurriculum( int batchYear, double[] creditRequirements ) {
         try {
+            if ( batchYear < 0 || creditRequirements == null || creditRequirements.length != 12 ) return false;
+            for ( int i = 0; i < creditRequirements.length; i++ ) if ( creditRequirements[i] < 0 ) return false;
+
             PreparedStatement createCurriculumQuery = databaseConnection.prepareStatement( "INSERT INTO ug_curriculum VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" );
             createCurriculumQuery.setInt( 1, batchYear );
             for ( int i = 2; i <= 12; i++ ) {
@@ -184,6 +208,14 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean insertCoreCourse( String courseCode, String[] departmentCodes, int batch, String courseCategory ) {
         try {
+            if ( courseCode == null || departmentCodes == null || batch < 0 || courseCategory == null ) return false;
+            for ( int i = 0; i < departmentCodes.length; i++ ) {
+                if ( departmentCodes[i] == null ) return false;
+                departmentCodes[i] = departmentCodes[i].toUpperCase();
+            }
+            courseCategory = courseCategory.toUpperCase();
+            courseCode = courseCode.toUpperCase();
+
             int               insertCourseQueryResult = 1;
             PreparedStatement insertCourseQuery       = databaseConnection.prepareStatement( "INSERT INTO core_courses VALUES (?, ?, ?, ?)" );
             insertCourseQuery.setString( 1, courseCode );
@@ -221,6 +253,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean findEntryNumber( String entryNumber ) {
         try {
+            if ( entryNumber == null ) return false;
+
             // Generate the SQL query that will check if the student exists
             PreparedStatement findEntryNumberQuery = databaseConnection.prepareStatement( "SELECT name FROM student WHERE entry_number = ?" );
             findEntryNumberQuery.setString( 1, entryNumber );
@@ -237,6 +271,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public String[] getCoreCourses( int batch, String studentDepartment ) {
         try {
+            if ( batch < 0 || studentDepartment == null ) return null;
+
             // Execute the SQL statement that will get all the core courses of a particular department in a particular year
             PreparedStatement getCoreCoursesQuery = databaseConnection.prepareStatement( "SELECT course_code FROM core_courses WHERE batch = ? AND department_id = ?" );
             getCoreCoursesQuery.setInt( 1, batch );
@@ -260,6 +296,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public String[] getListOfStudentsInBatch( int batch, String department ) {
         try {
+            if ( batch < 0 || department == null ) return null;
+
             // Execute the SQL query to fetch all the students of this department from this batch
             PreparedStatement getStudentsQuery = databaseConnection.prepareStatement( "SELECT entry_number FROM student WHERE batch = ? AND department_id = ?" );
             getStudentsQuery.setInt( 1, batch );
@@ -286,6 +324,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean checkIfSessionCompleted( int year, int semester ) {
         try {
+            if ( year < 0 || semester < 0 ) return false;
+
             // Get the status of the session that was provided
             PreparedStatement getSessionQuery = databaseConnection.prepareStatement( "SELECT current_event FROM current_year_and_semester WHERE year = ? AND semester = ?" );
             getSessionQuery.setInt( 1, year );
@@ -308,6 +348,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean createNewSession( int newYear, int newSemester ) {
         try {
+            if ( newYear < 0 || newSemester < 0 ) return false;
+
             // Create an SQL query to insert the session into the database
             PreparedStatement createSessionQuery = databaseConnection.prepareStatement( "INSERT INTO current_year_and_semester( year, semester ) VALUES(?, ?)" );
             createSessionQuery.setInt( 1, newYear );
@@ -324,6 +366,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean setSessionEvent( String event, int currentYear, int currentSemester ) {
         try {
+            if ( event == null || currentSemester < 0 || currentYear < 0 ) return false;
             // These are the only statuses that are allowed. If the user has entered a completely different status, it must be rejected
             String[] availableEvents = new String[]{ "RUNNING", "ENROLLING", "OFFERING", "GRADE SUBMISSION", "COMPLETED" };
 
@@ -352,6 +395,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean verifyNoMissingGrades( int currentYear, int currentSemester ) {
         try {
+            if ( currentYear < 0 || currentSemester < 0 ) return false;
+
             // SQL query to check if there are any students in the previous semester who have not had their grades entered
             // '-' is used in the database to indicate that an entry has not yet been inserted
             PreparedStatement missingGradeQuery = databaseConnection.prepareStatement( "SELECT * FROM student_course_registration WHERE year = ? AND semester = ? AND grade = '-'" );

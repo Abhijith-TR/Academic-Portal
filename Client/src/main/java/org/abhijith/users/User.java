@@ -25,6 +25,7 @@ public class User {
         return commonDAO.setEmail( this.id, email );
     }
 
+    // Returns { email, phoneNumber }
     public String[] getContactDetails( String userID ) {
         return commonDAO.getContactDetails( userID );
     }

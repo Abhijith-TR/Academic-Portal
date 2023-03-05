@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 
 public class FacultyUI {
+    Faculty faculty;
     String[] facultyChoices = {
             "Register Course",
             "Update CG and Prerequisites",
@@ -25,12 +26,15 @@ public class FacultyUI {
     };
 
     public FacultyUI( String id ) {
-        FacultyUI( id );
+        faculty = new Faculty( id );
     }
 
-    public void FacultyUI( String id ) {
+    public void setFaculty( Faculty faculty ) {
+        this.faculty = faculty;
+    }
+
+    public void facultyInterfaceHomeScreen() {
         CustomScanner keyboardInput = new CustomScanner();
-        Faculty       faculty       = new Faculty( id );
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );
@@ -62,7 +66,6 @@ public class FacultyUI {
                     int               numberOfCourses = keyboardInput.integerInput( "Enter the number of courses of type " + i );
                     ArrayList<String> courses         = new ArrayList<>();
                     for ( int j = 0; j < numberOfCourses; j++ ) {
-                        System.out.println();
                         String course = keyboardInput.stringInput( "Enter the course code" );
                         // Should the grade cutoff be in numbers or should it be a grade as a string?
                         int prerequisite = keyboardInput.integerInput( "Enter the grade cutoff (as a number)" );
@@ -75,7 +78,9 @@ public class FacultyUI {
                     }
                     prerequisites.add( courses.toArray( new String[courses.size()] ) );
                 }
-                if ( faculty.setCGAndPrerequisites( courseCode, departmentID, minimumCGPA, prerequisites.toArray( new String[prerequisites.size()][] ) ) )
+                System.out.println( minimumCGPA );
+                String[][] prerequisitesArray = prerequisites.toArray( new String[prerequisites.size()][] );
+                if ( faculty.setCGAndPrerequisites( courseCode, departmentID, minimumCGPA, prerequisitesArray ) )
                     System.out.println( "Details Updated Successfully" );
                 else System.out.println( "Criteria Update Failed" );
             }

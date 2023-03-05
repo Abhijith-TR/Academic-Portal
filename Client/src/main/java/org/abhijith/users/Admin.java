@@ -40,7 +40,7 @@ public class Admin extends User {
     }
 
     public String[][] getGradesOfOffering( String courseCode, int year, int semester, String departmentID ) {
-        if ( courseCode == null || year < 0 || semester <= 0 || departmentID == null ) return new String[][]{};
+        if ( courseCode == null || year < 0 || semester < 0 || departmentID == null ) return new String[][]{};
         return adminDAO.getGradesOfCourse( courseCode, year, semester, departmentID );
     }
 

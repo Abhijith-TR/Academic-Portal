@@ -1,7 +1,5 @@
 You can also create a separate utils object for each instance instead of the static idea
 
-Viewing the course catalog by the admin
-
 No editing curriculum is allowed
 
 Test the instructor prerequisites thing
@@ -13,3 +11,7 @@ Change the exception return value of getCurrentAcademicSession() to null
 Note that the Main-Class: org.abhijith.Main has to be added to get the file to run
 
 Maybe put a try catch in checkInstructorPrerequisites, getCGPA, getSGPA
+
+Include course category in the get grades for the student
+Everyone should be able to view the course catalog
+

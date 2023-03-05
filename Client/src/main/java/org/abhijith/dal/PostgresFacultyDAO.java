@@ -261,7 +261,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
 
     public String[][] getGradesOfCourse( String courseCode, int year, int semester, String departmentID ) {
         try {
-            if ( courseCode == null || year < 0 || semester <= 0 || departmentID == null ) return new String[][]{};
+            if ( courseCode == null || year < 0 || semester < 0 || departmentID == null ) return new String[][]{};
             courseCode = courseCode.toUpperCase();
             departmentID = departmentID.toUpperCase();
 
@@ -292,7 +292,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
     @Override
     public String[][] getCourseEnrollmentsList( String courseCode, int year, int semester, String offeringDepartment ) {
         try {
-            if ( courseCode == null || year < 0 || semester <= 0 ) return new String[][]{};
+            if ( courseCode == null || year < 0 || semester < 0 ) return new String[][]{};
             courseCode = courseCode.toUpperCase();
 
             // SQL query to get the name and entry number for this particular course offeirng
@@ -320,7 +320,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
     @Override
     public String[] getListOfStudents( String courseCode, int year, int semester, String offeringDepartment ) {
         try {
-            if ( courseCode == null || year < 0 || semester <= 0 || offeringDepartment == null ) return new String[]{};
+            if ( courseCode == null || year < 0 || semester < 0 || offeringDepartment == null ) return new String[]{};
             courseCode = courseCode.toUpperCase();
             offeringDepartment = offeringDepartment.toUpperCase();
 
@@ -389,7 +389,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
     @Override
     public boolean uploadCourseGrades( String courseCode, int year, int semester, String offeringDepartment, String[] listOfStudents, String[] listOfGrades ) {
         try {
-            if ( courseCode == null || year < 0 || semester <= 0 || listOfGrades == null || listOfStudents == null || offeringDepartment == null || listOfStudents.length != listOfGrades.length ) return false;
+            if ( courseCode == null || year < 0 || semester < 0 || listOfGrades == null || listOfStudents == null || offeringDepartment == null || listOfStudents.length != listOfGrades.length ) return false;
             courseCode = courseCode.toUpperCase();
             offeringDepartment = offeringDepartment.toUpperCase();
 

@@ -208,7 +208,7 @@ public class Student extends User {
     // Return format: { { courseCode, courseTitle, grade, credits } }
     public String[][] getGrades( int year, int semester ) {
         // Checking input parameters
-        if ( year <= 0 || semester <= 0 ) return new String[][]{};
+        if ( year < 0 || semester < 0 ) return new String[][]{};
 
         return studentDAO.getStudentGradesForSemester( this.id, year, semester );
     }

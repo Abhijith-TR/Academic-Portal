@@ -7,6 +7,7 @@ import org.abhijith.utils.Utils;
 import java.io.BufferedReader;
 
 public class AdminUI {
+    Admin admin;
 
     String[] adminChoices = {
             "Add Student",
@@ -29,12 +30,15 @@ public class AdminUI {
     };
 
     public AdminUI( String id ) {
-        adminInterfaceHomeScreen( id );
+        admin = new Admin( id );
     }
 
-    public void adminInterfaceHomeScreen( String id ) {
+    public void setAdmin( Admin admin ) {
+        this.admin = admin;
+    }
+
+    public void adminInterfaceHomeScreen() {
         CustomScanner keyboardInput = new CustomScanner();
-        Admin         admin         = new Admin( id );
 
         // Uses the default database connection
         while ( true ) {
@@ -88,7 +92,7 @@ public class AdminUI {
                 System.out.println( "Warning! Removing course will also remove all records corresponding to the course" );
                 String courseCode = keyboardInput.stringInput( "Enter course code to be removed" );
                 if ( admin.dropCourseFromCatalog( courseCode ) ) System.out.println( "Course dropped successfully" );
-
+                else System.out.println( "Course Drop Failed" );
             }
 
             else if ( adminChoice == 5 ) {
@@ -98,8 +102,8 @@ public class AdminUI {
                 int          semester    = 1;
                 for ( String[][] record : records ) {
                     Utils.prettyPrintGrades( year, semester, record );
-                    semester = ( semester == 1 ) ? 2 : 1;
                     if ( semester == 2 ) year++;
+                    semester = ( semester == 1 ) ? 2 : 1;
                 }
             }
 
@@ -216,7 +220,7 @@ public class AdminUI {
                 System.out.println( "List of possible Events" );
                 String[] eventsList = new String[]{ "ENROLLING", "OFFERING", "GRADE SUBMISSION", "COMPLETED", "RUNNING" };
                 for ( int i = 1; i <= eventsList.length; i++ ) {
-                    System.out.println( i + ". " + eventsList[i] );
+                    System.out.println( i + ". " + eventsList[i-1] );
                 }
                 int choice = keyboardInput.integerInput( "Enter your choice" );
                 if ( choice <= 0 || choice > eventsList.length ) {

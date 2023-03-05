@@ -27,7 +27,6 @@ public class PasswordDatabase implements PasswordDAO {
                     password
             );
         } catch ( Exception error ) {
-            System.out.println( error.getMessage() );
             System.err.println( "Configuration Error. Could not connect to database. Shutting down." );
             System.exit( 0 );
         }

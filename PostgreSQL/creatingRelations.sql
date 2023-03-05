@@ -150,7 +150,7 @@ CREATE TABLE current_year_and_semester
 (
     year          INTEGER NOT NULL,
     semester      INTEGER NOT NULL,
-    current_event TEXT DEFAULT 'NONE',
+    current_event TEXT DEFAULT 'RUNNING',
     PRIMARY KEY (year, semester),
     CHECK ( current_event IN ('ENROLLING', 'OFFERING', 'GRADE SUBMISSION', 'COMPLETED', 'RUNNING'))
 );

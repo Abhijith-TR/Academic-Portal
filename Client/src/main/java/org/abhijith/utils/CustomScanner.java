@@ -20,6 +20,7 @@ public class CustomScanner {
                 keyboardInput.nextLine();
                 return input;
             } catch ( Exception error ) {
+                System.out.println( error.getMessage() );
                 System.out.println( "Please Enter Valid Input" );
                 keyboardInput = new Scanner( System.in );
             }
@@ -82,7 +83,6 @@ public class CustomScanner {
             dialog.dispose();
 
             if ( !dialog.getFile().equals( expectedFileName ) ) {
-                System.out.println( dialog.getFile() + " " + expectedFileName );
                 throw new RuntimeException( "Unexpected file name" );
             }
             BufferedReader CSVFile = new BufferedReader( new FileReader( fileName ) );

@@ -8,14 +8,19 @@ public class HomeUI {
     PasswordDAO passwordAuthConnection;
 
     // Roles in the database system - to allow easy extension
-    String[] Role = new String[]{
+    String[] roles = new String[]{
             "STUDENT",
             "FACULTY",
-            "ADMIN"
+            "ADMIN",
+            "SHUT DOWN"
     };
 
     public HomeUI() {
         passwordAuthConnection = new PasswordDatabase();
+    }
+
+    public void setPasswordAuthConnection( PasswordDAO passwordAuthConnection ) {
+        this.passwordAuthConnection = passwordAuthConnection;
     }
 
     public void mainInterface() {
@@ -31,7 +36,7 @@ public class HomeUI {
             // Short-lived iterator variable
             int i = 1;
             // Printing all the roles available in the database
-            for ( String role : Role ) {
+            for ( String role : roles ) {
                 System.out.printf( "%d. %s\n", i, role );
                 i++;
             }
@@ -40,7 +45,7 @@ public class HomeUI {
             int roleIndex = keyboardInput.integerInput( "Enter the number corresponding to the role" );
 
             // If the user has entered an invalid role index
-            if ( roleIndex > Role.length || roleIndex <= 0 ) {
+            if ( roleIndex > roles.length || roleIndex <= 0 ) {
                 System.out.println( "Invalid Choice" );
                 continue;
             }
@@ -50,7 +55,8 @@ public class HomeUI {
             String password = keyboardInput.stringInput( "Enter your password" );
 
             // We verify the username, password and role using the details entered
-            boolean isValidUser = passwordAuthConnection.authenticateUser( id, password, Role[roleIndex - 1] );
+            String  role        = ( roleIndex == roles.length ) ? roles[2] : roles[roleIndex - 1];
+            boolean isValidUser = passwordAuthConnection.authenticateUser( id, password, role );
             // If the verification reveals that the username or password or role is invalid
             if ( !isValidUser ) {
                 System.out.println( "Invalid Username or Password" );
@@ -59,18 +65,24 @@ public class HomeUI {
 
             // Once the username and password have been verified, pass control over to the corresponding user interface
             if ( roleIndex == 1 ) {
-                new StudentUI( id );
+                StudentUI studentUI = new StudentUI( id );
+                studentUI.studentInterfaceHomeScreen();
             }
             else if ( roleIndex == 2 ) {
-                new FacultyUI( id );
+                FacultyUI facultyUI = new FacultyUI( id );
+                facultyUI.facultyInterfaceHomeScreen();
             }
             else if ( roleIndex == 3 ) {
-                new AdminUI( id );
+                AdminUI adminUI = new AdminUI( id );
+                adminUI.adminInterfaceHomeScreen();
+            }
+            else if ( roleIndex == 4 ) {
+                break;
             }
 
             // Trying to log the logout of the user into the database. Logout is not successful until the log recognizes it
             while ( true ) {
-                if ( passwordAuthConnection.logLogoutEntry( id, Role[roleIndex - 1] ) )
+                if ( passwordAuthConnection.logLogoutEntry( id, role ) )
                     break;
             }
         }
