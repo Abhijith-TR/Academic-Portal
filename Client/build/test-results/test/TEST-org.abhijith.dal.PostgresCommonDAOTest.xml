@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.dal.PostgresCommonDAOTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2023-03-05T09:40:48" hostname="ADMIN" time="0.386">
+  <properties/>
+  <testcase name="getStudentDepartment()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.036"/>
+  <testcase name="checkCourseCatalog()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.033"/>
+  <testcase name="setPassword()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.032"/>
+  <testcase name="getCourseGrade()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.028"/>
+  <testcase name="getStudentGradesForSemester()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.034"/>
+  <testcase name="setPhoneNumber()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.036"/>
+  <testcase name="getContactDetails()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.029"/>
+  <testcase name="setEmail()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.031"/>
+  <testcase name="getCreditsInAllCategories()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.031"/>
+  <testcase name="getUGCurriculum()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.03"/>
+  <testcase name="getBatch()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.031"/>
+  <testcase name="getCurrentAcademicSession()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.029"/>
+  <system-out><![CDATA[Database Error. Please try again later
+Database Error. Try again later
+Database Error. Please try again later
+Database Error. Please try again later
+Database Error. Try again later
+Database Error. Please try again later
+Database Error. Please try again later
+Database error. Please try again later
+Database Error. Please try again later 
+Database Error. Please try again later
+Database Error. Try again later
+Database Error. Please try again later
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.ui.StudentUITest" tests="11" skipped="0" failures="0" errors="0" timestamp="2023-03-05T09:40:54" hostname="ADMIN" time="0.422">
+  <properties/>
+  <testcase name="getAvailableCoursesTest()" classname="org.abhijith.ui.StudentUITest" time="0.049"/>
+  <testcase name="viewGradesForParticularSessionTest()" classname="org.abhijith.ui.StudentUITest" time="0.012"/>
+  <testcase name="updateEmailTest()" classname="org.abhijith.ui.StudentUITest" time="0.005"/>
+  <testcase name="getCGPATest()" classname="org.abhijith.ui.StudentUITest" time="0.002"/>
+  <testcase name="dropTest()" classname="org.abhijith.ui.StudentUITest" time="0.002"/>
+  <testcase name="updatePasswordTest()" classname="org.abhijith.ui.StudentUITest" time="0.002"/>
+  <testcase name="getContactDetailsTest()" classname="org.abhijith.ui.StudentUITest" time="0.003"/>
+  <testcase name="getRemainingCreditRequirementsTest()" classname="org.abhijith.ui.StudentUITest" time="0.004"/>
+  <testcase name="enrollTest()" classname="org.abhijith.ui.StudentUITest" time="0.003"/>
+  <testcase name="updatePhoneNumberTest()" classname="org.abhijith.ui.StudentUITest" time="0.002"/>
+  <testcase name="viewGradesForEntireDegree()" classname="org.abhijith.ui.StudentUITest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

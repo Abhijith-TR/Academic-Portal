@@ -7,8 +7,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO {
-    public PostgresFacultyDAO( String connectionURL, String username, String password ) {
-        super( connectionURL, username, password );
+    public PostgresFacultyDAO() {
+        super();
     }
 
     @Override

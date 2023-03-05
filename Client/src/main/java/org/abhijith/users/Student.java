@@ -14,24 +14,8 @@ public class Student extends User {
 
     public Student( String id ) {
         super( id );
-        try {
-            Properties  databaseConfig = new Properties();
-            ClassLoader classLoader    = Student.class.getClassLoader();
-            InputStream inputStream    = classLoader.getResourceAsStream( "config.properties" );
-            databaseConfig.load( inputStream );
-
-            String connectionURL = databaseConfig.getProperty( "student.connectionURL" );
-            String username      = databaseConfig.getProperty( "student.username" );
-            String password      = databaseConfig.getProperty( "student.password" );
-            this.studentDAO = new PostgresStudentDAO(
-                    connectionURL,
-                    username,
-                    password
-            );
-            super.setCommonDAO( studentDAO );
-        } catch ( Exception error ) {
-            System.out.println( "Could not connect to database" );
-        }
+        this.studentDAO = new PostgresStudentDAO();
+        super.setCommonDAO( studentDAO );
     }
 
     public void setStudentDAO( StudentDAO studentDAO ) {
@@ -124,8 +108,10 @@ public class Student extends User {
 
         // Checks whether the student has got any grade in this course before
         String courseGrade = studentDAO.getCourseGrade( this.id, courseCode );
+
         // '-' indicates that the student is already enrolled in this course in this semester
-        if ( Utils.getGradeValue( courseGrade ) >= 4 || courseGrade.equals( "-" ) ) {
+        // "" indicates that something has gone wrong while fetching the grade
+        if ( Utils.getGradeValue( courseGrade ) >= 4 || courseGrade.equals( "-" ) || courseGrade.equals( "" ) ) {
             return false;
         }
 

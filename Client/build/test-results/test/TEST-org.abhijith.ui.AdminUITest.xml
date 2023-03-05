@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.ui.AdminUITest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-05T05:32:50" hostname="ADMIN" time="0.969">
+<testsuite name="org.abhijith.ui.AdminUITest" tests="15" skipped="0" failures="0" errors="0" timestamp="2023-03-05T09:40:51" hostname="ADMIN" time="1.923">
   <properties/>
-  <testcase name="getCourseRecordsTest()" classname="org.abhijith.ui.AdminUITest" time="0.969"/>
+  <testcase name="generateTranscriptTest()" classname="org.abhijith.ui.AdminUITest" time="1.403"/>
+  <testcase name="insertCourseTest()" classname="org.abhijith.ui.AdminUITest" time="0.013"/>
+  <testcase name="updateEmailTest()" classname="org.abhijith.ui.AdminUITest" time="0.003"/>
+  <testcase name="removeCourseTest()" classname="org.abhijith.ui.AdminUITest" time="0.003"/>
+  <testcase name="getCourseRecordsTest()" classname="org.abhijith.ui.AdminUITest" time="0.012"/>
+  <testcase name="updatePasswordTest()" classname="org.abhijith.ui.AdminUITest" time="0.004"/>
+  <testcase name="getContactDetailsTest()" classname="org.abhijith.ui.AdminUITest" time="0.005"/>
+  <testcase name="startNewSessionTest()" classname="org.abhijith.ui.AdminUITest" time="0.003"/>
+  <testcase name="insertStudentTest()" classname="org.abhijith.ui.AdminUITest" time="0.003"/>
+  <testcase name="updatePhoneNumberTest()" classname="org.abhijith.ui.AdminUITest" time="0.003"/>
+  <testcase name="getRecordsTest()" classname="org.abhijith.ui.AdminUITest" time="0.003"/>
+  <testcase name="checkGraduationTest()" classname="org.abhijith.ui.AdminUITest" time="0.002"/>
+  <testcase name="insertBatchTest()" classname="org.abhijith.ui.AdminUITest" time="0.004"/>
+  <testcase name="setEventTest()" classname="org.abhijith.ui.AdminUITest" time="0.003"/>
+  <testcase name="insertFacultyTest()" classname="org.abhijith.ui.AdminUITest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

@@ -283,10 +283,10 @@ INSERT INTO student_course_registration VALUES( '2020CSB1062', 'CS999', 2023, 2,
 
 INSERT INTO instructor_prerequisites VALUES( 'CS539', 2023, 2, 'CS', 'CS303', 8, 1);
 
-INSERT INTO common_user_details VALUES ('ADMIN1', 'iitropar', 'ADMIN');
-INSERT INTO common_user_details VALUES ('FAC38', 'iitropar', 'FACULTY');
-INSERT INTO common_user_details VALUES ('2020CSB1062', 'iitropar', 'STUDENT');
-INSERT INTO common_user_details VALUES ('2021CSB1062', 'iitropar', 'STUDENT');
+INSERT INTO common_user_details(id, password, role) VALUES ('ADMIN1', 'iitropar', 'ADMIN');
+INSERT INTO common_user_details(id, password, role) VALUES ('FAC38', 'iitropar', 'FACULTY');
+INSERT INTO common_user_details(id, password, role, phone, email) VALUES ('2020CSB1062', 'iitropar', 'STUDENT', '99999', 'random@gmail.com');
+INSERT INTO common_user_details(id, password, role) VALUES ('2021CSB1062', 'iitropar', 'STUDENT');
 
 INSERT INTO core_courses VALUES( 'GE103', 'CS', 2020, 'GR');
 INSERT INTO core_courses VALUES( 'MA101', 'CS', 2020, 'SC');

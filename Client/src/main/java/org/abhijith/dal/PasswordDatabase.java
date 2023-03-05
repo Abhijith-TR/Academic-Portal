@@ -2,14 +2,20 @@ package org.abhijith.dal;
 
 import org.abhijith.daoInterfaces.PasswordDAO;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.Properties;
 
 public class PasswordDatabase implements PasswordDAO {
     private Connection databaseConnection;
+
+    public Connection getDatabaseConnection() {
+        return databaseConnection;
+    }
 
     public PasswordDatabase() {
         try {
@@ -34,6 +40,9 @@ public class PasswordDatabase implements PasswordDAO {
 
     public boolean authenticateUser( String id, String password, String role ) {
         try {
+            if ( id == null || password == null || role == null ) return false;
+            role = role.toUpperCase();
+
             // Create a query to check whether there exists a user with this role and this id in the database
             PreparedStatement authenticationQuery = databaseConnection.prepareStatement( "SELECT password FROM common_user_details WHERE id = ? AND role = ?" );
             authenticationQuery.setString( 1, id );
@@ -61,15 +70,18 @@ public class PasswordDatabase implements PasswordDAO {
                     return insertLogQueryResult != 0;
                 }
             }
-        } catch ( SQLException error ) {
+            return false;
+        } catch ( Exception error ) {
             System.err.println( "Database Error. Login failed" );
             return false;
         }
-        return false;
     }
 
     public boolean logLogoutEntry( String id, String role ) {
         try {
+            if ( id == null || role == null ) return false;
+            role = role.toUpperCase();
+
             // Create a query to insert the out entry of the user into the log table
             PreparedStatement logoutQuery = databaseConnection.prepareStatement( "INSERT INTO log VALUES (?, ?, ?, ?)" );
             logoutQuery.setString( 1, id );
@@ -103,13 +115,13 @@ public class PasswordDatabase implements PasswordDAO {
             String role      = getLastLogResult.getString( 2 );
             String in_or_out = getLastLogResult.getString( 3 );
 
-            if ( in_or_out.equals( "in" ) ) {
+            if ( in_or_out.equals( "IN" ) ) {
                 // Now we have to insert a new log into the database which says that the user has logged out
                 PreparedStatement insertOutLog = databaseConnection.prepareStatement( "INSERT INTO log VALUES ( ?, ?, ?, ?)" );
                 insertOutLog.setString( 1, id );
                 insertOutLog.setString( 2, role );
                 insertOutLog.setObject( 3, LocalDateTime.now() );
-                insertOutLog.setString( 4, "out" );
+                insertOutLog.setString( 4, "OUT" );
 
                 // Returns true if the out entry was inserted successfully, returns false otherwise
                 return insertOutLog.executeUpdate() == 1;

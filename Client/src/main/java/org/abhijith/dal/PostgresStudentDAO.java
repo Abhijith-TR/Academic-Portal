@@ -6,12 +6,11 @@ import org.abhijith.utils.Utils;
 import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO {
-    public PostgresStudentDAO( String connectionURL, String username, String password ) {
-        super( connectionURL, username, password );
+    public PostgresStudentDAO() {
+        super();
     }
 
     @Override
@@ -32,7 +31,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
 
             // Returns true if it manages to find such an entry
             return doesCourseExist.next();
-        } catch ( SQLException error ) {
+        } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return false;
         }
@@ -77,7 +76,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             Array prerequisites = courseCatalogResult.getArray( 1 );
             if ( prerequisites == null ) return new String[]{};
             return (String[]) prerequisites.getArray();
-        } catch ( SQLException error ) {
+        } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return null;
         }

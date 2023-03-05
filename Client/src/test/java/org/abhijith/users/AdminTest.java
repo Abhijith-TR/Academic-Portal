@@ -4,22 +4,15 @@ import org.abhijith.dal.PostgresAdminDAO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.StringReader;
 import java.security.InvalidParameterException;
-import java.sql.SQLException;
 import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 class AdminTest {
     Admin            admin = new Admin( "ADMIN1" );

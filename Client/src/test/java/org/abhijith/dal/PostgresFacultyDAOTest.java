@@ -12,24 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PostgresFacultyDAOTest {
     PostgresFacultyDAO facultyDAO;
-    StudentDAO studentDAO = new PostgresStudentDAO(
-            "jdbc:postgresql://localhost:5432/mini_project",
-            "postgres",
-            "admin"
-    );
-    AdminDAO           adminDAO = new PostgresAdminDAO(
-            "jdbc:postgresql://localhost:5432/mini_project",
-            "postgres",
-            "admin"
-    );
+    StudentDAO         studentDAO = new PostgresStudentDAO();
+    AdminDAO           adminDAO   = new PostgresAdminDAO();
 
     @BeforeEach
     void setUp() {
-        facultyDAO = new PostgresFacultyDAO(
-                "jdbc:postgresql://localhost:5432/mini_project",
-                "postgres",
-                "admin"
-        );
+        facultyDAO = new PostgresFacultyDAO();
     }
 
     @AfterEach
@@ -349,7 +337,7 @@ class PostgresFacultyDAOTest {
         // Successful as the entry is completely valid
         facultyDAO.setCourseCategory( "HS507", 2023, 2, "HE", "CS", new int[]{ 2020 }, "HS" );
         studentDAO.enroll( "HS507", "2020CSB1062", 2023, 2, "HS", "HE" );
-        assertTrue( facultyDAO.uploadCourseGrades( "HS507", 2023, 2, "HS", new String[]{ "2020CSB1062" }, new String[]{ "A" } ));
+        assertTrue( facultyDAO.uploadCourseGrades( "HS507", 2023, 2, "HS", new String[]{ "2020CSB1062" }, new String[]{ "A" } ) );
         studentDAO.dropCourse( "HS507", "2020CSB1062", 2023, 2 );
         facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, "HS" );
         facultyDAO.insertCourseOffering( "HS507", 2023, 2, "HS", "FAC38" );
@@ -357,7 +345,7 @@ class PostgresFacultyDAOTest {
         try {
             Connection databaseConnection = facultyDAO.getDatabaseConnection();
             databaseConnection.close();
-            assertFalse( facultyDAO.uploadCourseGrades( "HS507", 2023, 2, "HS", new String[]{ "2020CSB1062" }, new String[]{ "A" } ));
+            assertFalse( facultyDAO.uploadCourseGrades( "HS507", 2023, 2, "HS", new String[]{ "2020CSB1062" }, new String[]{ "A" } ) );
         } catch ( Exception error ) {
             fail( "Could not close database connection" );
         }
@@ -372,15 +360,15 @@ class PostgresFacultyDAOTest {
         assertTrue( facultyDAO.isCourseAlreadyOffered( "HS507", 2023, 2, null ) );
 
         // True because the course has already been offered by your department
-        assertTrue( facultyDAO.isCourseAlreadyOffered( "HS507", 2023, 2, "HS" ));
+        assertTrue( facultyDAO.isCourseAlreadyOffered( "HS507", 2023, 2, "HS" ) );
 
         // False because the course has not been offered by your department
-        assertFalse( facultyDAO.isCourseAlreadyOffered( "HS301", 2023, 2, "HS" ));
+        assertFalse( facultyDAO.isCourseAlreadyOffered( "HS301", 2023, 2, "HS" ) );
 
         try {
             Connection databaseConnection = facultyDAO.getDatabaseConnection();
             databaseConnection.close();
-            assertTrue( facultyDAO.isCourseAlreadyOffered( "HS301", 2023, 2, "HS" ));
+            assertTrue( facultyDAO.isCourseAlreadyOffered( "HS301", 2023, 2, "HS" ) );
         } catch ( Exception error ) {
             fail( "Could not close connection to database" );
         }

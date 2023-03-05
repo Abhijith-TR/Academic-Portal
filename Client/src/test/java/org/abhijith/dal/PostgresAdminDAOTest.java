@@ -1,11 +1,8 @@
 package org.abhijith.dal;
 
-import jdk.jshell.spi.ExecutionControlProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,11 +14,7 @@ class PostgresAdminDAOTest {
 
     @BeforeEach
     void setUp() {
-        adminDAO = new PostgresAdminDAO(
-                "jdbc:postgresql://localhost:5432/mini_project",
-                "postgres",
-                "admin"
-        );
+        adminDAO = new PostgresAdminDAO();
     }
 
     @AfterEach

@@ -12,24 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PostgresStudentDAOTest {
     PostgresStudentDAO postgresStudentDAO;
-    AdminDAO           adminDAO   = new PostgresAdminDAO(
-            "jdbc:postgresql://localhost:5432/mini_project",
-            "postgres",
-            "admin"
-    );
-    FacultyDAO         facultyDAO = new PostgresFacultyDAO(
-            "jdbc:postgresql://localhost:5432/mini_project",
-            "postgres",
-            "admin"
-    );
+    AdminDAO           adminDAO   = new PostgresAdminDAO();
+    FacultyDAO         facultyDAO = new PostgresFacultyDAO();
 
     @BeforeEach
     void setUp() {
-        postgresStudentDAO = new PostgresStudentDAO(
-                "jdbc:postgresql://localhost:5432/mini_project",
-                "postgres",
-                "admin"
-        );
+        postgresStudentDAO = new PostgresStudentDAO();
     }
 
     @AfterEach

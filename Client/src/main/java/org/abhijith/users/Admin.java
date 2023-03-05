@@ -4,7 +4,10 @@ import org.abhijith.dal.PostgresAdminDAO;
 import org.abhijith.daoInterfaces.AdminDAO;
 import org.abhijith.utils.Utils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,24 +18,8 @@ public class Admin extends User {
 
     public Admin( String name ) {
         super( name );
-        try {
-            Properties  databaseConfig = new Properties();
-            ClassLoader classLoader    = Admin.class.getClassLoader();
-            InputStream inputStream    = classLoader.getResourceAsStream( "config.properties" );
-            databaseConfig.load( inputStream );
-
-            String connectionURL = databaseConfig.getProperty( "admin.connectionURL" );
-            String username      = databaseConfig.getProperty( "admin.username" );
-            String password      = databaseConfig.getProperty( "admin.password" );
-            this.adminDAO = new PostgresAdminDAO(
-                    connectionURL,
-                    username,
-                    password
-            );
-            super.setCommonDAO( adminDAO );
-        } catch ( Exception error ) {
-            System.out.println( "Could not connect to database" );
-        }
+        this.adminDAO = new PostgresAdminDAO();
+        super.setCommonDAO( adminDAO );
     }
 
     public void setAdminDAO( AdminDAO adminDAO ) {

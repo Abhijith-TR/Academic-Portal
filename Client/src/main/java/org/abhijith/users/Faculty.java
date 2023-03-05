@@ -3,7 +3,10 @@ package org.abhijith.users;
 import org.abhijith.dal.PostgresFacultyDAO;
 import org.abhijith.daoInterfaces.FacultyDAO;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,25 +17,8 @@ public class Faculty extends User {
 
     public Faculty( String id ) {
         super( id );
-        try {
-            Properties  databaseConfig = new Properties();
-            ClassLoader classLoader    = Faculty.class.getClassLoader();
-            InputStream inputStream    = classLoader.getResourceAsStream( "config.properties" );
-            databaseConfig.load( inputStream );
-
-            String connectionURL = databaseConfig.getProperty( "faculty.connectionURL" );
-            String username      = databaseConfig.getProperty( "faculty.username" );
-            String password      = databaseConfig.getProperty( "faculty.password" );
-
-            this.facultyDAO = new PostgresFacultyDAO(
-                    connectionURL,
-                    username,
-                    password
-            );
-            super.setCommonDAO( facultyDAO );
-        } catch ( Exception error ) {
-            System.out.println( "Could not connect to database" );
-        }
+        this.facultyDAO = new PostgresFacultyDAO();
+        super.setCommonDAO( facultyDAO );
     }
 
     public void setFacultyDAO( FacultyDAO facultyDAO ) {

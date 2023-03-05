@@ -69,6 +69,10 @@ class StudentTest {
         when( studentDAO.getCourseGrade( entryNumber, courseCode ) ).thenReturn( "-" );
         assertFalse( student.enroll( courseCode, courseDepartment ) );
 
+        // False because the request could not be satisfied
+        when( studentDAO.getCourseGrade( entryNumber, courseCode ) ).thenReturn( "" );
+        assertFalse( student.enroll( courseCode, courseDepartment ) );
+
         // False because the course prerequisite request failed
         when( studentDAO.getCourseGrade( entryNumber, courseCode ) ).thenReturn( "F" );
         when( studentDAO.getCourseCatalogPrerequisites( courseCode ) ).thenReturn( null );

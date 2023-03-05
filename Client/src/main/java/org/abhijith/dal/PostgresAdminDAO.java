@@ -7,8 +7,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
-    public PostgresAdminDAO( String connectionURL, String username, String password ) {
-        super( connectionURL, username, password );
+    public PostgresAdminDAO() {
+        super();
     }
 
     public String[][] getGradesOfCourse( String courseCode, int year, int semester, String offeringDepartment ) {

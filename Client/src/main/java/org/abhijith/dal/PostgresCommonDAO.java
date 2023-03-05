@@ -1,17 +1,31 @@
 package org.abhijith.dal;
 
 import org.abhijith.daoInterfaces.CommonDAO;
+import org.abhijith.users.Student;
 import org.abhijith.utils.Utils;
 
-import java.sql.*;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 
 public class PostgresCommonDAO implements CommonDAO {
     protected Connection databaseConnection;
 
-    public PostgresCommonDAO( String connectionURL, String username, String password ) {
+    public PostgresCommonDAO() {
         try {
+            Properties  databaseConfig = new Properties();
+            ClassLoader classLoader    = Student.class.getClassLoader();
+            InputStream inputStream    = classLoader.getResourceAsStream( "config.properties" );
+            databaseConfig.load( inputStream );
+
+            String connectionURL = databaseConfig.getProperty( "db.connectionURL" );
+            String username      = databaseConfig.getProperty( "db.username" );
+            String password      = databaseConfig.getProperty( "db.password" );
             databaseConnection = DriverManager.getConnection(
                     connectionURL,
                     username,
@@ -40,7 +54,7 @@ public class PostgresCommonDAO implements CommonDAO {
             int currentSemester = currentSession.getInt( 2 );
 
             return new int[]{ currentYear, currentSemester };
-        } catch ( SQLException error ) {
+        } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return new int[]{ 2020, 1 };
         }
@@ -48,7 +62,10 @@ public class PostgresCommonDAO implements CommonDAO {
 
     public String[][] getStudentGradesForSemester( String entryNumber, int year, int semester ) {
         try {
-            PreparedStatement gradeQuery = databaseConnection.prepareStatement( "SELECT course_code, course_title, grade, credits FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ? AND year = ? AND semester = ?" );
+            if ( entryNumber == null || year < 0 || semester < 0 ) return new String[][]{};
+            entryNumber = entryNumber.toUpperCase();
+
+            PreparedStatement gradeQuery = databaseConnection.prepareStatement( "SELECT course_code, course_title, grade, credits FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ? AND year = ? AND semester = ? ORDER BY course_code" );
 
             gradeQuery.setString( 1, entryNumber );
             gradeQuery.setInt( 2, year );
@@ -73,10 +90,16 @@ public class PostgresCommonDAO implements CommonDAO {
     @Override
     public int getBatch( String entryNumber ) {
         try {
+            if ( entryNumber == null ) return -1;
+            entryNumber = entryNumber.toUpperCase();
+
             PreparedStatement batchQuery = databaseConnection.prepareStatement( "SELECT batch FROM student WHERE entry_number = ?" );
             batchQuery.setString( 1, entryNumber );
             ResultSet batchQueryResult = batchQuery.executeQuery();
-            batchQueryResult.next();
+
+            boolean studentExists = batchQueryResult.next();
+            if ( ! studentExists ) return -1;
+
             int batch = batchQueryResult.getInt( 1 );
             return batch;
         } catch ( Exception error ) {
@@ -88,6 +111,9 @@ public class PostgresCommonDAO implements CommonDAO {
     @Override
     public boolean checkCourseCatalog( String courseCode ) {
         try {
+            if ( courseCode == null ) return false;
+            courseCode = courseCode.toUpperCase();
+
             PreparedStatement checkCourseCatalogQuery = databaseConnection.prepareStatement( "SELECT course_code FROM course_catalog WHERE course_code = ?" );
             checkCourseCatalogQuery.setString( 1, courseCode );
             ResultSet checkCourseCatalogQueryResult = checkCourseCatalogQuery.executeQuery();
@@ -101,6 +127,8 @@ public class PostgresCommonDAO implements CommonDAO {
     @Override
     public HashMap<String, Double> getUGCurriculum( int batch ) {
         try {
+            if ( batch < 0 ) return null;
+
             // Execute the SQL statement that will fetch the corresponding columns from the UG curriculum table
             PreparedStatement getCurriculumQuery = databaseConnection.prepareStatement( "SELECT sc, se, gr, pc, pe, hc, he, cp, ii, nn, oe FROM ug_curriculum WHERE year = ?" );
             getCurriculumQuery.setInt( 1, batch );
@@ -126,9 +154,10 @@ public class PostgresCommonDAO implements CommonDAO {
     @Override
     public HashMap<String, Double> getCreditsInAllCategories( String entryNumber ) {
         try {
+            if ( entryNumber == null ) return null;
             // SQL query to get the categories and the corresponding credits completed in all of them
             // Note that the SQL query contains the grades that will allow the course to be marked as passed
-            PreparedStatement getCreditsQuery = databaseConnection.prepareStatement( "SELECT category, sum(credits) FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ? AND grade IN ('A', 'A-', 'B', 'B-', 'C', 'C-', 'D') GROUP BY category" );
+            PreparedStatement getCreditsQuery = databaseConnection.prepareStatement( "SELECT UPPER(category), sum(credits) FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ? AND grade IN ('A', 'A-', 'B', 'B-', 'C', 'C-', 'D') GROUP BY category" );
             getCreditsQuery.setString( 1, entryNumber );
             ResultSet getCreditsQueryResult = getCreditsQuery.executeQuery();
 
@@ -149,6 +178,8 @@ public class PostgresCommonDAO implements CommonDAO {
     @Override
     public boolean setPhoneNumber( String id, String phoneNumber ) {
         try {
+            if ( id == null || phoneNumber == null ) return false;
+
             // SQL query to update this particular id with the phone number that is provided
             PreparedStatement setPhoneNumberQuery = databaseConnection.prepareStatement( "UPDATE common_user_details SET phone = ? WHERE id = ?" );
             setPhoneNumberQuery.setString( 1, phoneNumber );
@@ -166,6 +197,8 @@ public class PostgresCommonDAO implements CommonDAO {
     @Override
     public boolean setEmail( String id, String email ) {
         try {
+            if ( id == null || email == null ) return false;
+
             // Create an SQL query to set the email of the specified user
             PreparedStatement setEmailQuery = databaseConnection.prepareStatement( "UPDATE common_user_details SET email = ? WHERE id = ?" );
             setEmailQuery.setString( 1, email );
@@ -183,6 +216,8 @@ public class PostgresCommonDAO implements CommonDAO {
     @Override
     public String[] getContactDetails( String userID ) {
         try {
+            if ( userID == null ) return new String[]{};
+
             // SQL query to fetch the contact details of the specified ID from the database
             PreparedStatement getContactDetailsQuery = databaseConnection.prepareStatement( "SELECT email, phone FROM common_user_details WHERE id = ?" );
             getContactDetailsQuery.setString( 1, userID );
@@ -193,8 +228,8 @@ public class PostgresCommonDAO implements CommonDAO {
             if ( !isIDValid ) return new String[]{};
 
             // If the user id that was entered is valid, get the email and phone number and return it
-            String  email     = getContactDetailsQueryResult.getString( 1 );
-            String  phone     = getContactDetailsQueryResult.getString( 2 );
+            String email = getContactDetailsQueryResult.getString( 1 );
+            String phone = getContactDetailsQueryResult.getString( 2 );
             return new String[]{ email, phone };
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
@@ -205,8 +240,10 @@ public class PostgresCommonDAO implements CommonDAO {
     @Override
     public boolean setPassword( String id, String password ) {
         try {
+            if ( id == null || password == null ) return false;
+
             // SQL statement to update the password in the database
-            PreparedStatement setPasswordQuery = databaseConnection.prepareStatement("UPDATE common_user_details SET password = ? WHERE id = ?");
+            PreparedStatement setPasswordQuery = databaseConnection.prepareStatement( "UPDATE common_user_details SET password = ? WHERE id = ?" );
             setPasswordQuery.setString( 1, password );
             setPasswordQuery.setString( 2, id );
             setPasswordQuery.executeUpdate();
@@ -222,6 +259,8 @@ public class PostgresCommonDAO implements CommonDAO {
     @Override
     public String getCourseGrade( String entryNumber, String courseCode ) {
         try {
+            if ( entryNumber == null || courseCode == null ) return "";
+
             // Setting up the SQL statement
             PreparedStatement getGradeQuery = databaseConnection.prepareStatement( "SELECT grade FROM student_course_registration WHERE entry_number = ? AND course_code = ?" );
             getGradeQuery.setString( 1, entryNumber );
@@ -230,7 +269,7 @@ public class PostgresCommonDAO implements CommonDAO {
 
             // If the student has done the course before, he may have done it multiple times. Get the highest possible grade
             // In the worst case, the student has not done the course before and his grade is "-" which is the not applicable symbol
-            String maximumGrade      = "F";
+            String maximumGrade      = "-";
             int    maximumGradeValue = 0;
             while ( getGradeQueryResult.next() ) {
                 // Convert the grade to a number to determine what the highest grade was
@@ -245,17 +284,25 @@ public class PostgresCommonDAO implements CommonDAO {
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             // Returning an A will prevent the student from enrolling in the course
-            return "A";
+            return "";
         }
     }
 
     @Override
     public String getStudentDepartment( String entryNumber ) {
         try {
+            if ( entryNumber == null ) return "";
+
+            // SQL query to fetch the department from the database
             PreparedStatement studentBranchQuery = databaseConnection.prepareStatement( "SELECT department_id FROM student WHERE entry_number = ?" );
             studentBranchQuery.setString( 1, entryNumber );
             ResultSet studentBranchQueryResult = studentBranchQuery.executeQuery();
-            studentBranchQueryResult.next();
+
+            // If the student is not found, return ""
+            boolean doesStudentExist = studentBranchQueryResult.next();
+            if ( !doesStudentExist ) return "";
+
+            // If the student exists, return the corresponding branch
             return studentBranchQueryResult.getString( 1 );
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
