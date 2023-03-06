@@ -44,9 +44,15 @@ public class Utils {
 
     // Pretty printing matrices of strings (not jagged multidimensional arrays)
     public static void prettyPrint( String[] headings, String[][] printableContent ) {
+        if ( headings == null || printableContent == null ) return;
+        for ( String[] temp: printableContent ) if ( temp == null ) return;
         int rows = printableContent.length;
-        if ( rows == 0 ) return;
+        if ( rows == 0 ) {
+            return;
+        }
         int   columns            = printableContent[0].length;
+        if ( columns != headings.length ) return;
+        for ( String[] temp : printableContent ) if ( temp.length != columns ) return;
         int[] maximumFieldLength = new int[columns];
 
         for ( int i = 0; i < headings.length; i++ )

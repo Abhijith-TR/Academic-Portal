@@ -76,7 +76,9 @@ public class Faculty extends User {
             // Check if all the courses entered as prerequisites are in the course catalog
             boolean isPrerequisitesValid = true;
             for ( String[] courseBatch : prerequisites ) {
-                if ( courseBatch == null ) return false;
+                if ( courseBatch == null ) {
+                    return false;
+                }
                 for ( int i = 0; i < courseBatch.length; i += 2 ) {
                     isPrerequisitesValid &= facultyDAO.checkCourseCatalog( courseBatch[i] );
                 }
@@ -164,7 +166,9 @@ public class Faculty extends User {
                 completeStudentRecords.add( semesterRecords );
 
                 // If we have reached the current semester, then break
-                if ( year == currentYear && semester == currentSemester ) break;
+                if ( year == currentYear && semester == currentSemester ) {
+                    break;
+                }
             }
         }
         return completeStudentRecords.toArray( new String[completeStudentRecords.size()][][] );
@@ -253,5 +257,14 @@ public class Faculty extends User {
         } catch ( Exception error ) {
             return false;
         }
+    }
+
+    public String[][] getInstructorPrerequisites(String courseCode, int year, int semester, String departmentID) {
+        if ( courseCode == null || year < 0 || semester < 0 || departmentID == null ) return new String[][]{};
+
+        // Instructor can only view the prerequisites for his own course
+        if ( !facultyDAO.checkIfOfferedBySelf( this.id, courseCode, year, semester, departmentID )) return new String[][]{};
+
+        return facultyDAO.getInstructorPrerequisites( courseCode, year, semester, departmentID );
     }
 }

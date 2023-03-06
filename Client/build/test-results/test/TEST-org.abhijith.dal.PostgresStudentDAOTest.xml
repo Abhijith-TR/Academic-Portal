@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.dal.PostgresStudentDAOTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2023-03-05T09:40:50" hostname="ADMIN" time="1.15">
+<testsuite name="org.abhijith.dal.PostgresStudentDAOTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2023-03-06T06:39:41" hostname="ADMIN" time="1.573">
   <properties/>
-  <testcase name="getAllRecords()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.046"/>
-  <testcase name="enroll()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.048"/>
+  <testcase name="getAllRecords()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.042"/>
+  <testcase name="enroll()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.043"/>
   <testcase name="getInstructorPrerequisites()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.028"/>
-  <testcase name="getCourseCategory()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.031"/>
-  <testcase name="getCourseCatalogPrerequisites()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.05"/>
-  <testcase name="isCurrentEventEnrolling()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.044"/>
-  <testcase name="getCGPACriteria()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.032"/>
+  <testcase name="getCourseCategory()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.136"/>
+  <testcase name="getCourseCatalogPrerequisites()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.04"/>
+  <testcase name="isCurrentEventEnrolling()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.037"/>
+  <testcase name="getCGPACriteria()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.034"/>
   <testcase name="dropCourse()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.043"/>
   <testcase name="getOfferedCourses()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.033"/>
-  <testcase name="checkStudentPassStatus()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.034"/>
-  <testcase name="getCreditsOfCourse()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.029"/>
-  <testcase name="getCreditsInSession()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.031"/>
-  <testcase name="checkCourseOffering()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.028"/>
+  <testcase name="checkStudentPassStatus()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.144"/>
+  <testcase name="getCreditsOfCourse()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.028"/>
+  <testcase name="getCreditsInSession()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.033"/>
+  <testcase name="checkCourseOffering()" classname="org.abhijith.dal.PostgresStudentDAOTest" time="0.03"/>
   <system-out><![CDATA[Database Error. Try again later
 Enrollment Request Failed
 Database Error. Please try again later

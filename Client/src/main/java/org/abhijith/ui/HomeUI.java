@@ -5,7 +5,7 @@ import org.abhijith.daoInterfaces.PasswordDAO;
 import org.abhijith.utils.CustomScanner;
 
 public class HomeUI {
-    PasswordDAO passwordAuthConnection;
+    private PasswordDAO passwordAuthConnection;
 
     // Roles in the database system - to allow easy extension
     String[] roles = new String[]{
@@ -65,18 +65,18 @@ public class HomeUI {
 
             // Once the username and password have been verified, pass control over to the corresponding user interface
             if ( roleIndex == 1 ) {
-                StudentUI studentUI = new StudentUI( id );
+                StudentUI studentUI = new StudentUI( id, keyboardInput );
                 studentUI.studentInterfaceHomeScreen();
             }
             else if ( roleIndex == 2 ) {
-                FacultyUI facultyUI = new FacultyUI( id );
+                FacultyUI facultyUI = new FacultyUI( id, keyboardInput );
                 facultyUI.facultyInterfaceHomeScreen();
             }
             else if ( roleIndex == 3 ) {
-                AdminUI adminUI = new AdminUI( id );
+                AdminUI adminUI = new AdminUI( id, keyboardInput );
                 adminUI.adminInterfaceHomeScreen();
             }
-            else if ( roleIndex == 4 ) {
+            else {
                 break;
             }
 

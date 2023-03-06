@@ -63,7 +63,8 @@ class PostgresFacultyDAOTest {
         assertFalse( facultyDAO.setCGCriteria( "FAC38", "HS507", 8, null, "HS" ) );
         assertFalse( facultyDAO.setCGCriteria( "FAC38", "HS507", 8, new int[]{ 2023, 2 }, null ) );
         assertFalse( facultyDAO.setCGCriteria( "FAC38", "HS507", 8, new int[]{ -1, 2 }, "HS" ) );
-        assertFalse( facultyDAO.setCGCriteria( "FAC38", "HS507", 8, new int[]{ 2023, 0 }, "HS" ) );
+        assertFalse( facultyDAO.setCGCriteria( "FAC38", "HS507", 8, new int[]{ 2023, -1 }, "HS" ) );
+        assertFalse( facultyDAO.setCGCriteria( "FAC38", "HS507", 8, new int[]{ 2023  }, "HS" ) );
 
         // Returns true as the CG criteria is valid
         assertTrue( facultyDAO.setCGCriteria( "FAC38", "HS507", 8, new int[]{ 2023, 2 }, "HS" ) );
@@ -97,6 +98,10 @@ class PostgresFacultyDAOTest {
         // Fails because of the odd length prerequisites array
         assertFalse( facultyDAO.setInstructorPrerequisites( "HS", "HS507", new String[][]{ { "CS101", "8", "7" } }, new int[]{ 2023, 2 } ) );
 
+        // False because of invalid grade criteria
+        assertTrue( facultyDAO.setInstructorPrerequisites( "HS", "HS507", new String[][]{ { "CS101", "11" } }, new int[]{ 2023, 2 } ) );
+        assertTrue( facultyDAO.setInstructorPrerequisites( "HS", "HS507", new String[][]{ { "CS101", "-1" } }, new int[]{ 2023, 2 } ) );
+
         // Returns true as all input arguments obey constraints
         assertTrue( facultyDAO.setInstructorPrerequisites( "HS", "HS507", new String[][]{ { "CS101", "8" } }, new int[]{ 2023, 2 } ) );
 
@@ -117,8 +122,8 @@ class PostgresFacultyDAOTest {
         // False because of invalid input parameters
         assertFalse( facultyDAO.dropCourseOffering( null, "HS507", 2023, 2, "HS" ) );
         assertFalse( facultyDAO.dropCourseOffering( "FAC38", null, 2023, 2, "HS" ) );
-        assertFalse( facultyDAO.dropCourseOffering( "FAC38", "HS507", 0, 2, "HS" ) );
-        assertFalse( facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 0, "HS" ) );
+        assertFalse( facultyDAO.dropCourseOffering( "FAC38", "HS507", -1, 2, "HS" ) );
+        assertFalse( facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, -1, "HS" ) );
         assertFalse( facultyDAO.dropCourseOffering( "FAC38", "HS507", 2023, 2, null ) );
 
         // False because this course was not offered by this faculty and therefore nothing was dropped
@@ -142,8 +147,8 @@ class PostgresFacultyDAOTest {
         // False because of invalid input arguments
         assertFalse( facultyDAO.checkIfOfferedBySelf( null, "HS507", 2023, 2, "HS" ) );
         assertFalse( facultyDAO.checkIfOfferedBySelf( "FAC38", null, 2023, 2, "HS" ) );
-        assertFalse( facultyDAO.checkIfOfferedBySelf( "FAC38", "HS507", 0, 2, "HS" ) );
-        assertFalse( facultyDAO.checkIfOfferedBySelf( "FAC38", "HS507", 2023, 0, "HS" ) );
+        assertFalse( facultyDAO.checkIfOfferedBySelf( "FAC38", "HS507", -1, 2, "HS" ) );
+        assertFalse( facultyDAO.checkIfOfferedBySelf( "FAC38", "HS507", 2023, -1, "HS" ) );
         assertFalse( facultyDAO.checkIfOfferedBySelf( "FAC38", "HS507", 2023, 0, null ) );
 
         // False because this course is not offered by the instructor
@@ -166,11 +171,12 @@ class PostgresFacultyDAOTest {
         // False because of invalid input arguments
         assertFalse( facultyDAO.setCourseCategory( null, 2023, 2, "PE", "CS", new int[]{ 2021 }, "HS" ) );
         assertFalse( facultyDAO.setCourseCategory( "HS507", -1, 2, "PE", "CS", new int[]{ 2021 }, "HS" ) );
-        assertFalse( facultyDAO.setCourseCategory( "HS507", 2023, 0, "PE", "CS", new int[]{ 2021 }, "HS" ) );
+        assertFalse( facultyDAO.setCourseCategory( "HS507", 2023, -1, "PE", "CS", new int[]{ 2021 }, "HS" ) );
         assertFalse( facultyDAO.setCourseCategory( "HS507", 2023, 2, null, "CS", new int[]{ 2021 }, "HS" ) );
         assertFalse( facultyDAO.setCourseCategory( "HS507", 2023, 2, "PE", null, new int[]{ 2021 }, "HS" ) );
         assertFalse( facultyDAO.setCourseCategory( "HS507", 2023, 2, "PE", "CS", null, "HS" ) );
         assertFalse( facultyDAO.setCourseCategory( "HS507", 2023, 2, "PE", "CS", new int[]{ -1 }, "HS" ) );
+        assertFalse( facultyDAO.setCourseCategory( "HS507", 2023, 2, "PE", "CS", new int[]{ -1 }, null ) );
 
         // True because it is a successful insertion
         assertTrue( facultyDAO.setCourseCategory( "HS507", 2023, 2, "HE", "CS", new int[]{ 2021 }, "HS" ) );
@@ -209,7 +215,7 @@ class PostgresFacultyDAOTest {
         // [][] because of invalid input arguments
         assertArrayEquals( new String[][]{}, facultyDAO.getGradesOfCourse( null, 2022, 2, "HS" ) );
         assertArrayEquals( new String[][]{}, facultyDAO.getGradesOfCourse( "CS301", -1, 2, "HS" ) );
-        assertArrayEquals( new String[][]{}, facultyDAO.getGradesOfCourse( "CS301", 2022, 0, "HS" ) );
+        assertArrayEquals( new String[][]{}, facultyDAO.getGradesOfCourse( "CS301", 2022, -1, "HS" ) );
         assertArrayEquals( new String[][]{}, facultyDAO.getGradesOfCourse( "CS301", 2022, 2, null ) );
 
         // [][] because no such course exists
@@ -371,6 +377,31 @@ class PostgresFacultyDAOTest {
             assertTrue( facultyDAO.isCourseAlreadyOffered( "HS301", 2023, 2, "HS" ) );
         } catch ( Exception error ) {
             fail( "Could not close connection to database" );
+        }
+    }
+
+    @Test
+    void getInstructorPrerequisites() {
+        String courseCode   = "CS539";
+        int    year         = 2023;
+        int    semester     = 2;
+        String departmentID = "CS";
+
+        // [][] due to invalid input parameters
+        assertArrayEquals( new String[][]{}, facultyDAO.getInstructorPrerequisites(null, year, semester, departmentID) );
+        assertArrayEquals( new String[][]{}, facultyDAO.getInstructorPrerequisites(courseCode, -1, semester, departmentID) );
+        assertArrayEquals( new String[][]{}, facultyDAO.getInstructorPrerequisites(courseCode, year, -1, departmentID) );
+        assertArrayEquals( new String[][]{}, facultyDAO.getInstructorPrerequisites(courseCode, year, semester, null) );
+
+        // Expected result
+        assertArrayEquals( new String[][]{ {"CS303", "8" }}, facultyDAO.getInstructorPrerequisites(courseCode, year, semester, departmentID) );
+
+        try {
+            Connection connection = facultyDAO.getDatabaseConnection();
+            connection.close();
+            assertArrayEquals( new String[][]{}, facultyDAO.getInstructorPrerequisites(courseCode, year, semester, departmentID) );
+        } catch ( Exception error ) {
+            fail( "Could not close database connection" );
         }
     }
 }

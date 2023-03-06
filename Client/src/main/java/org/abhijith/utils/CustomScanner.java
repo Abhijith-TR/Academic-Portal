@@ -2,6 +2,7 @@ package org.abhijith.utils;
 
 import java.awt.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.Scanner;
 
@@ -20,7 +21,6 @@ public class CustomScanner {
                 keyboardInput.nextLine();
                 return input;
             } catch ( Exception error ) {
-                System.out.println( error.getMessage() );
                 System.out.println( "Please Enter Valid Input" );
                 keyboardInput = new Scanner( System.in );
             }
@@ -35,7 +35,7 @@ public class CustomScanner {
                 keyboardInput.nextLine();
                 return input;
             } catch ( Exception error ) {
-                System.out.println( "Please Enter Valid Input" );
+                System.out.println( "Please enter valid input" );
                 keyboardInput = new Scanner( System.in );
             }
         }
@@ -55,37 +55,32 @@ public class CustomScanner {
 
     public BufferedReader CSVFileInput( String message ) {
         try {
-            FileDialog dialog = new FileDialog( (Frame) null, "Select File to Open" );
-            dialog.setMode( FileDialog.LOAD );
-            dialog.setVisible( true );
-            String fileName = dialog.getDirectory() + dialog.getFile();
+            System.out.print( message + ": " );
+            String fileName = keyboardInput.nextLine();
             if ( !fileName.substring( fileName.length() - 3 ).equals( "csv" ) )
                 throw new RuntimeException( "Enter a valid CSV file" );
-            dialog.dispose();
             BufferedReader CSVFile = new BufferedReader( new FileReader( fileName ) );
+            System.out.println( CSVFile.readLine() );
             return CSVFile;
         } catch ( Exception error ) {
             System.out.println( "Enter a valid CSV file" );
-            keyboardInput = new Scanner( System.in );
             return null;
         }
     }
 
-    public BufferedReader openCourseCSVFile( String courseCode, int year, int semester, String departmentID ) {
+    public BufferedReader openCourseCSVFile( String courseCode, int year, int semester, String departmentID, String message ) {
         try {
             String expectedFileName = new StringBuilder().append( courseCode ).append( "_" ).append( year ).append( "_" ).append( semester ).append( "_" ).append( departmentID ).append( ".csv" ).toString();
-            FileDialog dialog = new FileDialog( (Frame) null, "Select File to Open" );
-            dialog.setMode( FileDialog.LOAD );
-            dialog.setVisible( true );
-            String fileName = dialog.getDirectory() + dialog.getFile();
-            if ( !fileName.substring( fileName.length() - 3 ).equals( "csv" ) )
+            System.out.print( message + ": ");
+            String filePath = keyboardInput.nextLine();
+            File fileName = new File( filePath );
+            if ( !filePath.substring( filePath.length() - 3 ).equals( "csv" ) )
                 throw new RuntimeException( "Enter a valid CSV file" );
-            dialog.dispose();
 
-            if ( !dialog.getFile().equals( expectedFileName ) ) {
+            if ( !fileName.getName().equals( expectedFileName ) ) {
                 throw new RuntimeException( "Unexpected file name" );
             }
-            BufferedReader CSVFile = new BufferedReader( new FileReader( fileName ) );
+            BufferedReader CSVFile = new BufferedReader( new FileReader( filePath ) );
             return CSVFile;
         } catch ( Exception error ) {
             System.out.println( error.getMessage() );

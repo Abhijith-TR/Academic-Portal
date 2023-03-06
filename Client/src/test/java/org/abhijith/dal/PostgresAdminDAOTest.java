@@ -131,6 +131,7 @@ class PostgresAdminDAOTest {
         // False because of invalid input parameters
         assertFalse( adminDAO.insertCourse( null, courseTitle, creditStructure, prerequisites ) );
         assertFalse( adminDAO.insertCourse( courseCode, null, creditStructure, prerequisites ) );
+        assertFalse( adminDAO.insertCourse( courseCode, courseTitle, null, prerequisites ) );
         assertFalse( adminDAO.insertCourse( courseCode, courseTitle, new double[]{}, prerequisites ) );
         assertFalse( adminDAO.insertCourse( courseCode, courseTitle, new double[]{ -1, -1, -1, -1, -1 }, prerequisites ) );
         assertFalse( adminDAO.insertCourse( courseCode, courseTitle, creditStructure, new String[]{ null } ) );
@@ -224,6 +225,7 @@ class PostgresAdminDAOTest {
         assertFalse( adminDAO.createCurriculum( -1, curriculum ) );
         assertFalse( adminDAO.createCurriculum( batch, null ) );
         assertFalse( adminDAO.createCurriculum( batch, new double[]{ 1 } ) );
+        assertFalse( adminDAO.createCurriculum( batch, new double[]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1 } ) );
 
         // True because the curriculum was inserted
         adminDAO.createBatch( 9999 );

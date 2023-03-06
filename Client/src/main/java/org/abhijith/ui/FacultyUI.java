@@ -8,7 +8,8 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 
 public class FacultyUI {
-    Faculty faculty;
+    private Faculty       faculty;
+    private CustomScanner keyboardInput;
     String[] facultyChoices = {
             "Register Course",
             "Update CG and Prerequisites",
@@ -22,11 +23,19 @@ public class FacultyUI {
             "Change Contact Email",
             "View Contact Details",
             "Change Password",
+            "View Course Catalog",
+            "View Instructor prerequisites",
             "Any other number to logout"
     };
 
     public FacultyUI( String id ) {
         faculty = new Faculty( id );
+        keyboardInput = new CustomScanner();
+    }
+
+    public FacultyUI( String id, CustomScanner keyboardInput ) {
+        faculty = new Faculty( id );
+        this.keyboardInput = keyboardInput;
     }
 
     public void setFaculty( Faculty faculty ) {
@@ -34,7 +43,6 @@ public class FacultyUI {
     }
 
     public void facultyInterfaceHomeScreen() {
-        CustomScanner keyboardInput = new CustomScanner();
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );
@@ -78,7 +86,6 @@ public class FacultyUI {
                     }
                     prerequisites.add( courses.toArray( new String[courses.size()] ) );
                 }
-                System.out.println( minimumCGPA );
                 String[][] prerequisitesArray = prerequisites.toArray( new String[prerequisites.size()][] );
                 if ( faculty.setCGAndPrerequisites( courseCode, departmentID, minimumCGPA, prerequisitesArray ) )
                     System.out.println( "Details Updated Successfully" );
@@ -116,8 +123,8 @@ public class FacultyUI {
                 int          semester    = 1;
                 for ( String[][] record : records ) {
                     Utils.prettyPrintGrades( year, semester, record );
-                    semester = ( semester == 1 ) ? 2 : 1;
                     if ( semester == 2 ) year++;
+                    semester = ( semester == 1 ) ? 2 : 1;
                 }
             }
 
@@ -150,10 +157,10 @@ public class FacultyUI {
                 int    year         = keyboardInput.integerInput( "Enter the year" );
                 int    semester     = keyboardInput.integerInput( "Enter the semester" );
                 String departmentID = keyboardInput.stringInput( "Enter the offering department" );
-                // You need to perform faculty authentication even here
                 try {
-                    BufferedReader gradeCSVFile = keyboardInput.openCourseCSVFile( courseCode, year, semester, departmentID );
+                    BufferedReader gradeCSVFile = keyboardInput.openCourseCSVFile( courseCode, year, semester, departmentID, "Enter the file path" );
                     if ( gradeCSVFile == null ) {
+                        System.out.println( "Enter valid file path" );
                         continue;
                     }
                     if ( faculty.uploadGrades( courseCode, year, semester, gradeCSVFile, departmentID ) )
@@ -205,6 +212,21 @@ public class FacultyUI {
 
                 if ( faculty.setPassword( password ) ) System.out.println( "Password updated successfully" );
                 else System.out.println( "Password Update Failed" );
+            }
+
+            else if ( facultyChoice == 13 ) {
+                String[][] courses = faculty.getCourseCatalog();
+                Utils.prettyPrint( new String[]{ "Course Code", "Course Title", "L", "T", "P", "S", "C", "Prerequisites" }, courses );
+            }
+
+            else if ( facultyChoice == 14 ) {
+                String courseCode   = keyboardInput.stringInput( "Enter the course code" );
+                int    year         = keyboardInput.integerInput( "Enter the year" );
+                int    semester     = keyboardInput.integerInput( "Enter the semester" );
+                String departmentID = keyboardInput.stringInput( "Enter the department ID" );
+
+                String[][] prerequisiteCourses = faculty.getInstructorPrerequisites( courseCode, year, semester, departmentID );
+                Utils.prettyPrint( new String[]{ "Course Code", "Grade Cutoff" }, prerequisiteCourses );
             }
 
             else break;

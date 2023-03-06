@@ -48,13 +48,13 @@ class StudentUITest {
 
     private String extractOutput( String splitter, int index ) {
         String[] output = outputStream.toString().split( "\\r?\\n" );
-        output = output[output.length - 16 + index].split( splitter );
+        output = output[output.length - 17 + index].split( splitter );
         return output[output.length - 1].trim();
     }
 
     @Test
     void enrollTest() {
-        String input = "1\nCS101\nCS\n12\n";
+        String input = "1\nCS101\nCS\n13\n";
         when( student.enroll( "CS101", "CS" ) ).thenReturn( true );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
@@ -68,7 +68,7 @@ class StudentUITest {
 
     @Test
     void dropTest() {
-        String input = "2\nCS101\n12\n";
+        String input = "2\nCS101\n13\n";
         when( student.drop( "CS101" ) ).thenReturn( true );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
@@ -82,24 +82,30 @@ class StudentUITest {
 
     @Test
     void viewGradesForEntireDegree() {
-        String[][][] records = new String[][][]{ { { "CS101", "DISCRETE MATHEMATICS", "A", "4.5" } } };
+        String[][][] records = new String[][][]{ { { "CS101", "DISCRETE MATHEMATICS", "A", "4.5" } }, { { "CS201", "DATA STRUCTURES", "A", "4" } } };
 
-        String input = "3\n12\n";
+        String input = "3\n13\n";
         when( student.getGradesForDegree() ).thenReturn( records );
         when( student.getBatch() ).thenReturn( 2020 );
         when( student.getSGPA( records[0] )).thenReturn( 10.00 );
+        when( student.getSGPA( records[1] )).thenReturn( 9.00 );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
-        assertEquals( "Records - Year: 2020 Semester: 1 SGPA: 10.00", extractOutput( "choice:", -3 ) );
-        assertEquals( "Course Code   Course Title           Grade   Credits", extractOutput( "choice:", -2 ) );
-        assertEquals( "CS101         DISCRETE MATHEMATICS   A       4.5", extractOutput( "choice:", -1 ) );
+        System.setOut( systemOutput );
+        System.out.println(outputStream);
+        assertEquals( "Records - Year: 2020 Semester: 1 SGPA: 10.00", extractOutput( "choice:", -7 ) );
+        assertEquals( "Course Code   Course Title           Grade   Credits", extractOutput( "choice:", -6 ) );
+        assertEquals( "CS101         DISCRETE MATHEMATICS   A       4.5", extractOutput( "choice:", -5 ) );
+        assertEquals( "Records - Year: 2020 Semester: 2 SGPA: 9.00", extractOutput( "choice:", -3 ) );
+        assertEquals( "Course Code   Course Title      Grade   Credits", extractOutput( "choice:", -2 ) );
+        assertEquals( "CS201         DATA STRUCTURES   A       4", extractOutput( "choice:", -1 ) );
     }
 
     @Test
     void viewGradesForParticularSessionTest() {
         String[][] records = new String[][]{ { "CS101", "DISCRETE MATHEMATICS", "A", "4.5" } };
 
-        String input = "4\n2020\n1\n12\n";
+        String input = "4\n2020\n1\n13\n";
         when( student.getGrades( 2020, 1 ) ).thenReturn( new String[][]{} );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
@@ -116,18 +122,18 @@ class StudentUITest {
 
     @Test
     void getCGPATest() {
-        String input = "5\n12\n";
+        String input = "5\n13\n";
         when( student.getCGPA() ).thenReturn( 9.866 );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
-        assertEquals( "CGPA: 9.87", extractOutput( "choice:", 1 ) );
+        assertEquals( "CGPA: 9.87", extractOutput( "choice:", 0 ) );
     }
 
     @Test
     void getAvailableCoursesTest() {
         String[][] record = new String[][]{ { "CS101", "DISCRETE MATHEMATICS", "DR APURVA MUDGAL", "{}", "CS", "PC" } };
 
-        String input = "6\n12\n";
+        String input = "6\n13\n";
         when( student.getAvailableCourses() ).thenReturn( new String[][]{} );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
@@ -146,7 +152,7 @@ class StudentUITest {
         remainingCredit.put( "PC", 10.0 );
         remainingCredit.put( "PE", 4.5 );
 
-        String input = "7\n12\n";
+        String input = "7\n13\n";
         when( student.getRemainingCreditRequirements() ).thenReturn( remainingCredit );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
@@ -156,7 +162,7 @@ class StudentUITest {
 
     @Test
     void updatePhoneNumberTest() {
-        String input = "8\n99999\n12\n";
+        String input = "8\n99999\n13\n";
         when( student.setPhoneNumber( "99999" ) ).thenReturn( true );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
@@ -170,7 +176,7 @@ class StudentUITest {
 
     @Test
     void updateEmailTest() {
-        String input = "9\nrandom@gmail.com\n12\n";
+        String input = "9\nrandom@gmail.com\n13\n";
         when( student.setEmail( "random@gmail.com" ) ).thenReturn( true );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
@@ -184,7 +190,7 @@ class StudentUITest {
 
     @Test
     void getContactDetailsTest() {
-        String input = "10\nADMIN1\n12\n";
+        String input = "10\nADMIN1\n13\n";
         when( student.getContactDetails( "ADMIN1" ) ).thenReturn( new String[]{ "random@gmail.com", "99999" } );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
@@ -202,6 +208,11 @@ class StudentUITest {
         studentUI.studentInterfaceHomeScreen();
         assertEquals(  "Email: random@gmail.com", extractOutput( "user:", 0 ) );
 
+        when( student.getContactDetails( "ADMIN1" ) ).thenReturn( new String[]{ null, "99999" } );
+        setInputToString( input );
+        studentUI.studentInterfaceHomeScreen();
+        assertEquals(  "Phone: 99999", extractOutput( "user:", 0 ) );
+
         when( student.getContactDetails( "ADMIN1" ) ).thenReturn( new String[]{ null, null } );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
@@ -210,7 +221,7 @@ class StudentUITest {
 
     @Test
     void updatePasswordTest() {
-        String input = "11\nrandom\nrandom\n12\n";
+        String input = "11\nrandom\nrandom\n13\n";
         when( student.setPassword( "random" )).thenReturn( true );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
@@ -221,10 +232,23 @@ class StudentUITest {
         studentUI.studentInterfaceHomeScreen();
         assertEquals( "Password Update Failed", extractOutput( ":", 0 ) );
 
-        input = "11\nrandom\nother\n12\n";
+        input = "11\nrandom\nother\n13\n";
         when( student.setPassword( "random" )).thenReturn( true );
         setInputToString( input );
         studentUI.studentInterfaceHomeScreen();
         assertEquals( "Please reenter the same password", extractOutput( ":", 0 ) );
     }
+
+    @Test
+    void viewCourseCatalogTest() {
+        String[][] catalog = new String[][]{{"CS101", "DISCRETE MATHEMATICS", "3", "0", "2", "1", "4", "{CS301}"}};
+        String input = "12\n13\n";
+        when( student.getCourseCatalog() ).thenReturn( catalog );
+        setInputToString( input );
+        studentUI.studentInterfaceHomeScreen();
+        assertEquals( "Course Code   Course Title           L   T   P   S   C   Prerequisites", extractOutput( ":", -2 ) );
+        assertEquals( "CS101         DISCRETE MATHEMATICS   3   0   2   1   4   {CS301}", extractOutput( ":", -1 ) );
+    }
 }
+
+

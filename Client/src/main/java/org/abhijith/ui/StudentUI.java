@@ -9,6 +9,7 @@ import java.util.HashMap;
 public class StudentUI {
     // Global for testability
     private Student  student;
+    private CustomScanner keyboardInput;
     final   String[] studentChoices = {
             "Enroll",
             "Drop",
@@ -21,11 +22,18 @@ public class StudentUI {
             "Change Contact Email",
             "View Contact Details",
             "Change Password",
+            "View Course Catalog",
             "Any other number to log out"
     };
 
     public StudentUI( String id ) {
         student = new Student( id );
+        keyboardInput = new CustomScanner();
+    }
+
+    public StudentUI( String id, CustomScanner keyboardInput ) {
+        student = new Student( id );
+        this.keyboardInput = keyboardInput;
     }
 
     public void setStudent( Student student ) {
@@ -33,7 +41,6 @@ public class StudentUI {
     }
 
     public void studentInterfaceHomeScreen() {
-        CustomScanner keyboardInput = new CustomScanner();
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );
@@ -88,7 +95,7 @@ public class StudentUI {
             }
 
             else if ( studentChoice == 5 ) {
-                System.out.printf( "CGPA: %.2f", student.getCGPA() );
+                System.out.printf( "CGPA: %.2f\n", student.getCGPA() );
             }
 
             else if ( studentChoice == 6 ) {
@@ -144,6 +151,11 @@ public class StudentUI {
 
                 if ( student.setPassword( password ) ) System.out.println( "Password updated successfully" );
                 else System.out.println( "Password Update Failed" );
+            }
+
+            else if ( studentChoice == 12 ) {
+                String[][] courses = student.getCourseCatalog();
+                Utils.prettyPrint( new String[]{ "Course Code", "Course Title", "L", "T", "P", "S", "C", "Prerequisites"}, courses );
             }
 
             else {

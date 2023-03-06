@@ -2,24 +2,24 @@
 -- The admin will have the username mentioned in the project specification
 CREATE TABLE admin
 (
-    admin_id VARCHAR(15) PRIMARY KEY,
-    name     VARCHAR(40) NOT NULL
+    admin_id TEXT PRIMARY KEY,
+    name     TEXT NOT NULL
 );
 
 -- department_id: Used to uniquely identify each department. Given based on number of departments
 CREATE TABLE department
 (
-    department_id   VARCHAR(15) PRIMARY KEY,
-    department_name VARCHAR(40) NOT NULL
+    department_id   TEXT PRIMARY KEY,
+    department_name TEXT NOT NULL
 );
 
 -- faculty_id: Used to uniquely identify each faculty. Given based on number of faculties
 -- Each faculty belongs to some specific department
 CREATE TABLE faculty
 (
-    faculty_id    VARCHAR(15) PRIMARY KEY,
-    name          VARCHAR(40) NOT NULL,
-    department_id VARCHAR(15) NOT NULL,
+    faculty_id    TEXT PRIMARY KEY,
+    name          TEXT NOT NULL,
+    department_id TEXT NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE
 );
 
@@ -34,8 +34,8 @@ CREATE TABLE faculty
 -- Any course can be offered by any department, but the prerequisites for a course are always same
 CREATE TABLE course_catalog
 (
-    course_code      VARCHAR(6),
-    course_title     VARCHAR(70)                                                            NOT NULL,
+    course_code      TEXT,
+    course_title     TEXT                                                                   NOT NULL,
     lecture_hours    DECIMAL(4, 2) CHECK (lecture_hours >= 0 AND lecture_hours <= 24)       NOT NULL,
     tutorial_hours   DECIMAL(4, 2) CHECK (tutorial_hours >= 0 AND tutorial_hours <= 24)     NOT NULL,
     practical_hours  DECIMAL(4, 2) CHECK (practical_hours >= 0 AND practical_hours <= 24)   NOT NULL,
@@ -55,15 +55,15 @@ CREATE TABLE course_catalog
 -- instructor refers only to the instructor in charge of the course, not all the instructors teaching the course
 CREATE TABLE course_offerings
 (
-    course_code   VARCHAR(6),
-    faculty_id    VARCHAR(15) NOT NULL,
-    year          INTEGER     NOT NULL,
-    semester      INTEGER     NOT NULL,
-    department_id VARCHAR(15) NOT NULL,
+    course_code   TEXT,
+    faculty_id    TEXT    NOT NULL,
+    year          INTEGER NOT NULL,
+    semester      INTEGER NOT NULL,
+    department_id TEXT    NOT NULL,
     cgpa_criteria DECIMAL(4, 2) CHECK (
                 cgpa_criteria >= 0.0
             AND cgpa_criteria <= 10.0
-        )                DEFAULT 0,
+        ) DEFAULT 0,
     CHECK (semester IN (1, 2)),
     FOREIGN KEY (course_code) REFERENCES course_catalog (course_code) ON DELETE CASCADE,
     FOREIGN KEY (department_id) REFERENCES department (department_id),
@@ -83,10 +83,10 @@ CREATE TABLE batch
 -- batch: denotes the year of joining the institute
 CREATE TABLE student
 (
-    entry_number  VARCHAR(15) PRIMARY KEY,
-    name          VARCHAR(40) NOT NULL,
-    department_id VARCHAR(15) NOT NULL,
-    batch         INTEGER     NOT NULL,
+    entry_number  TEXT PRIMARY KEY,
+    name          TEXT    NOT NULL,
+    department_id TEXT    NOT NULL,
+    batch         INTEGER NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department (department_id) ON DELETE CASCADE,
     FOREIGN KEY (batch) REFERENCES batch (year) ON DELETE CASCADE
 );
@@ -112,13 +112,13 @@ CREATE TABLE student
 -- academic_session and course_code as in previous tables
 CREATE TABLE student_course_registration
 (
-    entry_number  VARCHAR(15),
-    course_code   VARCHAR(6),
-    year          INTEGER     NOT NULL,
-    semester      INTEGER     NOT NULL,
-    grade         VARCHAR(2) DEFAULT '-',
-    department_id VARCHAR(15) NOT NULL,
-    category      TEXT        NOT NULL,
+    entry_number  TEXT,
+    course_code   TEXT,
+    year          INTEGER NOT NULL,
+    semester      INTEGER NOT NULL,
+    grade         TEXT DEFAULT '-',
+    department_id TEXT    NOT NULL,
+    category      TEXT    NOT NULL,
     PRIMARY KEY (entry_number, course_code, year, semester),
     FOREIGN KEY (course_code, year, semester, department_id) REFERENCES course_offerings (course_code, year, semester, department_id) ON DELETE CASCADE,
     FOREIGN KEY (entry_number) REFERENCES student (entry_number) ON DELETE CASCADE,
@@ -134,9 +134,9 @@ CREATE TABLE student_course_registration
 -- The default password is iitropar which can be changed by the user once they login
 CREATE TABLE common_user_details
 (
-    id       VARCHAR(15) PRIMARY KEY,
-    password VARCHAR(40) DEFAULT 'iitropar',
-    role     VARCHAR(7) NOT NULL,
+    id       TEXT,
+    password TEXT DEFAULT 'iitropar',
+    role     TEXT NOT NULL,
     phone    TEXT,
     email    TEXT,
     CHECK ( role in ('ADMIN', 'STUDENT', 'FACULTY')),
@@ -160,10 +160,10 @@ CREATE TABLE current_year_and_semester
 -- Used to figure out who is responsible in case of database anomalies
 CREATE TABLE log
 (
-    id        VARCHAR(15) NOT NULL,
-    role      VARCHAR(7)  NOT NULL,
-    log_time  TIMESTAMP   NOT NULL,
-    in_or_out VARCHAR(4)  NOT NULL,
+    id        TEXT       NOT NULL,
+    role      TEXT NOT NULL,
+    log_time  TIMESTAMP  NOT NULL,
+    in_or_out TEXT NOT NULL,
     CHECK ( role in ('ADMIN', 'STUDENT', 'FACULTY')),
     CHECK (in_or_out IN ('IN', 'OUT'))
 );
@@ -200,8 +200,8 @@ CREATE TABLE ug_curriculum
 -- Table that stores the core courses of all batches
 CREATE TABLE core_courses
 (
-    course_code     VARCHAR(6) NOT NULL,
-    department_id   VARCHAR(15),
+    course_code     TEXT NOT NULL,
+    department_id   TEXT,
     batch           INTEGER,
     course_category TEXT       NOT NULL,
     CHECK (course_category IN ('SC', 'SE', 'GR', 'PC', 'PE', 'HC', 'HE', 'CP', 'II', 'NN', 'OE')),
@@ -213,13 +213,13 @@ CREATE TABLE core_courses
 -- Table to store the prerequisites of the instructor
 CREATE TABLE instructor_prerequisites
 (
-    course_code    VARCHAR(6) NOT NULL,
+    course_code    TEXT NOT NULL,
     year           INTEGER,
     semester       INTEGER,
-    department_id  VARCHAR(15),
-    prereq         VARCHAR(6) NOT NULL,
+    department_id  TEXT,
+    prereq         TEXT NOT NULL,
     grade_criteria INTEGER,
-    type          INTEGER,
+    type           INTEGER,
     CHECK (grade_criteria >= 0 AND grade_criteria <= 10),
     FOREIGN KEY (course_code, year, semester, department_id) REFERENCES course_offerings (course_code, year, semester, department_id) ON DELETE CASCADE,
     PRIMARY KEY (course_code, year, semester, department_id, prereq, type)
@@ -228,13 +228,13 @@ CREATE TABLE instructor_prerequisites
 -- Table that stores what category each course offering is for a particular batch and department
 CREATE TABLE course_category
 (
-    course_code   VARCHAR(6) NOT NULL,
+    course_code   TEXT NOT NULL,
     year          INTEGER,
     semester      INTEGER,
-    department_id VARCHAR(15),
+    department_id TEXT,
     category      TEXT       NOT NULL,
     batch         INTEGER,
-    department    VARCHAR(15),
+    department    TEXT,
     FOREIGN KEY (course_code, year, semester, department_id) REFERENCES course_offerings (course_code, year, semester, department_id) ON DELETE CASCADE,
     PRIMARY KEY (course_code, year, semester, department_id, batch, department),
     CHECK (category IN ('SC', 'SE', 'GR', 'PC', 'PE', 'HC', 'HE', 'CP', 'II', 'NN', 'OE'))

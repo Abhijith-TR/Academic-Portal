@@ -234,7 +234,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
         try {
             if ( currentYear <= 0 || currentSemester <= 0 ) return new String[][]{};
 
-            PreparedStatement getCoursesQuery = databaseConnection.prepareStatement( "SELECT course_code, course_title, name, pre_requisites, department_id FROM course_offerings NATURAL JOIN course_catalog NATURAL JOIN faculty WHERE year = ? AND semester = ?" );
+            PreparedStatement getCoursesQuery = databaseConnection.prepareStatement( "SELECT course_code, course_title, name, pre_requisites, department_id FROM course_offerings NATURAL JOIN course_catalog NATURAL JOIN faculty WHERE year = ? AND semester = ? ORDER BY course_code" );
             getCoursesQuery.setInt( 1, currentYear );
             getCoursesQuery.setInt( 2, currentSemester );
             ResultSet getCoursesQueryResult = getCoursesQuery.executeQuery();
@@ -297,7 +297,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
     @Override
     public String getCourseCategory( String courseCode, int year, int semester, String courseDepartment, String studentDepartment, int batch ) {
         try {
-            if ( courseCode == null || year < 0 || semester < 0 || courseDepartment == null || studentDepartment == null || batch <= 0 )
+            if ( courseCode == null || year < 0 || semester < 0 || courseDepartment == null || studentDepartment == null || batch < 0 )
                 return "";
 
             // SQL query to fetch the course category for this particular student from the database

@@ -98,7 +98,7 @@ public class PostgresCommonDAO implements CommonDAO {
             ResultSet batchQueryResult = batchQuery.executeQuery();
 
             boolean studentExists = batchQueryResult.next();
-            if ( ! studentExists ) return -1;
+            if ( !studentExists ) return -1;
 
             int batch = batchQueryResult.getInt( 1 );
             return batch;
@@ -257,6 +257,33 @@ public class PostgresCommonDAO implements CommonDAO {
     }
 
     @Override
+    public String[][] getCourseCatalog() {
+        try {
+            // SQL statement to fetch the entire course catalog from the database
+            PreparedStatement getCatalogQuery       = databaseConnection.prepareStatement( "SELECT * FROM course_catalog ORDER BY course_code" );
+            ResultSet         getCatalogQueryResult = getCatalogQuery.executeQuery();
+
+            ArrayList<String[]> courseList = new ArrayList<>();
+            while ( getCatalogQueryResult.next() ) {
+                ArrayList<String> course = new ArrayList<>();
+                course.add( getCatalogQueryResult.getString( 1 ) );
+                course.add( getCatalogQueryResult.getString( 2 ) );
+                course.add( getCatalogQueryResult.getString( 3 ) );
+                course.add( getCatalogQueryResult.getString( 4 ) );
+                course.add( getCatalogQueryResult.getString( 5 ) );
+                course.add( getCatalogQueryResult.getString( 6 ) );
+                course.add( getCatalogQueryResult.getString( 7 ) );
+                course.add( getCatalogQueryResult.getString( 8 ) );
+                courseList.add( course.toArray( new String[course.size()] ) );
+            }
+            return courseList.toArray( new String[courseList.size()][] );
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return new String[][]{};
+        }
+    }
+
+    @Override
     public String getCourseGrade( String entryNumber, String courseCode ) {
         try {
             if ( entryNumber == null || courseCode == null ) return "";
@@ -269,7 +296,7 @@ public class PostgresCommonDAO implements CommonDAO {
 
             // If the student has done the course before, he may have done it multiple times. Get the highest possible grade
             // In the worst case, the student has not done the course before and his grade is "-" which is the not applicable symbol
-            String maximumGrade      = "-";
+            String maximumGrade      = "F";
             int    maximumGradeValue = 0;
             while ( getGradeQueryResult.next() ) {
                 // Convert the grade to a number to determine what the highest grade was
@@ -283,7 +310,6 @@ public class PostgresCommonDAO implements CommonDAO {
             return maximumGrade;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
-            // Returning an A will prevent the student from enrolling in the course
             return "";
         }
     }

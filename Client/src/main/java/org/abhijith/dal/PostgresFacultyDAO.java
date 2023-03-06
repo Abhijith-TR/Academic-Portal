@@ -62,7 +62,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
         try {
             if ( facultyID == null || courseCode == null || minimumCGPA < 0 || minimumCGPA > 10 || currentSession == null || departmentID == null )
                 return false;
-            if ( currentSession.length != 2 || currentSession[0] < 0 || currentSession[1] <= 0 ) return false;
+            if ( currentSession.length != 2 || currentSession[0] < 0 || currentSession[1] < 0 ) return false;
             facultyID = facultyID.toUpperCase();
             courseCode = courseCode.toUpperCase();
             departmentID = departmentID.toUpperCase();
@@ -153,7 +153,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
     @Override
     public boolean dropCourseOffering( String facultyID, String courseCode, int currentYear, int currentSemester, String departmentID ) {
         try {
-            if ( facultyID == null || courseCode == null || currentSemester <= 0 || currentYear < 0 || departmentID == null ) return false;
+            if ( facultyID == null || courseCode == null || currentSemester < 0 || currentYear < 0 || departmentID == null ) return false;
             facultyID = facultyID.toUpperCase();
             courseCode = courseCode.toUpperCase();
             departmentID = departmentID.toUpperCase();
@@ -177,7 +177,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
     @Override
     public boolean checkIfOfferedBySelf( String facultyID, String courseCode, int currentYear, int currentSemester, String departmentID ) {
         try {
-            if ( facultyID == null || courseCode == null || currentSemester <= 0 || currentYear < 0 || departmentID == null ) return false;
+            if ( facultyID == null || courseCode == null || currentSemester < 0 || currentYear < 0 || departmentID == null ) return false;
             facultyID = facultyID.toUpperCase();
             courseCode = courseCode.toUpperCase();
             departmentID = departmentID.toUpperCase();
@@ -202,7 +202,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
     @Override
     public boolean setCourseCategory( String courseCode, int currentYear, int currentSemester, String courseCategory, String department, int[] years, String offeringDepartment ) {
         try {
-            if ( courseCode == null || currentYear < 0 || currentSemester <= 0 || courseCategory == null || department == null || years == null || offeringDepartment == null )
+            if ( courseCode == null || currentYear < 0 || currentSemester < 0 || courseCategory == null || department == null || years == null || offeringDepartment == null )
                 return false;
             courseCode = courseCode.toUpperCase();
             courseCategory = courseCategory.toUpperCase();
@@ -441,6 +441,34 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return true;
+        }
+    }
+
+    @Override
+    public String[][] getInstructorPrerequisites( String courseCode, int year, int semester, String departmentID ) {
+        try {
+            if ( courseCode == null || year < 0 || semester < 0 || departmentID == null ) return new String[][]{};
+
+            // SQL query to fetch the instructor prerequisites from the specified course
+            PreparedStatement getPrerequisiteQuery = databaseConnection.prepareStatement("SELECT prereq, grade_criteria FROM instructor_prerequisites WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ? ");
+            getPrerequisiteQuery.setString( 1, courseCode );
+            getPrerequisiteQuery.setInt( 2, year );
+            getPrerequisiteQuery.setInt( 3, semester );
+            getPrerequisiteQuery.setString( 4, departmentID );
+            ResultSet getPrerequisiteQueryResult = getPrerequisiteQuery.executeQuery();
+
+            ArrayList<String[]> courseList = new ArrayList<>();
+            while ( getPrerequisiteQueryResult.next() ) {
+                ArrayList<String> course = new ArrayList<>();
+                course.add( getPrerequisiteQueryResult.getString( 1 ) );
+                course.add( getPrerequisiteQueryResult.getString( 2 ) );
+                courseList.add( course.toArray( new String[course.size()]) );
+            }
+
+            return courseList.toArray( new String[courseList.size()][] );
+        } catch ( Exception error ) {
+            System.out.println( "Database Error. Please try again later" );
+            return new String[][]{};
         }
     }
 }

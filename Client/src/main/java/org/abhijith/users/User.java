@@ -33,4 +33,8 @@ public class User {
     public boolean setPassword( String password ) {
         return commonDAO.setPassword( this.id, password );
     }
+
+    public String[][] getCourseCatalog() {
+        return commonDAO.getCourseCatalog();
+    }
 }

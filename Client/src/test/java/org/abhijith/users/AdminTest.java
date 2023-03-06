@@ -24,10 +24,6 @@ class AdminTest {
         admin.setAdminDAO( mockDAO );
     }
 
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
     void testConstructor() {
         Admin admin = new Admin( null );

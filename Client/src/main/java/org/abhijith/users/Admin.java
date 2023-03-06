@@ -133,7 +133,7 @@ public class Admin extends User {
         }
 
         // Get the credit requirements that are left for this particular student
-        HashMap<String, Double> creditsLeft = getRemainingCreditRequirements( entryNumber );
+        HashMap<String, Double> creditsLeft = getRemainingCreditRequirements( entryNumber, batch );
         if ( creditsLeft == null ) return false;
 
         // Iterate through the UG curriculum requirements left. If all entries are 0, the student is eligible to pass
@@ -145,11 +145,7 @@ public class Admin extends User {
         return true;
     }
 
-    private HashMap<String, Double> getRemainingCreditRequirements( String entryNumber ) {
-        // Get the batch of the student and retrieve the UG curriculum of the corresponding batch
-        int                     batch        = adminDAO.getBatch( entryNumber );
-        if ( batch == -1 ) return null;
-
+    private HashMap<String, Double> getRemainingCreditRequirements( String entryNumber, int batch ) {
         HashMap<String, Double> ugCurriculum = adminDAO.getUGCurriculum( batch );
         if ( ugCurriculum == null ) return null;
 

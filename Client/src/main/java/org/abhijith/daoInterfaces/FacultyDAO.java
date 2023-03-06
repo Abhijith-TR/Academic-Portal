@@ -30,4 +30,6 @@ public interface FacultyDAO extends CommonDAO {
     boolean uploadCourseGrades( String courseCode, int year, int semester, String departmentID, String[] listOfStudents, String[] listOfGrades );
 
     boolean isCourseAlreadyOffered( String courseCode, int currentYear, int currentSemester, String offeringDepartment );
+
+    String[][] getInstructorPrerequisites( String courseCode, int year, int semester, String departmentID );
 }

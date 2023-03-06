@@ -148,6 +148,9 @@ class PostgresStudentDAOTest {
         // 24 because of invalid input
         assertEquals( maximumCredits, postgresStudentDAO.getCreditsOfCourse( null ) );
 
+        // Course does not exist
+        assertEquals( maximumCredits , postgresStudentDAO.getCreditsOfCourse( "CS888" ) );
+
         // Actual credits of course
         assertEquals( expectedCredits, postgresStudentDAO.getCreditsOfCourse( courseCode ) );
 
@@ -175,6 +178,9 @@ class PostgresStudentDAOTest {
         assertEquals( creditLimitPlusOne, postgresStudentDAO.getCreditsInSession( null, currentYear, currentSemester ) );
         assertEquals( creditLimitPlusOne, postgresStudentDAO.getCreditsInSession( entryNumber, -1, currentSemester ) );
         assertEquals( creditLimitPlusOne, postgresStudentDAO.getCreditsInSession( entryNumber, currentYear, -1 ) );
+
+        // Student does not exist
+        assertEquals( 0, postgresStudentDAO.getCreditsInSession( "random", currentYear, currentSemester ) );
 
         // Successful
         assertEquals( creditsInSession, postgresStudentDAO.getCreditsInSession( entryNumber, previousYear, previousSemester ) );
@@ -309,7 +315,7 @@ class PostgresStudentDAOTest {
         String[] course5 = { "CS550", "RESEARCH METHODOLOGIES IN COMPUTER SCIENCE", "DR MUKESH SAINI", "{}", "CS", "" };
         String[] course6 = { "HS507", "POSITIVE PSYCHOLOGY AND WELL-BEING", "DR PARWINDER SINGH", "{}", "HS", "" };
         String[] course7 = { "CS999", "TEST COURSE", "TEST FACULTY", "{}", "CS", "" };
-        assertArrayEquals( new String[][]{ course1, course2, course3, course4, course5, course6, course7 }, postgresStudentDAO.getOfferedCourses( 2023, 2 ) );
+        assertArrayEquals( new String[][]{ course4, course3, course5, course7, course6, course1, course2 }, postgresStudentDAO.getOfferedCourses( 2023, 2 ) );
 
         try {
             Connection conn = postgresStudentDAO.getDatabaseConnection();
@@ -364,11 +370,11 @@ class PostgresStudentDAOTest {
     void getCourseCategory() {
         // "" because of invalid input parameters
         assertEquals( "", postgresStudentDAO.getCourseCategory( null, 2023, 2, "HS", "CS", 2021 ) );
-        assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", 0, 2, "HS", "CS", 2021 ) );
-        assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", 2023, 0, "HS", "CS", 2021 ) );
+        assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", -1, 2, "HS", "CS", 2021 ) );
+        assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", 2023, -1, "HS", "CS", 2021 ) );
         assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", 2023, 2, null, "CS", 2021 ) );
         assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", 2023, 2, "HS", null, 2021 ) );
-        assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", 2023, 2, "HS", "CS", 0 ) );
+        assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", 2023, 2, "HS", "CS", -1 ) );
 
         // The course category has been set up in the test database
         assertEquals( "PC", postgresStudentDAO.getCourseCategory( "CS101", 2020, 1, "CS", "CS", 2020 ) );

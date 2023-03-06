@@ -28,4 +28,6 @@ public interface CommonDAO {
     String[] getContactDetails( String userID );
 
     boolean setPassword( String id, String password );
+
+    String[][] getCourseCatalog();
 }

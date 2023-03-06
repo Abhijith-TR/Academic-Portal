@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 class HomeUITest {
@@ -22,7 +23,7 @@ class HomeUITest {
 
     @BeforeEach
     void setUp() {
-//        System.setOut( new PrintStream( outputStream ) );
+        System.setOut( new PrintStream( outputStream ) );
         passwordDAO = Mockito.mock( PasswordDAO.class );
         homeUI.setPasswordAuthConnection( passwordDAO );
     }
@@ -44,19 +45,66 @@ class HomeUITest {
 
     private String extractOutput( String splitter, int index ) {
         String[] output = outputStream.toString().split( "\\r?\\n" );
-        output = output[output.length - 16 + index].split( splitter );
+        output = output[output.length + index].split( splitter );
         return output[output.length - 1].trim();
     }
 
     @Test
     void mainInterface() {
-        String input = "1\n2020CSB1062\niitropar\n12\n4\nADMIN1\niitropar\n";
+        String input = "1\n2020CSB1062\niitropar\n13\n4\nADMIN1\niitropar\n";
         when( passwordDAO.logoutPreviousUser() ).thenReturn( true );
         when( passwordDAO.authenticateUser( "2020CSB1062", "iitropar", "STUDENT" )).thenReturn( true );
         when( passwordDAO.logLogoutEntry( "2020CSB1062", "STUDENT" )).thenReturn( true );
+        when( passwordDAO.authenticateUser( "ADMIN1", "iitropar", "ADMIN" )).thenReturn( true );
         setInputToString( input );
-//        homeUI.mainInterface();
-//        System.setOut( systemOutput );
-//        System.out.println( outputStream );
+        homeUI.mainInterface();
+
+        input = "2\n2020CSB1062\niitropar\n15\n4\nADMIN1\niitropar\n";
+        when( passwordDAO.logoutPreviousUser() ).thenReturn( true );
+        when( passwordDAO.authenticateUser( "2020CSB1062", "iitropar", "FACULTY" )).thenReturn( true );
+        when( passwordDAO.logLogoutEntry( "2020CSB1062", "FACULTY" )).thenReturn( true );
+        when( passwordDAO.authenticateUser( "ADMIN1", "iitropar", "ADMIN" )).thenReturn( true );
+        setInputToString( input );
+        homeUI.mainInterface();
+
+        input = "3\n2020CSB1062\niitropar\n18\n4\nADMIN1\niitropar\n";
+        when( passwordDAO.logoutPreviousUser() ).thenReturn( true );
+        when( passwordDAO.authenticateUser( "2020CSB1062", "iitropar", "ADMIN" )).thenReturn( true );
+        when( passwordDAO.logLogoutEntry( "2020CSB1062", "ADMIN" )).thenReturn( true );
+        when( passwordDAO.authenticateUser( "ADMIN1", "iitropar", "ADMIN" )).thenReturn( true );
+        setInputToString( input );
+        homeUI.mainInterface();
+
+        input = "3\n2020CSB1062\niitropar\n18\n4\nADMIN1\niitropar\n";
+        when( passwordDAO.logoutPreviousUser() ).thenReturn( true );
+        when( passwordDAO.authenticateUser( "2020CSB1062", "iitropar", "ADMIN" )).thenReturn( true );
+        when( passwordDAO.logLogoutEntry( "2020CSB1062", "ADMIN" )).thenReturn( false, true );
+        when( passwordDAO.authenticateUser( "ADMIN1", "iitropar", "ADMIN" )).thenReturn( true );
+        setInputToString( input );
+        homeUI.mainInterface();
+
+        input = "2\n2020CSB1061\nrandom\n4\nADMIN1\niitropar\n";
+        when( passwordDAO.logoutPreviousUser() ).thenReturn( true );
+        when( passwordDAO.authenticateUser( "2020CSB1061", "iitropar", "FACULTY" )).thenReturn( true );
+        when( passwordDAO.authenticateUser( "ADMIN1", "iitropar", "ADMIN" )).thenReturn( true );
+        setInputToString( input );
+        homeUI.mainInterface();
+        assertEquals( "Invalid Username or Password", extractOutput( ":", -9 ));
+
+        input = "5\n4\nADMIN1\niitropar\n";
+        when( passwordDAO.logoutPreviousUser() ).thenReturn( true );
+        when( passwordDAO.authenticateUser( "2020CSB1061", "iitropar", "FACULTY" )).thenReturn( true );
+        when( passwordDAO.authenticateUser( "ADMIN1", "iitropar", "ADMIN" )).thenReturn( true );
+        setInputToString( input );
+        homeUI.mainInterface();
+        assertEquals( "Invalid Choice", extractOutput( ":", -9 ));
+
+        input = "-1\n4\nADMIN1\niitropar\n";
+        when( passwordDAO.logoutPreviousUser() ).thenReturn( true );
+        when( passwordDAO.authenticateUser( "2020CSB1061", "iitropar", "FACULTY" )).thenReturn( true );
+        when( passwordDAO.authenticateUser( "ADMIN1", "iitropar", "ADMIN" )).thenReturn( true );
+        setInputToString( input );
+        homeUI.mainInterface();
+        assertEquals( "Invalid Choice", extractOutput( ":", -9 ));
     }
 }

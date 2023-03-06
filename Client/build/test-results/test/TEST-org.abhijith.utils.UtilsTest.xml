@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.utils.UtilsTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-03-06T06:39:51" hostname="ADMIN" time="0.006">
+  <properties/>
+  <testcase name="printTest()" classname="org.abhijith.utils.UtilsTest" time="0.004"/>
+  <testcase name="getGradeValueTest()" classname="org.abhijith.utils.UtilsTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

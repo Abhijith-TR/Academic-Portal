@@ -265,7 +265,7 @@ class PostgresCommonDAOTest {
         assertEquals( "A", commonDAO.getCourseGrade( entryNumber, courseCode ) );
 
         // No such record exists in the database
-        assertEquals( "-", commonDAO.getCourseGrade( entryNumber, "CS888" ) );
+        assertEquals( "F", commonDAO.getCourseGrade( entryNumber, "CS888" ) );
 
         try {
             Connection connection = commonDAO.getDatabaseConnection();
@@ -293,6 +293,74 @@ class PostgresCommonDAOTest {
             Connection connection = commonDAO.getDatabaseConnection();
             connection.close();
             assertEquals( "", commonDAO.getStudentDepartment( entryNumber ) );
+        } catch ( Exception error ) {
+            fail( "Could not close database connection" );
+        }
+    }
+
+    @Test
+    void getCourseCatalog() {
+        String[][] courseCatalog = new String[][]{ { "BM101", "BIOLOGY FOR ENGINEERS", "3.00", "1.00", "0.00", "5.00", "3.0", "{}" },
+                { "CP301", "DEVELOPMENT ENGINEERING PRODUCT", "0.00", "0.00", "6.00", "3.00", "3.0", "{}" },
+                { "CP302", "CAPSTONE I", "0.00", "0.00", "6.00", "3.00", "3.0", "{}" },
+                { "CP303", "CAPSTONE II", "0.00", "0.00", "6.00", "3.00", "3.0", "{CP302}" },
+                { "CS101", "DISCRETE MATHEMATICAL STRUCTURES", "3.00", "1.00", "0.00", "5.00", "3.0", "{}" },
+                { "CS201", "DATA STRUCTURES", "3.00", "1.00", "2.00", "6.00", "4.0", "{GE103}" },
+                { "CS202", "PROGRAMMING PARADIGMS AND PRAGMATICS", "3.00", "1.00", "2.00", "6.00", "4.0", "{CS201}" },
+                { "CS203", "DIGITAL LOGIC DESIGN", "3.00", "1.00", "3.00", "6.00", "4.0", "{}" },
+                { "CS204", "COMPUTER ARCHITECTURE", "3.00", "1.00", "2.00", "6.00", "4.0", "{CS203,GE103}" },
+                { "CS301", "DATABASES", "3.00", "1.00", "2.00", "6.00", "4.0", "{CS201}" },
+                { "CS302", "ANALYSIS AND DESIGN OF ALGORITHMS", "3.00", "1.00", "0.00", "5.00", "3.0", "{CS101,CS201}" },
+                { "CS303", "OPERATING SYSTEMS", "3.00", "1.00", "2.00", "6.00", "4.0", "{CS201}" },
+                { "CS304", "COMPUTER NETWORKS", "3.00", "1.00", "2.00", "6.00", "4.0", "{CS201}" },
+                { "CS305", "SOFTWARE ENGINEERING", "3.00", "1.00", "2.00", "6.00", "4.0", "{CS301,CS303}" },
+                { "CS306", "THEORY OF COMPUTATION", "3.00", "1.00", "0.00", "5.00", "3.0", "{CS101}" },
+                { "CS517", "DIGITAL IMAGE PROCESSING AND ANALYSIS", "2.00", "1.00", "2.00", "4.00", "3.0", "{}" },
+                { "CS522", "SOCIAL COMPUTING AND NETWORKS", "2.00", "0.00", "2.00", "5.00", "3.0", "{}" },
+                { "CS535", "INTRODUCTION TO GAME THEORY AND MECHANISM DESIGN", "3.00", "0.00", "0.00", "6.00", "3.0", "{}" },
+                { "CS539", "INTERNET OF THINGS", "3.00", "0.00", "0.00", "6.00", "3.0", "{}" },
+                { "CS550", "RESEARCH METHODOLOGIES IN COMPUTER SCIENCE", "1.00", "0.00", "0.00", "2.00", "1.0", "{}" },
+                { "CS999", "TEST COURSE", "3.00", "0.00", "0.00", "6.00", "25.0", "{}" },
+                { "CY101", "CHEMISTRY FOR ENGINEERS", "3.00", "1.00", "2.00", "6.00", "4.0", "{}" },
+                { "EE201", "SIGNALS AND SYSTEMS", "3.00", "1.00", "0.00", "5.00", "3.0", "{}" },
+                { "GE101", "TECHNOLOGY MUSEUM LAB", "0.00", "0.00", "2.00", "1.00", "1.0", "{}" },
+                { "GE102", "WORKSHOP PRACTICE", "0.00", "0.00", "4.00", "2.00", "2.0", "{}" },
+                { "GE103", "INTRODUCTION TO COMPUTING AND DATA STRUCTURES", "3.00", "0.00", "3.00", "7.00", "4.5", "{}" },
+                { "GE104", "INTRODUCTION TO ELECTRICAL ENGINEERING", "2.00", "0.00", "2.00", "4.00", "3.0", "{}" },
+                { "GE105", "ENGINEERING DRAWING", "0.00", "0.00", "3.00", "1.50", "1.5", "{}" },
+                { "GE107", "TINKERING LAB", "0.00", "0.00", "3.00", "1.00", "1.5", "{}" },
+                { "GE108", "BASIC ELECTRONICS", "2.00", "0.00", "2.00", "4.00", "3.0", "{}" },
+                { "GE109", "INTRODUCTION TO ENGINEERING PRODUCTS", "0.00", "0.00", "2.00", "1.00", "1.0", "{}" },
+                { "GE111", "INTRODUCTION TO ENVIRONMENTAL SCIENCE AND ENGINEERING", "3.00", "1.00", "0.00", "5.00", "3.0", "{}" },
+                { "HS101", "HISTORY OF TECHNOLOGY", "1.50", "0.50", "0.00", "2.50", "1.5", "{}" },
+                { "HS103", "PROFESSIONAL ENGLISH COMMUNICATION", "2.00", "0.00", "2.00", "5.00", "3.0", "{}" },
+                { "HS104", "PROFESSIONAL ETHICS", "1.00", "0.00", "1.00", "2.00", "1.5", "{}" },
+                { "HS201", "ECONOMICS", "3.00", "1.00", "0.00", "5.00", "3.0", "{}" },
+                { "HS202", "HUMAN GEOGRAPHY AND SOCIAL NEEDS", "1.00", "0.00", "4.00", "3.00", "3.0", "{}" },
+                { "HS301", "INDUSTRIAL MANAGEMENT", "3.00", "1.00", "0.00", "5.00", "3.0", "{}" },
+                { "HS475", "AN INTRODUCTION TO FANTASY AND SCIENCE FICTION", "3.00", "0.00", "0.00", "6.00", "3.0", "{}" },
+                { "HS507", "POSITIVE PSYCHOLOGY AND WELL-BEING", "3.00", "0.00", "0.00", "6.00", "3.0", "{}" },
+                { "II301", "INDUSTRIAL INTERNSHIP AND COMPREHENSIVE VIVA", "0.00", "0.00", "7.00", "3.50", "3.5", "{}" },
+                { "MA101", "CALCULUS", "3.00", "1.00", "0.00", "5.00", "3.0", "{}" },
+                { "MA102", "LINEAR ALGEBRA, INTEGRAL TRANSFORMS AND SPECIAL FUNCTIONS", "3.00", "1.00", "0.00", "5.00", "3.0", "{}" },
+                { "MA201", "DIFFERENTIAL EQUATIONS", "3.00", "1.00", "0.00", "5.00", "3.0", "{}" },
+                { "MA202", "PROBABILITY AND STATISTICS", "3.00", "0.00", "0.00", "6.00", "3.0", "{}" },
+                { "MA515", "FOUNDATIONS OF DATA SCIENCE", "3.00", "0.00", "2.00", "7.00", "4.0", "{}" },
+                { "MA628", "FINANCIAL DERIVATIVES PRICING", "3.00", "0.00", "2.00", "7.00", "4.0", "{}" },
+                { "NS101", "NSS I", "0.00", "0.00", "2.00", "1.00", "1.0", "{}" },
+                { "NS102", "NSS II", "0.00", "0.00", "2.00", "1.00", "1.0", "{}" },
+                { "NS103", "NSS III", "0.00", "0.00", "2.00", "1.00", "1.0", "{}" },
+                { "NS104", "NSS IV", "0.00", "0.00", "2.00", "1.00", "1.0", "{}" },
+                { "PH101", "PHYSICS FOR ENGINEERS", "3.00", "1.00", "0.00", "5.00", "3.0", "{}" },
+                { "PH102", "PHYSICS FOR ENGINEERS LAB", "0.00", "0.00", "4.00", "2.00", "2.0", "{}" } };
+
+        // Expected result
+        assertArrayEquals( courseCatalog, commonDAO.getCourseCatalog() );
+
+        try {
+            Connection connection = commonDAO.getDatabaseConnection();
+            connection.close();
+            assertArrayEquals( new String[][]{}, commonDAO.getCourseCatalog() );
         } catch ( Exception error ) {
             fail( "Could not close database connection" );
         }

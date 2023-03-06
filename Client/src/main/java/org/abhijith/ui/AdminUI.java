@@ -7,7 +7,8 @@ import org.abhijith.utils.Utils;
 import java.io.BufferedReader;
 
 public class AdminUI {
-    Admin admin;
+    private Admin admin;
+    private CustomScanner keyboardInput;
 
     String[] adminChoices = {
             "Add Student",
@@ -26,10 +27,17 @@ public class AdminUI {
             "Change Password",
             "Add new session",
             "Modify Session",
+            "View Course Catalog",
             "Any other number to log out"
     };
 
     public AdminUI( String id ) {
+        admin = new Admin( id );
+        keyboardInput = new CustomScanner();
+    }
+
+    public AdminUI( String id, CustomScanner keyboardInput ) {
+        this.keyboardInput = keyboardInput;
         admin = new Admin( id );
     }
 
@@ -38,9 +46,6 @@ public class AdminUI {
     }
 
     public void adminInterfaceHomeScreen() {
-        CustomScanner keyboardInput = new CustomScanner();
-
-        // Uses the default database connection
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );
@@ -145,6 +150,7 @@ public class AdminUI {
                     int            batch         = keyboardInput.integerInput( "Enter the batch" );
                     BufferedReader courseCSVFile = keyboardInput.CSVFileInput( "Enter the CSV file path" );
                     if ( courseCSVFile == null ) {
+                        System.out.println( "Please enter valid file" );
                         continue;
                     }
                     if ( admin.insertCoreCourses( batch, courseCSVFile ) )
@@ -230,6 +236,11 @@ public class AdminUI {
                 if ( admin.setCurrentSessionStatus( eventsList[choice - 1] ) )
                     System.out.println( "Event updated successfully" );
                 else System.out.println( "Event update failed" );
+            }
+
+            else if ( adminChoice == 17 ) {
+                String[][] courses = admin.getCourseCatalog();
+                Utils.prettyPrint( new String[]{ "Course Code", "Course Title", "L", "T", "P", "S", "C", "Prerequisites"}, courses );
             }
 
             else break;
