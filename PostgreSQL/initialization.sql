@@ -13,10 +13,5 @@ CREATE DATABASE mini_project;
 -- Run the database initialization script
 \i 'creatingRelations.sql';
 
--- Start inserting the functions
-\i 'utilities.sql';
-\i './students/studentMethods.sql';
-\i './students/creatingStudents.sql';
-
--- Creating roles and assigning permissions
-\i './authorization/permissions.sql';
+-- Initialize the database
+\i 'dummyData.sql';

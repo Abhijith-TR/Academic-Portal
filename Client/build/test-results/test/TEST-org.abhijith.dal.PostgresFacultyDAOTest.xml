@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.dal.PostgresFacultyDAOTest" tests="16" skipped="0" failures="0" errors="0" timestamp="2023-03-06T06:39:39" hostname="ADMIN" time="1.933">
+<testsuite name="org.abhijith.dal.PostgresFacultyDAOTest" tests="16" skipped="0" failures="0" errors="0" timestamp="2023-03-06T18:07:11" hostname="ADMIN" time="1.331">
   <properties/>
-  <testcase name="setCourseCategory()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.106"/>
-  <testcase name="getGradesOfCourse()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.039"/>
-  <testcase name="verifyCore()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.035"/>
-  <testcase name="getInstructorPrerequisites()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.079"/>
-  <testcase name="setInstructorPrerequisites()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.036"/>
-  <testcase name="getListOfStudents()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.035"/>
-  <testcase name="isCourseAlreadyOffered()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.03"/>
-  <testcase name="insertCourseOffering()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.039"/>
-  <testcase name="isCurrentEventGradeSubmission()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.039"/>
-  <testcase name="getDepartment()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.029"/>
-  <testcase name="setCGCriteria()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.032"/>
-  <testcase name="dropCourseOffering()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.037"/>
-  <testcase name="uploadCourseGrades()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.04"/>
-  <testcase name="checkIfOfferedBySelf()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.148"/>
-  <testcase name="isCurrentEventOffering()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.034"/>
-  <testcase name="getCourseEnrollmentsList()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.03"/>
+  <testcase name="setCourseCategory()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.037"/>
+  <testcase name="getGradesOfCourse()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.027"/>
+  <testcase name="verifyCore()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.031"/>
+  <testcase name="getInstructorPrerequisites()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.027"/>
+  <testcase name="setInstructorPrerequisites()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.031"/>
+  <testcase name="getListOfStudents()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.03"/>
+  <testcase name="isCourseAlreadyOffered()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.031"/>
+  <testcase name="insertCourseOffering()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.036"/>
+  <testcase name="isCurrentEventGradeSubmission()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.032"/>
+  <testcase name="getDepartment()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.03"/>
+  <testcase name="setCGCriteria()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.031"/>
+  <testcase name="dropCourseOffering()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.034"/>
+  <testcase name="uploadCourseGrades()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.039"/>
+  <testcase name="checkIfOfferedBySelf()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.031"/>
+  <testcase name="isCurrentEventOffering()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.037"/>
+  <testcase name="getCourseEnrollmentsList()" classname="org.abhijith.dal.PostgresFacultyDAOTest" time="0.036"/>
   <system-out><![CDATA[Database error. Please try again later
 Database Error. Please try again later
 Database error. Please try again later
@@ -30,6 +30,7 @@ Faculty ID not found in database.
 Database Error. Please verify that the course offering exists in the current session
 Database Error. Please try again later
 Database Error. Please verify that all grades are valid
+Database Error. Please try again later
 Database Error. Please try again later
 Database Error. Please try again later
 Database Error. Please try again later

@@ -1,9 +1,0 @@
-Remove the first line of initialization.sql. It may cause your thing to crash if the user is not called postgres.
-
-Create trigger that inserts anyone inserted into faculty or student into the user details with a default password.
-
-Create a new role as soon as a new user is created and allow the user to inherit the roles that were set up for admin, faculty and student.
-
-If the credit limit is less than 18, set the credit limit to 18 and if the credit limit is greater than 24, set the credit limit to 24
-
-The same course code cannot be offered by different departments

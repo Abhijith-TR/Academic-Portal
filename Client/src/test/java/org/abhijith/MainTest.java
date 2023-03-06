@@ -26,9 +26,8 @@ class MainTest {
 
     @Test
     void main() {
-        Main main = new Main();
         String input = "4\nADMIN1\niitropar\n";
         setInputToString( input );
-        main.main( null );
+        Main.main( null );
     }
 }

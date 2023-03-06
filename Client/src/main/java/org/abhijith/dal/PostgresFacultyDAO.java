@@ -294,9 +294,10 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
         try {
             if ( courseCode == null || year < 0 || semester < 0 ) return new String[][]{};
             courseCode = courseCode.toUpperCase();
+            offeringDepartment = offeringDepartment.toUpperCase();
 
             // SQL query to get the name and entry number for this particular course offeirng
-            PreparedStatement getEnrollmentsQuery = databaseConnection.prepareStatement( "SELECT name, entry_number FROM student_course_registration NATURAL JOIN student WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ?  ORDER BY entry_number" );
+            PreparedStatement getEnrollmentsQuery = databaseConnection.prepareStatement( "SELECT name, student_course_registration.entry_number FROM student_course_registration JOIN student ON student_course_registration.entry_number = student.entry_number WHERE course_code = ? AND year = ? AND semester = ? AND student_course_registration.department_id = ?  ORDER BY student.entry_number" );
             getEnrollmentsQuery.setString( 1, courseCode );
             getEnrollmentsQuery.setInt( 2, year );
             getEnrollmentsQuery.setInt( 3, semester );

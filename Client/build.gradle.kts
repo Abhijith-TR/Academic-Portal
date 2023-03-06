@@ -1,4 +1,5 @@
 plugins {
+    id("application")
     id("java")
 }
 
@@ -16,6 +17,14 @@ dependencies {
     testImplementation("junit:junit:4.13.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
+}
+
+application {
+    mainClass.set("org.abhijith.Main")
+}
+
+tasks.named<JavaExec>("run") {
+    standardInput = System.`in`
 }
 
 tasks.getByName<Test>("test") {

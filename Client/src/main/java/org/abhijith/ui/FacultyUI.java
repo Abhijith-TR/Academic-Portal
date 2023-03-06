@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class FacultyUI {
     private Faculty       faculty;
-    private CustomScanner keyboardInput;
+    private CustomScanner keyboardInput = null;
     String[] facultyChoices = {
             "Register Course",
             "Update CG and Prerequisites",
@@ -30,7 +30,6 @@ public class FacultyUI {
 
     public FacultyUI( String id ) {
         faculty = new Faculty( id );
-        keyboardInput = new CustomScanner();
     }
 
     public FacultyUI( String id, CustomScanner keyboardInput ) {
@@ -43,6 +42,7 @@ public class FacultyUI {
     }
 
     public void facultyInterfaceHomeScreen() {
+        if ( keyboardInput == null ) keyboardInput = new CustomScanner();
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );

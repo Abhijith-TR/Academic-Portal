@@ -67,11 +67,11 @@ goto fail
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\client-1.0-SNAPSHOT.jar;%APP_HOME%\lib\postgresql-42.5.3.jar
+set CLASSPATH=%APP_HOME%\lib\client-1.0.jar;%APP_HOME%\lib\mockito-core-5.1.1.jar;%APP_HOME%\lib\postgresql-42.5.3.jar;%APP_HOME%\lib\byte-buddy-1.12.22.jar;%APP_HOME%\lib\byte-buddy-agent-1.12.22.jar;%APP_HOME%\lib\objenesis-3.3.jar;%APP_HOME%\lib\checker-qual-3.5.0.jar
 
 
 @rem Execute client
-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %CLIENT_OPTS%  -classpath "%CLASSPATH%"  %*
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %CLIENT_OPTS%  -classpath "%CLASSPATH%" org.abhijith.Main %*
 
 :end
 @rem End local scope for the variables with windows NT shell

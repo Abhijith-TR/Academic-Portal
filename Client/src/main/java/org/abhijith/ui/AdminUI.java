@@ -8,7 +8,7 @@ import java.io.BufferedReader;
 
 public class AdminUI {
     private Admin admin;
-    private CustomScanner keyboardInput;
+    private CustomScanner keyboardInput = null;
 
     String[] adminChoices = {
             "Add Student",
@@ -33,7 +33,6 @@ public class AdminUI {
 
     public AdminUI( String id ) {
         admin = new Admin( id );
-        keyboardInput = new CustomScanner();
     }
 
     public AdminUI( String id, CustomScanner keyboardInput ) {
@@ -46,6 +45,7 @@ public class AdminUI {
     }
 
     public void adminInterfaceHomeScreen() {
+        if ( keyboardInput == null ) keyboardInput = new CustomScanner();
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );

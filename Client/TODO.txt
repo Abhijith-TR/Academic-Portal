@@ -1,11 +1,9 @@
 Ensure that every sql query is doing what it is supposed to be doing
 
-DONE - Note that the Main-Class: org.abhijith.Main has to be added to get the file to run
-
 Maybe put a try catch in checkInstructorPrerequisites, getCGPA, getSGPA
-
-You need to add the CS101_2023_2_CS.csv file to ensure that the tests run
 
 Note that the CSV file thingies do not have a new scanner every time
 
 Automate the database setup first time
+
+chmod +x gradlew

@@ -1,0 +1,81 @@
+INDIAN INSTITUTE OF TECHNOLOGY, ROPAR
+STUDENT GRADE TRANSCRIPT
+
+Entry Number: 2020CSB1062
+
+Year: 2020    Semester: 1     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+CS101          DISCRETE MATHEMATICAL STRUCTURES                            A         3.0       
+GE103          INTRODUCTION TO COMPUTING AND DATA STRUCTURES               A         4.5       
+GE105          ENGINEERING DRAWING                                         A         1.5       
+HS103          PROFESSIONAL ENGLISH COMMUNICATION                          A         3.0       
+MA101          CALCULUS                                                    A         3.0       
+PH101          PHYSICS FOR ENGINEERS                                       A         3.0       
+
+Year: 2020    Semester: 2     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+CY101          CHEMISTRY FOR ENGINEERS                                     A         4.0       
+GE101          TECHNOLOGY MUSEUM LAB                                       A         1.0       
+GE102          WORKSHOP PRACTICE                                           A         2.0       
+GE104          INTRODUCTION TO ELECTRICAL ENGINEERING                      A         3.0       
+HS101          HISTORY OF TECHNOLOGY                                       A         1.5       
+MA102          LINEAR ALGEBRA, INTEGRAL TRANSFORMS AND SPECIAL FUNCTIONS   A         3.0       
+PH102          PHYSICS FOR ENGINEERS LAB                                   A         2.0       
+
+Year: 2021    Semester: 1     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+CS201          DATA STRUCTURES                                             A         4.0       
+CS203          DIGITAL LOGIC DESIGN                                        A         4.0       
+EE201          SIGNALS AND SYSTEMS                                         A         3.0       
+GE107          TINKERING LAB                                               A         1.5       
+HS201          ECONOMICS                                                   A         3.0       
+MA201          DIFFERENTIAL EQUATIONS                                      A         3.0       
+
+Year: 2021    Semester: 2     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+CS202          PROGRAMMING PARADIGMS AND PRAGMATICS                        A         4.0       
+CS204          COMPUTER ARCHITECTURE                                       A         4.0       
+GE108          BASIC ELECTRONICS                                           A         3.0       
+GE109          INTRODUCTION TO ENGINEERING PRODUCTS                        A         1.0       
+HS202          HUMAN GEOGRAPHY AND SOCIAL NEEDS                            A         3.0       
+MA202          PROBABILITY AND STATISTICS                                  A         3.0       
+NS101          NSS I                                                       A         1.0       
+
+Year: 2022    Semester: 1     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+BM101          BIOLOGY FOR ENGINEERS                                       A         3.0       
+CS301          DATABASES                                                   A         4.0       
+CS302          ANALYSIS AND DESIGN OF ALGORITHMS                           A         3.0       
+CS303          OPERATING SYSTEMS                                           A         4.0       
+CS522          SOCIAL COMPUTING AND NETWORKS                               A         3.0       
+GE111          INTRODUCTION TO ENVIRONMENTAL SCIENCE AND ENGINEERING       A         3.0       
+HS104          PROFESSIONAL ETHICS                                         A         1.5       
+NS102          NSS II                                                      A         1.0       
+
+Year: 2022    Semester: 2     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+CP301          DEVELOPMENT ENGINEERING PRODUCT                             A         3.0       
+CS304          COMPUTER NETWORKS                                           A         4.0       
+CS305          SOFTWARE ENGINEERING                                        A         4.0       
+CS306          THEORY OF COMPUTATION                                       A         3.0       
+CS535          INTRODUCTION TO GAME THEORY AND MECHANISM DESIGN            A         3.0       
+HS301          INDUSTRIAL MANAGEMENT                                       A         3.0       
+NS103          NSS III                                                     A         1.0       
+
+Year: 2023    Semester: 1     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+CP302          CAPSTONE I                                                  A         3.0       
+CS517          DIGITAL IMAGE PROCESSING AND ANALYSIS                       A         3.0       
+HS475          AN INTRODUCTION TO FANTASY AND SCIENCE FICTION              A         3.0       
+II301          INDUSTRIAL INTERNSHIP AND COMPREHENSIVE VIVA                A         3.5       
+MA515          FOUNDATIONS OF DATA SCIENCE                                 A         4.0       
+
+Year: 2023    Semester: 2     SGPA: 10.0
+Course Code    Course Title                                                Grade     Credits Earned
+CP303          CAPSTONE II                                                 A         3.0       
+CS539          INTERNET OF THINGS                                          A         3.0       
+CS550          RESEARCH METHODOLOGIES IN COMPUTER SCIENCE                  A         1.0       
+MA628          FINANCIAL DERIVATIVES PRICING                               A         4.0       
+NS104          NSS IV                                                      A         1.0       
+
+CGPA: 10.00INELIGIBLE FOR GRADUATION

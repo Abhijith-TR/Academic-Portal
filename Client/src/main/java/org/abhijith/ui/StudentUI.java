@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class StudentUI {
     // Global for testability
     private Student  student;
-    private CustomScanner keyboardInput;
+    private CustomScanner keyboardInput = null;
     final   String[] studentChoices = {
             "Enroll",
             "Drop",
@@ -28,7 +28,6 @@ public class StudentUI {
 
     public StudentUI( String id ) {
         student = new Student( id );
-        keyboardInput = new CustomScanner();
     }
 
     public StudentUI( String id, CustomScanner keyboardInput ) {
@@ -41,6 +40,7 @@ public class StudentUI {
     }
 
     public void studentInterfaceHomeScreen() {
+        if ( keyboardInput == null ) keyboardInput = new CustomScanner();
         while ( true ) {
             System.out.println();
             System.out.println( "Select an option" );

@@ -27,7 +27,6 @@ CREATE TABLE faculty
 -- lecture_hours, tutorial_hours, practical_hours, self_study_hours: The course credit structure i.e., L-T-P-S
 -- credits: integer field
 -- pre_requisites: Array of course_code
--- course_code: 5 characters (currently), 6 characters (formerly). 
 
 -- Note: The course_code is unique to each course offered at IIT Ropar
 -- The pre-requisites are allowed to be empty.
@@ -78,8 +77,6 @@ CREATE TABLE batch
     year INTEGER PRIMARY KEY
 );
 
--- entry_number: Currently 11 characters. 15 to accommodate older entry numbers
--- name: Longest name encountered: 40 characters
 -- batch: denotes the year of joining the institute
 CREATE TABLE student
 (
@@ -91,7 +88,6 @@ CREATE TABLE student
     FOREIGN KEY (batch) REFERENCES batch (year) ON DELETE CASCADE
 );
 
--- entry_number: Currently 11 characters. 15 to accommodate older entry numbers
 -- status: One of the following:
 --   [ 
 --    Enrolled
@@ -239,3 +235,5 @@ CREATE TABLE course_category
     PRIMARY KEY (course_code, year, semester, department_id, batch, department),
     CHECK (category IN ('SC', 'SE', 'GR', 'PC', 'PE', 'HC', 'HE', 'CP', 'II', 'NN', 'OE'))
 );
+
+INSERT INTO common_user_details(id, password, role) VALUES ('staffdeanoffice', 'iitropar', 'ADMIN');

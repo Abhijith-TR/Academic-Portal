@@ -227,7 +227,7 @@ public class Admin extends User {
                 }
 
                 // The CGPA of the student will be mentioned at the end
-                fileWriter.printf( "CGPA: %.2f", getCGPA( records ) );
+                fileWriter.printf( "CGPA: %.2f\n", getCGPA( records ) );
 
                 // If the student is eligible for graduation, then there is no need to mention anything in the transcript
                 if ( !checkStudentPassStatus( entryNumber ) ) fileWriter.printf( "INELIGIBLE FOR GRADUATION\n" );

@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.ui.FacultyUITest" tests="14" skipped="0" failures="0" errors="0" timestamp="2023-03-06T06:39:46" hostname="ADMIN" time="1.135">
+<testsuite name="org.abhijith.ui.FacultyUITest" tests="14" skipped="0" failures="0" errors="0" timestamp="2023-03-06T18:07:16" hostname="ADMIN" time="0.538">
   <properties/>
-  <testcase name="getCourseGrades()" classname="org.abhijith.ui.FacultyUITest" time="0.223"/>
-  <testcase name="dropOfferingTest()" classname="org.abhijith.ui.FacultyUITest" time="0.006"/>
-  <testcase name="uploadGradesTest()" classname="org.abhijith.ui.FacultyUITest" time="0.022"/>
-  <testcase name="updateEmailTest()" classname="org.abhijith.ui.FacultyUITest" time="0.009"/>
-  <testcase name="generateGradeCSVTest()" classname="org.abhijith.ui.FacultyUITest" time="0.014"/>
-  <testcase name="updatePasswordTest()" classname="org.abhijith.ui.FacultyUITest" time="0.008"/>
-  <testcase name="getContactDetailsTest()" classname="org.abhijith.ui.FacultyUITest" time="0.011"/>
-  <testcase name="updatePhoneNumberTest()" classname="org.abhijith.ui.FacultyUITest" time="0.008"/>
-  <testcase name="viewCourseCatalogTest()" classname="org.abhijith.ui.FacultyUITest" time="0.005"/>
-  <testcase name="viewInstructorPrerequisitesTest()" classname="org.abhijith.ui.FacultyUITest" time="0.013"/>
-  <testcase name="insertPrerequisitesTest()" classname="org.abhijith.ui.FacultyUITest" time="0.022"/>
-  <testcase name="offerCourseTest()" classname="org.abhijith.ui.FacultyUITest" time="0.014"/>
-  <testcase name="getStudentGradesTest()" classname="org.abhijith.ui.FacultyUITest" time="0.009"/>
-  <testcase name="setCourseCategoryTest()" classname="org.abhijith.ui.FacultyUITest" time="0.01"/>
+  <testcase name="getCourseGrades()" classname="org.abhijith.ui.FacultyUITest" time="0.037"/>
+  <testcase name="dropOfferingTest()" classname="org.abhijith.ui.FacultyUITest" time="0.002"/>
+  <testcase name="uploadGradesTest()" classname="org.abhijith.ui.FacultyUITest" time="0.006"/>
+  <testcase name="updateEmailTest()" classname="org.abhijith.ui.FacultyUITest" time="0.003"/>
+  <testcase name="generateGradeCSVTest()" classname="org.abhijith.ui.FacultyUITest" time="0.002"/>
+  <testcase name="updatePasswordTest()" classname="org.abhijith.ui.FacultyUITest" time="0.003"/>
+  <testcase name="getContactDetailsTest()" classname="org.abhijith.ui.FacultyUITest" time="0.004"/>
+  <testcase name="updatePhoneNumberTest()" classname="org.abhijith.ui.FacultyUITest" time="0.002"/>
+  <testcase name="viewCourseCatalogTest()" classname="org.abhijith.ui.FacultyUITest" time="0.009"/>
+  <testcase name="viewInstructorPrerequisitesTest()" classname="org.abhijith.ui.FacultyUITest" time="0.002"/>
+  <testcase name="insertPrerequisitesTest()" classname="org.abhijith.ui.FacultyUITest" time="0.012"/>
+  <testcase name="offerCourseTest()" classname="org.abhijith.ui.FacultyUITest" time="0.003"/>
+  <testcase name="getStudentGradesTest()" classname="org.abhijith.ui.FacultyUITest" time="0.002"/>
+  <testcase name="setCourseCategoryTest()" classname="org.abhijith.ui.FacultyUITest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
