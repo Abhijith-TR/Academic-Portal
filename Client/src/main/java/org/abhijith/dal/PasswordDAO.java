@@ -1,7 +1,5 @@
 package org.abhijith.dal;
 
-import org.abhijith.daoInterfaces.PasswordDAO;
-
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,18 +8,18 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.Properties;
 
-public class PasswordDatabase implements PasswordDAO {
+public class PasswordDAO implements org.abhijith.daoInterfaces.PasswordDAO {
     private Connection databaseConnection;
 
     public Connection getDatabaseConnection() {
         return databaseConnection;
     }
 
-    public PasswordDatabase() {
+    public PasswordDAO() {
         try {
             // Fetches the class loader and uses this to load the properties from the config file
             Properties databaseConfig = new Properties();
-            ClassLoader classLoader = PasswordDatabase.class.getClassLoader();
+            ClassLoader classLoader = PasswordDAO.class.getClassLoader();
             InputStream inputStream = classLoader.getResourceAsStream( "config.properties" );
             databaseConfig.load( inputStream );
 

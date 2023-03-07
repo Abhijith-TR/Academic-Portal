@@ -12,35 +12,38 @@ The test plan has been designed to assess various functionalities required for t
 
 ### **Test Items**
 ---
-- User Interfaces
+- User Interfaces - All of the user interfaces must be tested to ensure that the are resilient to invalid inputs. The user interfaces must be able to interact with the other objects in the database and product the correct output when the proper output is returned by the other objects. The user interfaces include include custom scanner and printer objects which must also be tested to ensure proper functioning.
     * Student UI
     * Faculty UI
     * Admin UI
-- DAO
+- DAO - All of the separate DAOs must be tested to ensure that they have the ability to access the database correctly. The various SQL queries must be tested to ensure that the correct activities are being performed. The return values must be tested to ensure that they are conformant to the values mentioned in the interfaces and the values required by the users of the object.
     - Student DAO
     - Faculty DAO
     - Admin DAO
-- Business Logic
+- Business Logic - The business logic modules must be tested to ensure that the business requirements are met. The modules must return proper outputs and handle all the values returned by the DAO. Test cases must be generated to assess all possible flows through various functions.
     - Student 
     - Faculty
     - Admin
 
-### **Test Environment**
+### **Approach**
 ---
-The following are the software available on the system that was used to run the tests
-- Java JDK - Version 17.0.6
-- PostgreSQL - Version 15.1 
-- Dependencies
-  - PostgreSQL JDBC Driver
-- Test Dependencies
-  - Junit - Version 5.8.1
-  - Mockito - Version 5.1.1
+The testing will be done in a bottom up manner with the low level elements being tested first, then the higher level elements. This implies that the DAO will be tested first, followed by the business logic section and finally the user interface. The following is the testing methodology to be used
+- Agile Testing - This is the testing methodology that will be adopted in the development workflow. It allows for rapid development while ensuring that the modules work correctly independently and thus reducing errors while integrating with other modules. This allows for rapid error detection and minimizes the time spent debugging code. 
 
-### **Test Files and Cases**
+### **Pass / Fail Criteria**
 ---
-Mockito was used throughout the testing process to mock out dependencies to ensure that each unit was isolated during the unit testing. The test cases corresponding to each module are in the test file that carries the same name. <br> The test cases were generated such that each of the corner cases were covered, such as null arguments, negative batches, years and numbers, invalid file input and differering lengths from expected arguments. <br>
-Further test cases were generated based on the expected outputs of each individual function on specific inputs from different modules to verify expected behaviour. 
+A testing phase in the development workflow is only complete when 100% of unit tests execute successfully. The pass rate is 100%, achieving the pass rate is mandatory.
 
-1. User Interface - Unit tests considered all possible user input, results from other modules and the expected output that the user interface should generate.
-2. Business Logic - The test cases considered all logical flows through the various functions in each use case. The inputs from other modules as well as the database were mocked. The outputs corresponding to irregular input parameters were also tested. 
-3. DAO - The test cases considered various configurations of the database as well the return values if the database connection fails or some other error is returned by the connection. Running the tests requires initialization with the dummy data.
+### **Suspension Criteria**
+---
+If over 30% of test cases fail, further testing can be suspended until all the errors have been mitigated and the bugs fixed. 
+
+### **Testing Environment**
+---
+
+| S.No | Resources | Description |
+| --- | ----------- | ------ |
+| 1 | Database | PostgreSQL server containing the required schema
+| 2 | Java | JDK Version 17 preferably
+| 3 | Gradle | Gradle version 7.5.1 to run the automated test suite
+| 4 | Test Tool | Junit and Mockito to develop and run unit tests

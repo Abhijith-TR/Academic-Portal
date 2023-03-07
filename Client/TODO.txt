@@ -1,9 +1,1 @@
 Ensure that every sql query is doing what it is supposed to be doing
-
-Maybe put a try catch in checkInstructorPrerequisites, getCGPA, getSGPA
-
-Note that the CSV file thingies do not have a new scanner every time
-
-Automate the database setup first time
-
-chmod +x gradlew

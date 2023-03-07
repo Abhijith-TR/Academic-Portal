@@ -1,11 +1,10 @@
 package org.abhijith.ui;
 
-import org.abhijith.dal.PasswordDatabase;
-import org.abhijith.daoInterfaces.PasswordDAO;
+import org.abhijith.dal.PasswordDAO;
 import org.abhijith.utils.CustomScanner;
 
 public class HomeUI {
-    private PasswordDAO passwordAuthConnection;
+    private org.abhijith.daoInterfaces.PasswordDAO passwordAuthConnection;
 
     // Roles in the database system - to allow easy extension
     String[] roles = new String[]{
@@ -16,10 +15,10 @@ public class HomeUI {
     };
 
     public HomeUI() {
-        passwordAuthConnection = new PasswordDatabase();
+        passwordAuthConnection = new PasswordDAO();
     }
 
-    public void setPasswordAuthConnection( PasswordDAO passwordAuthConnection ) {
+    public void setPasswordAuthConnection( org.abhijith.daoInterfaces.PasswordDAO passwordAuthConnection ) {
         this.passwordAuthConnection = passwordAuthConnection;
     }
 
