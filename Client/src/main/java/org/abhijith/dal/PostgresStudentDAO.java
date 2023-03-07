@@ -45,7 +45,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             entryNumber = entryNumber.toUpperCase();
 
             // SQL query to fetch the grade of the corresponding student of the corresponding course code
-            PreparedStatement gradeQuery = databaseConnection.prepareStatement( "SELECT grade FROM student_course_registration WHERE entry_number = ? AND course_code = ? ORDER BY grade ASC" );
+            PreparedStatement gradeQuery = databaseConnection.prepareStatement( "SELECT grade FROM student_course_registration WHERE entry_number = ? AND course_code = ? ORDER BY grade" );
             gradeQuery.setString( 1, entryNumber );
             gradeQuery.setString( 2, courseCode );
             ResultSet courseQueryResult = gradeQuery.executeQuery();
@@ -96,7 +96,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             courseDepartment = courseDepartment.toUpperCase();
 
             // SQL query to get the prerequisites of a particular offering from the database
-            PreparedStatement prerequisiteQuery = databaseConnection.prepareStatement( "SELECT prereq, grade_criteria, type FROM instructor_prerequisites WHERE course_code = ? AND semester = ? AND year = ? AND department_id = ? ORDER BY type ASC, course_code ASC" );
+            PreparedStatement prerequisiteQuery = databaseConnection.prepareStatement( "SELECT prereq, grade_criteria, type FROM instructor_prerequisites WHERE course_code = ? AND semester = ? AND year = ? AND department_id = ? ORDER BY type , course_code" );
             prerequisiteQuery.setString( 1, courseCode );
             prerequisiteQuery.setInt( 2, semester );
             prerequisiteQuery.setInt( 3, year );

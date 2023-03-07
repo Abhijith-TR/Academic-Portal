@@ -335,7 +335,7 @@ public class Admin extends User {
         if ( rows == 0 ) return;
 
         // Print the heading of a particular semester into the file
-        fileWriter.println( "Year: " + year + "    Semester: " + semester + "     SGPA: " + computeSGPA( records ) );
+        fileWriter.printf("Year: %d    Semester: %d     SGPA: %.2f\n", year, semester, computeSGPA( records ));
         int   columns            = records[0].length;
 
         // Formatting the lengths for proper output

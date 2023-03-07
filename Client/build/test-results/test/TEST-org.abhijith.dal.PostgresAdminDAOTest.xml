@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.dal.PostgresAdminDAOTest" tests="17" skipped="0" failures="0" errors="0" timestamp="2023-03-07T05:08:18" hostname="ADMIN" time="0.877">
+<testsuite name="org.abhijith.dal.PostgresAdminDAOTest" tests="17" skipped="0" failures="0" errors="0" timestamp="2023-03-07T17:32:28" hostname="ADMIN" time="0.947">
   <properties/>
-  <testcase name="dropCourseFromCatalog()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.083"/>
-  <testcase name="insertFaculty()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.048"/>
+  <testcase name="dropCourseFromCatalog()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.177"/>
+  <testcase name="insertFaculty()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.047"/>
   <testcase name="getGradesOfCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.04"/>
-  <testcase name="resetCoreCoursesList()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.042"/>
-  <testcase name="createBatch()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.043"/>
-  <testcase name="getCoreCourses()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.046"/>
-  <testcase name="findEntryNumber()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.041"/>
-  <testcase name="createNewSession()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.036"/>
-  <testcase name="checkAllPrerequisites()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.144"/>
-  <testcase name="checkIfSessionCompleted()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.053"/>
-  <testcase name="insertCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.041"/>
-  <testcase name="createCurriculum()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.044"/>
-  <testcase name="verifyNoMissingGrades()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.05"/>
-  <testcase name="insertCoreCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.042"/>
-  <testcase name="setSessionEvent()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.034"/>
-  <testcase name="insertStudent()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.043"/>
-  <testcase name="getListOfStudentsInBatch()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.031"/>
+  <testcase name="resetCoreCoursesList()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.04"/>
+  <testcase name="createBatch()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.038"/>
+  <testcase name="getCoreCourses()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.151"/>
+  <testcase name="findEntryNumber()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.036"/>
+  <testcase name="createNewSession()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.037"/>
+  <testcase name="checkAllPrerequisites()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.035"/>
+  <testcase name="checkIfSessionCompleted()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.037"/>
+  <testcase name="insertCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.038"/>
+  <testcase name="createCurriculum()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.041"/>
+  <testcase name="verifyNoMissingGrades()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.043"/>
+  <testcase name="insertCoreCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.047"/>
+  <testcase name="setSessionEvent()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.042"/>
+  <testcase name="insertStudent()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.047"/>
+  <testcase name="getListOfStudentsInBatch()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.036"/>
   <system-out><![CDATA[Database Error. Please try again later
 Database Error. Please try again later
 Database Error. Please try again later

@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PostgresFacultyDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'client' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">org.abhijith.dal</a> &gt; <span class="el_source">PostgresFacultyDAO.java</span></div><h1>PostgresFacultyDAO.java</h1><pre class="source lang-java linenums">package org.abhijith.dal;
+
+import org.abhijith.daoInterfaces.FacultyDAO;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO {
+    public PostgresFacultyDAO() {
+<span class="fc" id="L11">        super();</span>
+<span class="fc" id="L12">    }</span>
+
+    @Override
+    public boolean insertCourseOffering( String courseCode, int currentYear, int currentSemester, String departmentID, String facultyID ) {
+        try {
+<span class="fc bfc" id="L17" title="All 10 branches covered.">            if ( courseCode == null || currentSemester &lt;= 0 || currentYear &lt; 0 || departmentID == null || facultyID == null )</span>
+<span class="fc" id="L18">                return false;</span>
+<span class="fc" id="L19">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L20">            departmentID = departmentID.toUpperCase();</span>
+<span class="fc" id="L21">            facultyID = facultyID.toUpperCase();</span>
+
+            // SQL query to insert a course into the course catalog
+<span class="fc" id="L24">            PreparedStatement insertCourseQuery = databaseConnection.prepareStatement( &quot;INSERT INTO course_offerings(course_code, faculty_id, year, semester, department_id) VALUES (?, ?, ?, ?, ?)&quot; );</span>
+<span class="fc" id="L25">            insertCourseQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L26">            insertCourseQuery.setString( 2, facultyID );</span>
+<span class="fc" id="L27">            insertCourseQuery.setInt( 3, currentYear );</span>
+<span class="fc" id="L28">            insertCourseQuery.setInt( 4, currentSemester );</span>
+<span class="fc" id="L29">            insertCourseQuery.setString( 5, departmentID );</span>
+
+            // Returns 1 if a new course was inserted, 0 otherwise
+<span class="fc" id="L32">            int insertCourseQueryResult = insertCourseQuery.executeUpdate();</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">            return insertCourseQueryResult == 1;</span>
+<span class="fc" id="L34">        } catch ( Exception error ) {</span>
+<span class="fc" id="L35">            System.out.println( &quot;Error. Please verify that the course is not already offered&quot; );</span>
+<span class="fc" id="L36">            return false;</span>
+        }
+    }
+
+    @Override
+    public String getDepartment( String facultyID ) {
+        try {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            if ( facultyID == null ) return &quot;&quot;;</span>
+<span class="fc" id="L44">            facultyID = facultyID.toUpperCase();</span>
+
+            // SQL query to retrieve the department ID of the faculty from the database
+<span class="fc" id="L47">            PreparedStatement getDepartmentQuery = databaseConnection.prepareStatement( &quot;SELECT department_id FROM faculty WHERE faculty_id = ?&quot; );</span>
+<span class="fc" id="L48">            getDepartmentQuery.setString( 1, facultyID );</span>
+<span class="fc" id="L49">            ResultSet getDepartmentQueryResult = getDepartmentQuery.executeQuery();</span>
+<span class="fc" id="L50">            getDepartmentQueryResult.next();</span>
+
+            // Gets the department ID of the faculty from the ResultSet ( if the professor ID is valid )
+<span class="fc" id="L53">            return getDepartmentQueryResult.getString( 1 );</span>
+<span class="fc" id="L54">        } catch ( Exception error ) {</span>
+<span class="fc" id="L55">            System.out.println( &quot;Faculty ID not found in database.&quot; );</span>
+<span class="fc" id="L56">            return &quot;&quot;;</span>
+        }
+    }
+
+    @Override
+    public boolean setCGCriteria( String facultyID, String courseCode, double minimumCGPA, int[] currentSession, String departmentID ) {
+        try {
+<span class="fc bfc" id="L63" title="All 12 branches covered.">            if ( facultyID == null || courseCode == null || minimumCGPA &lt; 0 || minimumCGPA &gt; 10 || currentSession == null || departmentID == null )</span>
+<span class="fc" id="L64">                return false;</span>
+<span class="fc bfc" id="L65" title="All 6 branches covered.">            if ( currentSession.length != 2 || currentSession[0] &lt; 0 || currentSession[1] &lt; 0 ) return false;</span>
+<span class="fc" id="L66">            facultyID = facultyID.toUpperCase();</span>
+<span class="fc" id="L67">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L68">            departmentID = departmentID.toUpperCase();</span>
+
+            // SQL query to update the CG requirements of the corresponding offering in the database
+<span class="fc" id="L71">            PreparedStatement setCGQuery = databaseConnection.prepareStatement( &quot;UPDATE course_offerings SET cgpa_criteria = ? WHERE course_code = ? AND faculty_id = ? AND year = ? AND semester = ? AND department_id = ?&quot; );</span>
+<span class="fc" id="L72">            setCGQuery.setDouble( 1, minimumCGPA );</span>
+<span class="fc" id="L73">            setCGQuery.setString( 2, courseCode );</span>
+<span class="fc" id="L74">            setCGQuery.setString( 3, facultyID );</span>
+<span class="fc" id="L75">            setCGQuery.setInt( 4, currentSession[0] );</span>
+<span class="fc" id="L76">            setCGQuery.setInt( 5, currentSession[1] );</span>
+<span class="fc" id="L77">            setCGQuery.setString( 6, departmentID );</span>
+<span class="fc" id="L78">            setCGQuery.executeUpdate();</span>
+
+            // Returns true if the query was successful and the CG criteria was updated ( if it was change, there is no difference )
+<span class="fc" id="L81">            return true;</span>
+<span class="fc" id="L82">        } catch ( Exception error ) {</span>
+<span class="fc" id="L83">            System.out.println( &quot;Database Error. Please verify that the course offering exists in the current session&quot; );</span>
+<span class="fc" id="L84">            return false;</span>
+        }
+    }
+
+    @Override
+    public boolean setInstructorPrerequisites( String departmentID, String courseCode, String[][] prerequisites, int[] currentSession ) {
+        try {
+<span class="fc bfc" id="L91" title="All 8 branches covered.">            if ( departmentID == null || courseCode == null || prerequisites == null || currentSession == null )</span>
+<span class="fc" id="L92">                return false;</span>
+<span class="fc bfc" id="L93" title="All 6 branches covered.">            if ( currentSession.length != 2 || currentSession[0] &lt; 0 || currentSession[1] &lt;= 0 ) return false;</span>
+<span class="fc" id="L94">            departmentID = departmentID.toUpperCase();</span>
+<span class="fc" id="L95">            courseCode = courseCode.toUpperCase();</span>
+
+            // If prerequisites already exist for this course offering, those are dropped first
+<span class="fc" id="L98">            int currentYear     = currentSession[0];</span>
+<span class="fc" id="L99">            int currentSemester = currentSession[1];</span>
+<span class="fc" id="L100">            int successStatus   = 1;</span>
+
+            // SQL query to drop the prerequisites for this course first
+<span class="fc" id="L103">            PreparedStatement dropQuery = databaseConnection.prepareStatement( &quot;DELETE FROM instructor_prerequisites WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ?&quot; );</span>
+<span class="fc" id="L104">            dropQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L105">            dropQuery.setInt( 2, currentYear );</span>
+<span class="fc" id="L106">            dropQuery.setInt( 3, currentSemester );</span>
+<span class="fc" id="L107">            dropQuery.setString( 4, departmentID );</span>
+<span class="fc" id="L108">            dropQuery.executeUpdate();</span>
+
+            // Set the prerequisites again
+<span class="fc" id="L111">            PreparedStatement insertQuery = databaseConnection.prepareStatement( &quot;INSERT INTO instructor_prerequisites VALUES (?, ?, ?, ?, ?, ?, ?)&quot; );</span>
+<span class="fc" id="L112">            insertQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L113">            insertQuery.setInt( 2, currentYear );</span>
+<span class="fc" id="L114">            insertQuery.setInt( 3, currentSemester );</span>
+<span class="fc" id="L115">            insertQuery.setString( 4, departmentID );</span>
+
+            // j denotes the type i.e., the group of offerings
+<span class="fc" id="L118">            int j = 1;</span>
+
+            // We iterate through all the prerequisites
+<span class="fc bfc" id="L121" title="All 2 branches covered.">            for ( String[] groups : prerequisites ) {</span>
+
+                // If an invalid length has somehow entered the function
+                // All arrays must be strings of even length where the even parity items are courses and odd parity items are course grades
+<span class="fc bfc" id="L125" title="All 2 branches covered.">                if ( groups.length % 2 == 1 ) {</span>
+<span class="fc" id="L126">                    successStatus = 0;</span>
+<span class="fc" id="L127">                    continue;</span>
+                }
+
+                // Iterate through all the courses entered
+<span class="fc bfc" id="L131" title="All 2 branches covered.">                for ( int i = 0; i &lt; groups.length; i += 2 ) {</span>
+<span class="fc" id="L132">                    insertQuery.setString( 5, groups[i].toUpperCase() );</span>
+<span class="fc" id="L133">                    int gradeCriteria = Integer.parseInt( groups[i + 1] );</span>
+
+                    // The grade checking is done to ensure that the database does not complain
+<span class="fc bfc" id="L136" title="All 4 branches covered.">                    if ( gradeCriteria &gt; 10 || gradeCriteria &lt; 0 ) continue;</span>
+<span class="fc" id="L137">                    insertQuery.setInt( 6, gradeCriteria );</span>
+<span class="fc" id="L138">                    insertQuery.setInt( 7, j );</span>
+
+                    // Success status = 1 is delivered only if ALL the entries were inserted into the database
+<span class="fc" id="L141">                    successStatus &amp;= insertQuery.executeUpdate();</span>
+                }
+<span class="fc" id="L143">                j++;</span>
+            }
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">            return successStatus == 1;</span>
+<span class="fc" id="L147">        } catch ( Exception error ) {</span>
+<span class="fc" id="L148">            System.out.println( &quot;Database Error. Please verify details before trying again&quot; );</span>
+<span class="fc" id="L149">            return false;</span>
+        }
+    }
+
+    @Override
+    public boolean dropCourseOffering( String facultyID, String courseCode, int currentYear, int currentSemester, String departmentID ) {
+        try {
+<span class="fc bfc" id="L156" title="All 10 branches covered.">            if ( facultyID == null || courseCode == null || currentSemester &lt; 0 || currentYear &lt; 0 || departmentID == null ) return false;</span>
+<span class="fc" id="L157">            facultyID = facultyID.toUpperCase();</span>
+<span class="fc" id="L158">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L159">            departmentID = departmentID.toUpperCase();</span>
+
+            // SQL query to drop the course from the table if it exists ( note that it also drops all students of the course )
+<span class="fc" id="L162">            PreparedStatement dropOfferingQuery = databaseConnection.prepareStatement( &quot;DELETE FROM course_offerings WHERE faculty_id = ? AND course_code = ? AND year = ? AND semester = ? AND department_id = ?&quot; );</span>
+<span class="fc" id="L163">            dropOfferingQuery.setString( 1, facultyID );</span>
+<span class="fc" id="L164">            dropOfferingQuery.setString( 2, courseCode );</span>
+<span class="fc" id="L165">            dropOfferingQuery.setInt( 3, currentYear );</span>
+<span class="fc" id="L166">            dropOfferingQuery.setInt( 4, currentSemester );</span>
+<span class="fc" id="L167">            dropOfferingQuery.setString( 5, departmentID );</span>
+
+            // If the course was dropped successfully return 1. If not return 0
+<span class="fc bfc" id="L170" title="All 2 branches covered.">            return dropOfferingQuery.executeUpdate() == 1;</span>
+<span class="fc" id="L171">        } catch ( Exception error ) {</span>
+<span class="fc" id="L172">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L173">            return false;</span>
+        }
+    }
+
+    @Override
+    public boolean checkIfOfferedBySelf( String facultyID, String courseCode, int currentYear, int currentSemester, String departmentID ) {
+        try {
+<span class="fc bfc" id="L180" title="All 10 branches covered.">            if ( facultyID == null || courseCode == null || currentSemester &lt; 0 || currentYear &lt; 0 || departmentID == null ) return false;</span>
+<span class="fc" id="L181">            facultyID = facultyID.toUpperCase();</span>
+<span class="fc" id="L182">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L183">            departmentID = departmentID.toUpperCase();</span>
+
+            // SQL query to fetch the course with these parameters if it exists
+<span class="fc" id="L186">            PreparedStatement checkOfferingQuery = databaseConnection.prepareStatement( &quot;SELECT course_code FROM course_offerings WHERE faculty_id = ? AND course_code = ? AND year = ? AND semester = ? AND department_id = ?&quot; );</span>
+<span class="fc" id="L187">            checkOfferingQuery.setString( 1, facultyID );</span>
+<span class="fc" id="L188">            checkOfferingQuery.setString( 2, courseCode );</span>
+<span class="fc" id="L189">            checkOfferingQuery.setInt( 3, currentYear );</span>
+<span class="fc" id="L190">            checkOfferingQuery.setInt( 4, currentSemester );</span>
+<span class="fc" id="L191">            checkOfferingQuery.setString( 5, departmentID );</span>
+<span class="fc" id="L192">            ResultSet checkOfferingQueryResult = checkOfferingQuery.executeQuery();</span>
+
+            // True only if there exists a course with these properties
+<span class="fc" id="L195">            return checkOfferingQueryResult.next();</span>
+<span class="fc" id="L196">        } catch ( Exception error ) {</span>
+<span class="fc" id="L197">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L198">            return false;</span>
+        }
+    }
+
+    @Override
+    public boolean setCourseCategory( String courseCode, int currentYear, int currentSemester, String courseCategory, String department, int[] years, String offeringDepartment ) {
+        try {
+<span class="fc bfc" id="L205" title="All 14 branches covered.">            if ( courseCode == null || currentYear &lt; 0 || currentSemester &lt; 0 || courseCategory == null || department == null || years == null || offeringDepartment == null )</span>
+<span class="fc" id="L206">                return false;</span>
+<span class="fc" id="L207">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L208">            courseCategory = courseCategory.toUpperCase();</span>
+<span class="fc" id="L209">            department = department.toUpperCase();</span>
+<span class="fc" id="L210">            offeringDepartment = offeringDepartment.toUpperCase();</span>
+
+            // SQL query to insert all the entries into the database
+<span class="fc" id="L213">            PreparedStatement insertCourseQuery = databaseConnection.prepareStatement( &quot;INSERT INTO course_category VALUES (?, ?, ?, ?, ?, ?, ?)&quot; );</span>
+<span class="fc" id="L214">            insertCourseQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L215">            insertCourseQuery.setInt( 2, currentYear );</span>
+<span class="fc" id="L216">            insertCourseQuery.setInt( 3, currentSemester );</span>
+<span class="fc" id="L217">            insertCourseQuery.setString( 4, offeringDepartment );</span>
+<span class="fc" id="L218">            insertCourseQuery.setString( 5, courseCategory );</span>
+<span class="fc" id="L219">            insertCourseQuery.setString( 7, department );</span>
+
+            // Iterate through all the years and insert the entries for the corresponding years into the database
+<span class="fc" id="L222">            boolean insertResult = true;</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            for ( int year : years ) {</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">                if ( year &lt; 0 ) {</span>
+<span class="fc" id="L225">                    insertResult = false;</span>
+<span class="fc" id="L226">                    continue;</span>
+                }
+<span class="fc" id="L228">                insertCourseQuery.setInt( 6, year );</span>
+<span class="fc" id="L229">                insertCourseQuery.executeUpdate();</span>
+            }
+
+            // If all the insert queries were executed without errors, return true
+<span class="fc" id="L233">            return insertResult;</span>
+<span class="fc" id="L234">        } catch ( Exception error ) {</span>
+<span class="fc" id="L235">            System.out.println( &quot;Database error. Please try again later&quot; );</span>
+<span class="fc" id="L236">            return false;</span>
+        }
+    }
+
+    @Override
+    public boolean verifyCore( String courseCode, String departmentID, int year ) {
+        try {
+<span class="fc bfc" id="L243" title="All 6 branches covered.">            if ( courseCode == null || departmentID == null || year &lt; 0 ) return false;</span>
+<span class="fc" id="L244">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L245">            departmentID = departmentID.toUpperCase();</span>
+
+            // From the table try and find the corresponding course code and the department
+<span class="fc" id="L248">            PreparedStatement checkCoreCourseQuery = databaseConnection.prepareStatement( &quot;SELECT * FROM core_courses WHERE course_code = ? AND department_id = ? AND batch = ?&quot; );</span>
+<span class="fc" id="L249">            checkCoreCourseQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L250">            checkCoreCourseQuery.setString( 2, departmentID );</span>
+<span class="fc" id="L251">            checkCoreCourseQuery.setInt( 3, year );</span>
+<span class="fc" id="L252">            ResultSet checkCoreCourseQueryResult = checkCoreCourseQuery.executeQuery();</span>
+
+            // If even a single record is returned, then you have found a course with the corresponding batch from the table
+<span class="fc" id="L255">            return checkCoreCourseQueryResult.next();</span>
+<span class="fc" id="L256">        } catch ( Exception error ) {</span>
+<span class="fc" id="L257">            System.out.println( &quot;Database error. Please try again later&quot; );</span>
+<span class="fc" id="L258">            return false;</span>
+        }
+    }
+
+    public String[][] getGradesOfCourse( String courseCode, int year, int semester, String departmentID ) {
+        try {
+<span class="fc bfc" id="L264" title="All 8 branches covered.">            if ( courseCode == null || year &lt; 0 || semester &lt; 0 || departmentID == null ) return new String[][]{};</span>
+<span class="fc" id="L265">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L266">            departmentID = departmentID.toUpperCase();</span>
+
+            // SQL query to fetch the grades of a particular course from the database
+<span class="fc" id="L269">            PreparedStatement getGradesQuery = databaseConnection.prepareStatement( &quot;SELECT entry_number, grade FROM student_course_registration WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ? ORDER BY entry_number&quot; );</span>
+<span class="fc" id="L270">            getGradesQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L271">            getGradesQuery.setInt( 2, year );</span>
+<span class="fc" id="L272">            getGradesQuery.setInt( 3, semester );</span>
+<span class="fc" id="L273">            getGradesQuery.setString( 4, departmentID );</span>
+<span class="fc" id="L274">            ResultSet getGradesQueryResult = getGradesQuery.executeQuery();</span>
+
+            // Once the results have been fetched, they must be converted to the proper return form
+<span class="fc" id="L277">            ArrayList&lt;String[]&gt; records = new ArrayList&lt;&gt;();</span>
+
+            // The ResultSet contains entry numbers and grades
+<span class="fc bfc" id="L280" title="All 2 branches covered.">            while ( getGradesQueryResult.next() ) {</span>
+<span class="fc" id="L281">                String entry_number = getGradesQueryResult.getString( 1 );</span>
+<span class="fc" id="L282">                String grade        = getGradesQueryResult.getString( 2 );</span>
+<span class="fc" id="L283">                records.add( new String[]{ entry_number, grade } );</span>
+<span class="fc" id="L284">            }</span>
+<span class="fc" id="L285">            return records.toArray( new String[records.size()][] );</span>
+<span class="fc" id="L286">        } catch ( Exception error ) {</span>
+<span class="fc" id="L287">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L288">            return new String[][]{};</span>
+        }
+    }
+
+    @Override
+    public String[][] getCourseEnrollmentsList( String courseCode, int year, int semester, String offeringDepartment ) {
+        try {
+<span class="fc bfc" id="L295" title="All 6 branches covered.">            if ( courseCode == null || year &lt; 0 || semester &lt; 0 ) return new String[][]{};</span>
+<span class="fc" id="L296">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L297">            offeringDepartment = offeringDepartment.toUpperCase();</span>
+
+            // SQL query to get the name and entry number for this particular course offeirng
+<span class="fc" id="L300">            PreparedStatement getEnrollmentsQuery = databaseConnection.prepareStatement( &quot;SELECT name, student_course_registration.entry_number FROM student_course_registration JOIN student ON student_course_registration.entry_number = student.entry_number WHERE course_code = ? AND year = ? AND semester = ? AND student_course_registration.department_id = ?  ORDER BY student.entry_number&quot; );</span>
+<span class="fc" id="L301">            getEnrollmentsQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L302">            getEnrollmentsQuery.setInt( 2, year );</span>
+<span class="fc" id="L303">            getEnrollmentsQuery.setInt( 3, semester );</span>
+<span class="fc" id="L304">            getEnrollmentsQuery.setString( 4, offeringDepartment );</span>
+<span class="fc" id="L305">            ResultSet getEnrollmentsQueryResult = getEnrollmentsQuery.executeQuery();</span>
+
+            // Converting the result set that was obtained
+<span class="fc" id="L308">            ArrayList&lt;String[]&gt; records = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">            while ( getEnrollmentsQueryResult.next() ) {</span>
+<span class="fc" id="L310">                String name        = getEnrollmentsQueryResult.getString( 1 );</span>
+<span class="fc" id="L311">                String entryNumber = getEnrollmentsQueryResult.getString( 2 );</span>
+<span class="fc" id="L312">                records.add( new String[]{ name, entryNumber } );</span>
+<span class="fc" id="L313">            }</span>
+<span class="fc" id="L314">            return records.toArray( new String[records.size()][] );</span>
+<span class="fc" id="L315">        } catch ( Exception error ) {</span>
+<span class="fc" id="L316">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L317">            return new String[][]{};</span>
+        }
+    }
+
+    @Override
+    public String[] getListOfStudents( String courseCode, int year, int semester, String offeringDepartment ) {
+        try {
+<span class="fc bfc" id="L324" title="All 8 branches covered.">            if ( courseCode == null || year &lt; 0 || semester &lt; 0 || offeringDepartment == null ) return new String[]{};</span>
+<span class="fc" id="L325">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L326">            offeringDepartment = offeringDepartment.toUpperCase();</span>
+
+            // A list to store all the students enrolled in this course
+<span class="fc" id="L329">            ArrayList&lt;String&gt; listOfStudents = new ArrayList&lt;&gt;();</span>
+
+            // SQL query to retrieve the list of students from the database
+<span class="fc" id="L332">            PreparedStatement getStudentsQuery = databaseConnection.prepareStatement( &quot;SELECT entry_number FROM student_course_registration WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ?&quot; );</span>
+<span class="fc" id="L333">            getStudentsQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L334">            getStudentsQuery.setInt( 2, year );</span>
+<span class="fc" id="L335">            getStudentsQuery.setInt( 3, semester );</span>
+<span class="fc" id="L336">            getStudentsQuery.setString( 4, offeringDepartment );</span>
+<span class="fc" id="L337">            ResultSet getStudentsQueryResult = getStudentsQuery.executeQuery();</span>
+
+            // Now get all the students from the result set into the array that was created above
+<span class="fc bfc" id="L340" title="All 2 branches covered.">            while ( getStudentsQueryResult.next() ) {</span>
+<span class="fc" id="L341">                String entryNumber = getStudentsQueryResult.getString( 1 );</span>
+<span class="fc" id="L342">                listOfStudents.add( entryNumber );</span>
+<span class="fc" id="L343">            }</span>
+            // Return it in the form of a string array
+<span class="fc" id="L345">            return listOfStudents.toArray( new String[listOfStudents.size()] );</span>
+<span class="fc" id="L346">        } catch ( Exception error ) {</span>
+<span class="fc" id="L347">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L348">            return new String[]{};</span>
+        }
+    }
+
+    @Override
+    public boolean isCurrentEventOffering( int currentYear, int currentSemester ) {
+        try {
+<span class="fc bfc" id="L355" title="All 4 branches covered.">            if ( currentYear &lt; 0 || currentSemester &lt;= 0 ) return false;</span>
+
+            // SQL query to check if the current event in the given session is enrolling
+<span class="fc" id="L358">            PreparedStatement offeringCheckQuery = databaseConnection.prepareStatement( &quot;SELECT * FROM current_year_and_semester WHERE year = ? AND semester = ? AND current_event = 'OFFERING'&quot; );</span>
+<span class="fc" id="L359">            offeringCheckQuery.setInt( 1, currentYear );</span>
+<span class="fc" id="L360">            offeringCheckQuery.setInt( 2, currentSemester );</span>
+<span class="fc" id="L361">            ResultSet offeringCheckQueryResult = offeringCheckQuery.executeQuery();</span>
+
+            // If there exists such a record, it implies that the current session is offering
+<span class="fc" id="L364">            return offeringCheckQueryResult.next();</span>
+<span class="fc" id="L365">        } catch ( Exception error ) {</span>
+<span class="fc" id="L366">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L367">            return false;</span>
+        }
+    }
+
+    @Override
+    public boolean isCurrentEventGradeSubmission( int currentYear, int currentSemester ) {
+        try {
+<span class="fc bfc" id="L374" title="All 4 branches covered.">            if ( currentYear &lt; 0 || currentSemester &lt;= 0 ) return false;</span>
+
+            // SQL query to check if the current event in the given session is enrolling
+<span class="fc" id="L377">            PreparedStatement offeringCheckQuery = databaseConnection.prepareStatement( &quot;SELECT * FROM current_year_and_semester WHERE year = ? AND semester = ? AND current_event = 'GRADE SUBMISSION'&quot; );</span>
+<span class="fc" id="L378">            offeringCheckQuery.setInt( 1, currentYear );</span>
+<span class="fc" id="L379">            offeringCheckQuery.setInt( 2, currentSemester );</span>
+<span class="fc" id="L380">            ResultSet offeringCheckQueryResult = offeringCheckQuery.executeQuery();</span>
+
+            // If there exists such a record, it implies that the current session is offering
+<span class="fc" id="L383">            return offeringCheckQueryResult.next();</span>
+<span class="fc" id="L384">        } catch ( Exception error ) {</span>
+<span class="fc" id="L385">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L386">            return false;</span>
+        }
+    }
+
+    @Override
+    public boolean uploadCourseGrades( String courseCode, int year, int semester, String offeringDepartment, String[] listOfStudents, String[] listOfGrades ) {
+        try {
+<span class="fc bfc" id="L393" title="All 14 branches covered.">            if ( courseCode == null || year &lt; 0 || semester &lt; 0 || listOfGrades == null || listOfStudents == null || offeringDepartment == null || listOfStudents.length != listOfGrades.length ) return false;</span>
+<span class="fc" id="L394">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L395">            offeringDepartment = offeringDepartment.toUpperCase();</span>
+
+            // The database requires the course codes to be in uppercase
+<span class="fc" id="L398">            courseCode = courseCode.toUpperCase();</span>
+
+            // Construct the SQL query that will be used to update course grades
+<span class="fc" id="L401">            PreparedStatement uploadGradeQuery = databaseConnection.prepareStatement( &quot;UPDATE student_course_registration SET grade = ? WHERE entry_number = ? AND  course_code = ? AND year = ? AND semester = ? AND department_id = ?&quot; );</span>
+<span class="fc" id="L402">            uploadGradeQuery.setString( 3, courseCode );</span>
+<span class="fc" id="L403">            uploadGradeQuery.setInt( 4, year );</span>
+<span class="fc" id="L404">            uploadGradeQuery.setInt( 5, semester );</span>
+<span class="fc" id="L405">            uploadGradeQuery.setString( 6, offeringDepartment );</span>
+
+            // Now iterate through the list of students and grades and set the grade and entry number of the student
+<span class="fc" id="L408">            boolean insertResult = true;</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">            for ( int i = 0; i &lt; listOfStudents.length; i++ ) {</span>
+                // If the grade is not mentioned, then do not insert it into the database and notify the user that all students grades have not been uploaded
+<span class="fc bfc" id="L411" title="All 4 branches covered.">                if ( listOfGrades[i] == null || listOfStudents[i] == null ) {</span>
+<span class="fc" id="L412">                    insertResult = false;</span>
+<span class="fc" id="L413">                    continue;</span>
+                }
+<span class="fc" id="L415">                uploadGradeQuery.setString( 1, listOfGrades[i] );</span>
+<span class="fc" id="L416">                uploadGradeQuery.setString( 2, listOfStudents[i].toUpperCase() );</span>
+<span class="fc" id="L417">                uploadGradeQuery.executeUpdate();</span>
+            }
+<span class="fc" id="L419">            return insertResult;</span>
+<span class="fc" id="L420">        } catch ( Exception error ) {</span>
+<span class="fc" id="L421">            System.out.println( &quot;Database Error. Please verify that all grades are valid&quot; );</span>
+<span class="fc" id="L422">            return false;</span>
+        }
+    }
+
+    @Override
+    public boolean isCourseAlreadyOffered( String courseCode, int currentYear, int currentSemester, String offeringDepartment ) {
+        try {
+<span class="fc bfc" id="L429" title="All 8 branches covered.">            if ( courseCode == null || currentYear &lt; 0 || currentSemester &lt;= 0 || offeringDepartment == null ) return true;</span>
+<span class="fc" id="L430">            courseCode = courseCode.toUpperCase();</span>
+<span class="fc" id="L431">            offeringDepartment = offeringDepartment.toUpperCase();</span>
+
+            // SQL query to check if this course has been offered by your department already
+<span class="fc" id="L434">            PreparedStatement checkOfferingQuery = databaseConnection.prepareStatement( &quot;SELECT * FROM course_offerings WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ?&quot; );</span>
+<span class="fc" id="L435">            checkOfferingQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L436">            checkOfferingQuery.setInt( 2, currentYear );</span>
+<span class="fc" id="L437">            checkOfferingQuery.setInt( 3, currentSemester );</span>
+<span class="fc" id="L438">            checkOfferingQuery.setString( 4, offeringDepartment );</span>
+<span class="fc" id="L439">            ResultSet checkOfferingQueryResult = checkOfferingQuery.executeQuery();</span>
+
+            // If the query returns a row, then the course has already been offered
+<span class="fc" id="L442">            return checkOfferingQueryResult.next();</span>
+<span class="fc" id="L443">        } catch ( Exception error ) {</span>
+<span class="fc" id="L444">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L445">            return true;</span>
+        }
+    }
+
+    @Override
+    public String[][] getInstructorPrerequisites( String courseCode, int year, int semester, String departmentID ) {
+        try {
+<span class="fc bfc" id="L452" title="All 8 branches covered.">            if ( courseCode == null || year &lt; 0 || semester &lt; 0 || departmentID == null ) return new String[][]{};</span>
+
+            // SQL query to fetch the instructor prerequisites from the specified course
+<span class="fc" id="L455">            PreparedStatement getPrerequisiteQuery = databaseConnection.prepareStatement(&quot;SELECT prereq, grade_criteria FROM instructor_prerequisites WHERE course_code = ? AND year = ? AND semester = ? AND department_id = ? &quot;);</span>
+<span class="fc" id="L456">            getPrerequisiteQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L457">            getPrerequisiteQuery.setInt( 2, year );</span>
+<span class="fc" id="L458">            getPrerequisiteQuery.setInt( 3, semester );</span>
+<span class="fc" id="L459">            getPrerequisiteQuery.setString( 4, departmentID );</span>
+<span class="fc" id="L460">            ResultSet getPrerequisiteQueryResult = getPrerequisiteQuery.executeQuery();</span>
+
+            // Convert the result set into the required format
+<span class="fc" id="L463">            ArrayList&lt;String[]&gt; courseList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">            while ( getPrerequisiteQueryResult.next() ) {</span>
+                // The arrays contain { Prerequisite Course Code, Grade Criteria }
+<span class="fc" id="L466">                ArrayList&lt;String&gt; course = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L467">                course.add( getPrerequisiteQueryResult.getString( 1 ) );</span>
+<span class="fc" id="L468">                course.add( getPrerequisiteQueryResult.getString( 2 ) );</span>
+<span class="fc" id="L469">                courseList.add( course.toArray( new String[course.size()]) );</span>
+<span class="fc" id="L470">            }</span>
+
+<span class="fc" id="L472">            return courseList.toArray( new String[courseList.size()][] );</span>
+<span class="fc" id="L473">        } catch ( Exception error ) {</span>
+<span class="fc" id="L474">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L475">            return new String[][]{};</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

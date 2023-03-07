@@ -73,6 +73,7 @@ public class PasswordDAO implements org.abhijith.daoInterfaces.PasswordDAO {
             }
             return false;
         } catch ( Exception error ) {
+            System.out.println( error.getMessage() );
             System.err.println( "Database Error. Login failed" );
             return false;
         }

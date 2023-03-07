@@ -5,26 +5,17 @@ import java.util.HashMap;
 public class Utils {
     public static int getGradeValue( String grade ) {
         // Returns the numeric value corresponding to the particular grade
-        switch ( grade ) {
-            case "A":
-                return 10;
-            case "A-":
-                return 9;
-            case "B":
-                return 8;
-            case "B-":
-                return 7;
-            case "C":
-                return 6;
-            case "C-":
-                return 5;
-            case "D":
-                return 4;
-            case "E":
-                return 2;
-            default:
-                return 0;
-        }
+        return switch ( grade ) {
+            case "A" -> 10;
+            case "A-" -> 9;
+            case "B" -> 8;
+            case "B-" -> 7;
+            case "C" -> 6;
+            case "C-" -> 5;
+            case "D" -> 4;
+            case "E" -> 2;
+            default -> 0;
+        };
     }
 
     public static void prettyPrintGrades( int year, int semester, String[][] records ) {

@@ -106,8 +106,7 @@ public class PostgresCommonDAO implements CommonDAO {
             boolean studentExists = batchQueryResult.next();
             if ( !studentExists ) return -1;
 
-            int batch = batchQueryResult.getInt( 1 );
-            return batch;
+            return batchQueryResult.getInt( 1 );
         } catch ( Exception error ) {
             System.out.println( "Database Error. Try again later" );
             return -1;

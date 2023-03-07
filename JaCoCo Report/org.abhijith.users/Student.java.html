@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Student.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'client' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">org.abhijith.users</a> &gt; <span class="el_source">Student.java</span></div><h1>Student.java</h1><pre class="source lang-java linenums">package org.abhijith.users;
+
+import org.abhijith.dal.PostgresStudentDAO;
+import org.abhijith.daoInterfaces.StudentDAO;
+import org.abhijith.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class Student extends User {
+    private StudentDAO studentDAO;
+
+    public Student( String id ) {
+<span class="fc" id="L14">        super( id );</span>
+<span class="fc" id="L15">        this.studentDAO = new PostgresStudentDAO();</span>
+<span class="fc" id="L16">        super.setCommonDAO( studentDAO );</span>
+<span class="fc" id="L17">    }</span>
+
+    public void setStudentDAO( StudentDAO studentDAO ) {
+<span class="fc" id="L20">        this.studentDAO = studentDAO;</span>
+<span class="fc" id="L21">    }</span>
+
+    // The default cutoff of 4 is implemented here.
+    private boolean checkCourseCatalogPrerequisites( String courseCode ) {
+        // Get all the course catalog prerequisites from the database
+<span class="fc" id="L26">        String[] prerequisites = studentDAO.getCourseCatalogPrerequisites( courseCode );</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if ( prerequisites == null ) return false;</span>
+
+        // Go through all the prerequisites, and check whether the student has passed all of them
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        for ( String course : prerequisites ) {</span>
+<span class="fc" id="L31">            boolean hasPassed = studentDAO.checkStudentPassStatus( course, 4, id );</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">            if ( !hasPassed ) {</span>
+<span class="fc" id="L33">                return false;</span>
+            }
+        }
+<span class="fc" id="L36">        return true;</span>
+    }
+
+    private boolean checkInstructorPrerequisites( String courseCode, int[] currentSession, String courseDepartment ) {
+        // Fetch all the instructor prerequisites of this particular course offering
+<span class="fc" id="L41">        int        currentYear     = currentSession[0];</span>
+<span class="fc" id="L42">        int        currentSemester = currentSession[1];</span>
+<span class="fc" id="L43">        String[][] prerequisites   = studentDAO.getInstructorPrerequisites( courseCode, currentYear, currentSemester, courseDepartment );</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if ( prerequisites == null ) return false;</span>
+
+        // Iterate through all the courses
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for ( String[] listOfCourses : prerequisites ) {</span>
+<span class="fc" id="L48">            boolean isEligible = false;</span>
+            // Ensure that the student has passed each of these courses with the required grade cutoff mentioned
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            for ( int i = 0; i &lt; listOfCourses.length; i += 2 ) {</span>
+<span class="fc" id="L51">                String course      = listOfCourses[i];</span>
+<span class="fc" id="L52">                int    gradeCutoff = Integer.parseInt( listOfCourses[i + 1] );</span>
+<span class="fc" id="L53">                isEligible |= studentDAO.checkStudentPassStatus( course, gradeCutoff, id );</span>
+            }
+            // If the student does not fulfill the criteria, return false
+<span class="fc bfc" id="L56" title="All 2 branches covered.">            if ( !isEligible ) return false;</span>
+        }
+<span class="fc" id="L58">        return true;</span>
+    }
+
+    private boolean checkStudentEligibility( String courseCode, int[] currentSession, String courseDepartment ) {
+<span class="fc" id="L62">        boolean hasCompletedCourseCatalogPrerequisites = checkCourseCatalogPrerequisites( courseCode );</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if ( !hasCompletedCourseCatalogPrerequisites ) {</span>
+<span class="fc" id="L64">            return false;</span>
+        }
+<span class="fc" id="L66">        return checkInstructorPrerequisites( courseCode, currentSession, courseDepartment );</span>
+    }
+
+    private boolean checkCreditLimit( String courseCode, int[] currentSession ) {
+<span class="fc" id="L70">        int currentYear     = currentSession[0];</span>
+<span class="fc" id="L71">        int currentSemester = currentSession[1];</span>
+
+        // The minimum and maximum credit limit of the student are 18 and 24 respectively
+<span class="fc" id="L74">        double minimumCreditLimit = 18;</span>
+<span class="fc" id="L75">        double maximumCreditLimit = 24;</span>
+
+        // Get the credits that the student has enrolled in the current semester
+<span class="fc" id="L78">        double creditsInCurrentSemester = studentDAO.getCreditsInSession( id, currentYear, currentSemester );</span>
+        double creditsInPreviousSemester, creditsInSemesterBefore;
+
+        // Get the credits that the student has enrolled in the previous two semesters
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if ( currentSemester == 2 ) {</span>
+<span class="fc" id="L83">            creditsInPreviousSemester = studentDAO.getCreditsInSession( id, currentYear, currentSemester - 1 );</span>
+<span class="fc" id="L84">            creditsInSemesterBefore = studentDAO.getCreditsInSession( id, currentYear - 1, 2 );</span>
+        }
+        else {
+<span class="fc" id="L87">            creditsInPreviousSemester = studentDAO.getCreditsInSession( id, currentYear - 1, 2 );</span>
+<span class="fc" id="L88">            creditsInSemesterBefore = studentDAO.getCreditsInSession( id, currentYear - 1, 1 );</span>
+        }
+
+        // The credit limit is 1.25 times the average of the credits in the previous two semesters
+<span class="fc" id="L92">        double creditLimit = ( creditsInSemesterBefore + creditsInPreviousSemester ) / 2 * 1.25;</span>
+<span class="fc" id="L93">        creditLimit = Math.max( creditLimit, minimumCreditLimit );</span>
+<span class="fc" id="L94">        creditLimit = Math.min( creditLimit, maximumCreditLimit );</span>
+
+        // Get the credits of the course that the student wishes to enroll in
+<span class="fc" id="L97">        double creditsOfCourse = studentDAO.getCreditsOfCourse( courseCode );</span>
+
+        // Returns true if the student will exceed the credit limit by enrolling in the mentioned course
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        return ( creditsInCurrentSemester + creditsOfCourse ) &gt; creditLimit;</span>
+    }
+
+    public boolean enroll( String courseCode, String courseDepartment ) {
+<span class="fc bfc" id="L104" title="All 4 branches covered.">        if ( courseCode == null || courseDepartment == null ) return false;</span>
+
+        // Gets the current year and semester
+<span class="fc" id="L107">        int[] currentSession  = studentDAO.getCurrentAcademicSession();</span>
+<span class="fc" id="L108">        int   currentYear     = currentSession[0];</span>
+<span class="fc" id="L109">        int   currentSemester = currentSession[1];</span>
+
+        // Check if it is currently the enrolling event
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if ( !studentDAO.isCurrentEventEnrolling( currentYear, currentSemester ) ) return false;</span>
+
+        // Checks whether this particular course has been offered in the current session by the mentioned department
+<span class="fc" id="L115">        boolean doesCourseExist = studentDAO.checkCourseOffering( courseCode, currentYear, currentSemester, courseDepartment );</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if ( !doesCourseExist ) return false;</span>
+
+        // Checks whether the student has got any grade in this course before
+<span class="fc" id="L119">        String courseGrade = studentDAO.getCourseGrade( this.id, courseCode );</span>
+
+        // '-' indicates that the student is already enrolled in this course in this semester
+        // &quot;&quot; indicates that something has gone wrong while fetching the grade
+<span class="fc bfc" id="L123" title="All 6 branches covered.">        if ( Utils.getGradeValue( courseGrade ) &gt;= 4 || courseGrade.equals( &quot;-&quot; ) || courseGrade.equals( &quot;&quot; ) ) {</span>
+<span class="fc" id="L124">            return false;</span>
+        }
+
+        // Checks whether the student has completed all the prerequisites i.e., instructor prerequisites and course catalog prerequisites
+<span class="fc" id="L128">        boolean isStudentEligible = checkStudentEligibility( courseCode, currentSession, courseDepartment );</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        if ( !isStudentEligible ) return false;</span>
+
+        // Check the CGPA criteria
+<span class="fc" id="L132">        double CGPA         = getCGPA();</span>
+<span class="fc" id="L133">        double CGPACriteria = studentDAO.getCGPACriteria( courseCode, currentYear, currentSemester, courseDepartment );</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        if ( CGPA &lt; CGPACriteria ) return false;</span>
+
+        // Checks whether enrolling in this course would exceed the credit limit
+<span class="fc" id="L137">        boolean creditLimitExceeded = checkCreditLimit( courseCode, currentSession );</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        if ( creditLimitExceeded ) return false;</span>
+
+        // Getting the department of the student and the department of the course
+<span class="fc" id="L141">        String studentDepartment = studentDAO.getStudentDepartment( this.id );</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        if ( studentDepartment.equals( &quot;&quot; ) ) return false;</span>
+
+        // Getting the batch of the student
+<span class="fc" id="L145">        int batch = studentDAO.getBatch( this.id );</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        if ( batch == -1 ) return false;</span>
+
+        // Getting the course category. If the batch and department combination does not exist, the student is not eligible for the offering
+<span class="fc" id="L149">        String courseCategory = studentDAO.getCourseCategory( courseCode, currentYear, currentSemester, courseDepartment, studentDepartment, batch );</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        if ( courseCategory.equals( &quot;&quot; ) ) return false;</span>
+
+        // Once all of the above conditions are fulfilled, the student is eligible to enroll in the course
+        // The request to enroll is sent to the database
+<span class="fc" id="L154">        return studentDAO.enroll( courseCode, this.id, currentYear, currentSemester, courseDepartment, courseCategory );</span>
+    }
+
+    public boolean drop( String courseCode ) {
+        // Checking input parameters
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if ( courseCode == null ) return false;</span>
+
+        // Get the current year and semester
+<span class="fc" id="L162">        int[] currentSession  = studentDAO.getCurrentAcademicSession();</span>
+<span class="fc" id="L163">        int   currentYear     = currentSession[0];</span>
+<span class="fc" id="L164">        int   currentSemester = currentSession[1];</span>
+
+        // Check if it is currently the enrolling event
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if ( !studentDAO.isCurrentEventEnrolling( currentYear, currentSemester ) )</span>
+<span class="fc" id="L168">            return false;</span>
+
+        // Returns true if the course drop was successful. False otherwise
+<span class="fc" id="L171">        return studentDAO.dropCourse( courseCode, id, currentYear, currentSemester );</span>
+    }
+
+    // Return format: { { { courseCode, courseTitle, grade, credits } } }
+    // The inner array will contain all the records of a particular semester
+    public String[][][] getGradesForDegree() {
+        // Array to store the records
+<span class="fc" id="L178">        ArrayList&lt;String[][]&gt; studentCourseRecords = new ArrayList&lt;&gt;();</span>
+
+        // Gets the current academic session. We iterate from his batch upto the current session
+<span class="fc" id="L181">        int[] currentSession  = studentDAO.getCurrentAcademicSession();</span>
+<span class="fc" id="L182">        int   currentYear     = currentSession[0];</span>
+<span class="fc" id="L183">        int   currentSemester = currentSession[1];</span>
+
+        // Getting the batch of the student. We start from batch - 1 as the first session
+<span class="fc" id="L186">        int studentBatch = studentDAO.getBatch( this.id );</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        if ( studentBatch == -1 ) return new String[][][]{};</span>
+
+        // We go through all years and semesters upto the current session
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        for ( int year = studentBatch; year &lt;= currentYear; year++ ) {</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">            for ( int semester = 1; semester &lt;= 2; semester++ ) {</span>
+                // We use the get grades function to get the grades of a particular semester and year ( i.e., session )
+<span class="fc" id="L193">                studentCourseRecords.add( getGrades( year, semester ) );</span>
+                // We have reached the current session, we should not be getting any more records
+<span class="pc bpc" id="L195" title="1 of 4 branches missed.">                if ( year == currentYear &amp;&amp; semester == currentSemester ) break;</span>
+            }
+        }
+
+        // Returns the arraylist after converting it into an array
+<span class="fc" id="L200">        return studentCourseRecords.toArray( new String[studentCourseRecords.size()][][] );</span>
+    }
+
+    // Return format: { { courseCode, courseTitle, grade, credits } }
+    public String[][] getGrades( int year, int semester ) {
+        // Checking input parameters
+<span class="fc bfc" id="L206" title="All 4 branches covered.">        if ( year &lt; 0 || semester &lt; 0 ) return new String[][]{};</span>
+
+<span class="fc" id="L208">        return studentDAO.getStudentGradesForSemester( this.id, year, semester );</span>
+    }
+
+    public int getBatch() {
+<span class="fc" id="L212">        return studentDAO.getBatch( this.id );</span>
+    }
+
+    // The record format expected is { { courseCode, courseTitle, grade, credits } }
+    // Note that all of the above are expected to be strings and parsable to double
+    public double getSGPA( String[][] records ) {
+        // Checking input parameters
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        if ( records == null ) return 0.0;</span>
+
+<span class="fc" id="L221">        double totalCredits  = 0;</span>
+<span class="fc" id="L222">        double creditsEarned = 0;</span>
+
+        // We iterate through all the records
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        for ( String[] record : records ) {</span>
+            // Checking input parameters
+<span class="pc bpc" id="L227" title="1 of 4 branches missed.">            if ( record == null || record.length != 4 ) continue;</span>
+
+            // We get the grades and the credits of the course
+<span class="fc" id="L230">            double credits             = Double.parseDouble( record[3] );</span>
+<span class="fc" id="L231">            double numericalGradeValue = Utils.getGradeValue( record[2] );</span>
+
+            // Computing the SGPA ( Note that E and F grades are considered in SGPA calculation );
+<span class="fc" id="L234">            totalCredits += credits;</span>
+<span class="fc" id="L235">            creditsEarned += ( numericalGradeValue ) / 10 * credits;</span>
+        }
+        // If no credits are done, return 0
+<span class="fc bfc" id="L238" title="All 2 branches covered.">        if ( totalCredits == 0 ) return 0;</span>
+
+<span class="fc" id="L240">        return creditsEarned / totalCredits * 10;</span>
+    }
+
+    public double getCGPA() {
+        // Get all the records of the student
+<span class="fc" id="L245">        String[][] records       = studentDAO.getAllRecords( this.id );</span>
+<span class="fc" id="L246">        double     totalCredits  = 0;</span>
+<span class="fc" id="L247">        double     creditsEarned = 0;</span>
+
+        // Go through every record of the student
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        for ( String[] record : records ) {</span>
+            // If the record is not in the expected format, ignore
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">            if ( record.length != 2 ) continue;</span>
+<span class="fc" id="L253">            double credits             = Double.parseDouble( record[0] );</span>
+<span class="fc" id="L254">            int    numericalGradeValue = Utils.getGradeValue( record[1] );</span>
+
+            // E and F grades are not considered in the computation of CGPA
+<span class="fc bfc" id="L257" title="All 2 branches covered.">            if ( numericalGradeValue &lt; 4 ) continue;</span>
+<span class="fc" id="L258">            totalCredits += credits;</span>
+<span class="fc" id="L259">            creditsEarned += ( numericalGradeValue ) / 10.0 * credits;</span>
+        }
+
+        // If the student has not done any courses, return 0
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        if ( totalCredits == 0 ) return 0;</span>
+<span class="fc" id="L264">        return creditsEarned / totalCredits * 10;</span>
+    }
+
+    public String[][] getAvailableCourses() {
+        // Getting the current year and semester
+<span class="fc" id="L269">        int[]  currentSession    = studentDAO.getCurrentAcademicSession();</span>
+<span class="fc" id="L270">        int    currentYear       = currentSession[0];</span>
+<span class="fc" id="L271">        int    currentSemester   = currentSession[1];</span>
+
+<span class="fc" id="L273">        String studentDepartment = studentDAO.getStudentDepartment( this.id );</span>
+<span class="fc" id="L274">        int    studentBatch      = studentDAO.getBatch( this.id );</span>
+<span class="fc bfc" id="L275" title="All 4 branches covered.">        if ( studentDepartment.equals( &quot;&quot; ) || studentBatch == -1 ) return new String[][]{};</span>
+
+        // Getting the courses that were offered in the current session
+<span class="fc" id="L278">        String[][] coursesOffered = studentDAO.getOfferedCourses( currentYear, currentSemester );</span>
+        // Getting the course category for all the courses that were found in the previous query
+<span class="fc bfc" id="L280" title="All 2 branches covered.">        for ( String[] course : coursesOffered ) {</span>
+<span class="fc" id="L281">            course[course.length - 1] = studentDAO.getCourseCategory( course[0], currentYear, currentSemester, course[4], studentDepartment, studentBatch );</span>
+        }
+<span class="fc" id="L283">        return coursesOffered;</span>
+    }
+
+    public HashMap&lt;String, Double&gt; getRemainingCreditRequirements() {
+        // Get the batch of the student and retrieve the UG curriculum of the corresponding batch
+<span class="fc" id="L288">        int                     batch        = studentDAO.getBatch( this.id );</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">        if ( batch == -1 ) return new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L291">        HashMap&lt;String, Double&gt; ugCurriculum = studentDAO.getUGCurriculum( batch );</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">        if ( ugCurriculum == null ) return new HashMap&lt;&gt;();</span>
+
+        // Now we have to fetch the course categories and the corresponding credits done by the student
+<span class="fc" id="L295">        HashMap&lt;String, Double&gt; categoryCreditsCompleted = studentDAO.getCreditsInAllCategories( this.id );</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">        if ( categoryCreditsCompleted == null ) return new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L298">        HashMap&lt;String, Double&gt; categoryCreditsLeft      = new HashMap&lt;&gt;();</span>
+
+        // Additional credits in any category will count towards the open electives section
+<span class="fc" id="L301">        double additionalCredits = 0;</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        for ( String category : ugCurriculum.keySet() ) {</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">            if ( categoryCreditsCompleted.containsKey( category ) ) {</span>
+<span class="fc" id="L304">                double creditsNeeded    = ugCurriculum.get( category );</span>
+<span class="fc" id="L305">                double creditsCompleted = categoryCreditsCompleted.get( category );</span>
+
+                // If student has done fewer credits than necessary, return false
+<span class="fc bfc" id="L308" title="All 2 branches covered.">                if ( creditsNeeded &gt; creditsCompleted ) {</span>
+<span class="fc" id="L309">                    categoryCreditsLeft.put( category, creditsNeeded - creditsCompleted );</span>
+                }
+                // If student has done more credits than necessary, those can be used for open electives
+                else {
+<span class="fc" id="L313">                    categoryCreditsLeft.put( category, 0.0 );</span>
+<span class="fc" id="L314">                    additionalCredits += creditsCompleted - creditsNeeded;</span>
+                }
+<span class="fc" id="L316">            }</span>
+            else {
+                // If the student has done no courses in a particular category
+<span class="fc" id="L319">                categoryCreditsLeft.put( category, ugCurriculum.get( category ) );</span>
+            }
+<span class="fc" id="L321">        }</span>
+
+        // Now we have to get open elective requirements to 0 if required
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">        if ( categoryCreditsLeft.containsKey( &quot;OE&quot; ) ) {</span>
+<span class="fc" id="L325">            double creditsLeft = categoryCreditsLeft.get( &quot;OE&quot; );</span>
+<span class="fc" id="L326">            categoryCreditsLeft.put( &quot;OE&quot;, Math.max( creditsLeft - additionalCredits, 0.0 ) );</span>
+        }
+
+<span class="fc" id="L329">        return categoryCreditsLeft;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

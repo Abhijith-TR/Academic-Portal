@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.users.UserTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2023-03-07T05:08:28" hostname="ADMIN" time="0.015">
+<testsuite name="org.abhijith.users.UserTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2023-03-07T17:32:38" hostname="ADMIN" time="0.005">
   <properties/>
-  <testcase name="setPassword()" classname="org.abhijith.users.UserTest" time="0.003"/>
+  <testcase name="setPassword()" classname="org.abhijith.users.UserTest" time="0.001"/>
   <testcase name="getID()" classname="org.abhijith.users.UserTest" time="0.0"/>
-  <testcase name="setPhoneNumber()" classname="org.abhijith.users.UserTest" time="0.003"/>
-  <testcase name="getContactDetails()" classname="org.abhijith.users.UserTest" time="0.003"/>
-  <testcase name="getCourseCatalog()" classname="org.abhijith.users.UserTest" time="0.001"/>
+  <testcase name="setPhoneNumber()" classname="org.abhijith.users.UserTest" time="0.001"/>
+  <testcase name="getContactDetails()" classname="org.abhijith.users.UserTest" time="0.001"/>
+  <testcase name="getCourseCatalog()" classname="org.abhijith.users.UserTest" time="0.0"/>
   <testcase name="setEmail()" classname="org.abhijith.users.UserTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

@@ -12,18 +12,18 @@ The test plan has been designed to assess various functionalities required for t
 
 ### **Test Items**
 ---
-- User Interfaces - All of the user interfaces must be tested to ensure that the are resilient to invalid inputs. The user interfaces must be able to interact with the other objects in the database and product the correct output when the proper output is returned by the other objects. The user interfaces include include custom scanner and printer objects which must also be tested to ensure proper functioning.
+- User Interfaces - All of the user interfaces must be tested to ensure that the are resilient to invalid inputs. The user interfaces must be able to interact with the other objects in the database and product the correct output when the proper output is returned by the other objects. The user interfaces include include custom scanner and printer objects which must also be tested to ensure proper functioning. Primary functionality requirements are specified in the business logic section. The user interface must facilitate all the operations required by various objects.
     * Student UI
     * Faculty UI
     * Admin UI
-- DAO - All of the separate DAOs must be tested to ensure that they have the ability to access the database correctly. The various SQL queries must be tested to ensure that the correct activities are being performed. The return values must be tested to ensure that they are conformant to the values mentioned in the interfaces and the values required by the users of the object.
+- DAO - All of the separate DAOs must be tested to ensure that they have the ability to access the database correctly. The various SQL queries must be tested to ensure that the correct activities are being performed. The return values must be tested to ensure that they are conformant to the values mentioned in the interfaces and the values required by the users of the object. Primary functionality requirements are specified in the business logic section. The DAO must facilitate all of the operations required by various objects.
     - Student DAO
     - Faculty DAO
     - Admin DAO
 - Business Logic - The business logic modules must be tested to ensure that the business requirements are met. The modules must return proper outputs and handle all the values returned by the DAO. Test cases must be generated to assess all possible flows through various functions.
-    - Student 
-    - Faculty
-    - Admin
+    - Student - Primary functional requirements are enrolling and dropping courses, viewing their records, viewing CGPA and the credits required to complete the curriculum. Additional functionality may include viewing SGPA and updating contact details.
+    - Faculty - Primary functional requirements are offering and dropping courses, viewing records of any student and uploading grades during grade submission. Additional functionality may include creating grade sheets for uploading grades and updating contact details.
+    - Admin - Primary functional requirements are creating new users, inserting batches and core courses, updating the course catalog and generating a transcript of all users. Additional functionality may include setting events and updating contact details. 
 
 ### **Approach**
 ---
@@ -37,6 +37,10 @@ A testing phase in the development workflow is only complete when 100% of unit t
 ### **Suspension Criteria**
 ---
 If over 30% of test cases fail, further testing can be suspended until all the errors have been mitigated and the bugs fixed. 
+
+### **Software and Libraries Used**
+---
+The primary technologies that will be involved in testing are Java, Gradle, Junit and Mockito. 
 
 ### **Testing Environment**
 ---

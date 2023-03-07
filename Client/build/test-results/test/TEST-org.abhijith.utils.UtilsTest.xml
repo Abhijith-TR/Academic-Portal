@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.utils.UtilsTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-03-07T05:08:28" hostname="ADMIN" time="0.0">
+<testsuite name="org.abhijith.utils.UtilsTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-03-07T17:32:38" hostname="ADMIN" time="0.004">
   <properties/>
-  <testcase name="printTest()" classname="org.abhijith.utils.UtilsTest" time="0.0"/>
-  <testcase name="getGradeValueTest()" classname="org.abhijith.utils.UtilsTest" time="0.0"/>
+  <testcase name="printTest()" classname="org.abhijith.utils.UtilsTest" time="0.003"/>
+  <testcase name="getGradeValueTest()" classname="org.abhijith.utils.UtilsTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

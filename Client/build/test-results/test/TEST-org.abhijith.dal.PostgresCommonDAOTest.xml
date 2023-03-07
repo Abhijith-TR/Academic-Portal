@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.dal.PostgresCommonDAOTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2023-03-07T05:08:18" hostname="ADMIN" time="0.544">
+<testsuite name="org.abhijith.dal.PostgresCommonDAOTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2023-03-07T17:32:29" hostname="ADMIN" time="0.525">
   <properties/>
-  <testcase name="getStudentDepartment()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.045"/>
-  <testcase name="checkCourseCatalog()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.037"/>
-  <testcase name="setPassword()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.044"/>
-  <testcase name="getCourseGrade()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.038"/>
-  <testcase name="getStudentGradesForSemester()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.042"/>
-  <testcase name="setPhoneNumber()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.038"/>
-  <testcase name="getContactDetails()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.044"/>
-  <testcase name="getCourseCatalog()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.048"/>
-  <testcase name="setEmail()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.044"/>
-  <testcase name="getCreditsInAllCategories()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.038"/>
-  <testcase name="getUGCurriculum()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.034"/>
-  <testcase name="getBatch()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.035"/>
-  <testcase name="getCurrentAcademicSession()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.046"/>
+  <testcase name="getStudentDepartment()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.038"/>
+  <testcase name="checkCourseCatalog()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.046"/>
+  <testcase name="setPassword()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.041"/>
+  <testcase name="getCourseGrade()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.05"/>
+  <testcase name="getStudentGradesForSemester()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.037"/>
+  <testcase name="setPhoneNumber()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.034"/>
+  <testcase name="getContactDetails()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.038"/>
+  <testcase name="getCourseCatalog()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.039"/>
+  <testcase name="setEmail()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.042"/>
+  <testcase name="getCreditsInAllCategories()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.043"/>
+  <testcase name="getUGCurriculum()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.038"/>
+  <testcase name="getBatch()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.036"/>
+  <testcase name="getCurrentAcademicSession()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.034"/>
   <system-out><![CDATA[Database Error. Please try again later
 Database Error. Try again later
 Database Error. Please try again later

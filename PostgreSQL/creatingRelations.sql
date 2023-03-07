@@ -237,3 +237,18 @@ CREATE TABLE course_category
 );
 
 INSERT INTO common_user_details(id, password, role) VALUES ('staffdeanoffice', 'iitropar', 'ADMIN');
+INSERT INTO current_year_and_semester VALUES(2020, 1, 'RUNNING');
+-- Creating all the departments in the institute
+INSERT INTO department VALUES ('CS', 'COMPUTER SCIENCE AND ENGINEERING');
+INSERT INTO department VALUES ('BM', 'BIOMEDICAL ENGINEERING');
+INSERT INTO department VALUES ('CH', 'CHEMICAL ENGINEERING');
+INSERT INTO department VALUES ('CE', 'CIVIL ENGINEERING');
+INSERT INTO department VALUES ('EE', 'ELECTRICAL ENGINEERING');
+INSERT INTO department VALUES ('ME', 'MECHANICAL ENGINEERING');
+INSERT INTO department VALUES ('MME', 'METALLURGICAL AND MATERIALS ENGINEERING');
+INSERT INTO department VALUES ('CY', 'CHEMISTRY');
+INSERT INTO department VALUES ('PY', 'PHYSICS');
+INSERT INTO department VALUES ('MA', 'MATHEMATICS');
+INSERT INTO department VALUES ('HS', 'HUMANITIES AND SOCIAL SCIENCES');
+-- And one additional department for Mathematics and Computing which comes under both maths and computer science
+INSERT INTO department VALUES ('MNC', 'MATHEMATICS AND COMPUTING');

@@ -211,12 +211,13 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     @Override
     public boolean createCurriculum( int batchYear, double[] creditRequirements ) {
         try {
-            if ( batchYear < 0 || creditRequirements == null || creditRequirements.length != 12 ) return false;
+            if ( batchYear < 0 || creditRequirements == null || creditRequirements.length != 11 ) return false;
             for ( double creditRequirement : creditRequirements ) if ( creditRequirement < 0 ) return false;
 
             // SQL query to insert the curriculum into the database for the corresponding batch
             PreparedStatement createCurriculumQuery = databaseConnection.prepareStatement( "INSERT INTO ug_curriculum VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" );
             createCurriculumQuery.setInt( 1, batchYear );
+
             // Iterate through all the categories and set them
             for ( int i = 2; i <= 12; i++ ) {
                 createCurriculumQuery.setDouble( i, creditRequirements[i - 2] );
@@ -265,10 +266,10 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             // Delete all the core courses of the particular batch from the core_courses table
             PreparedStatement resetCoreCoursesQuery = databaseConnection.prepareStatement( "DELETE FROM core_courses WHERE batch = ?" );
             resetCoreCoursesQuery.setInt( 1, batch );
-            int resetCoursesResult = resetCoreCoursesQuery.executeUpdate();
+            resetCoreCoursesQuery.executeUpdate();
 
             // If the query executes successfully return true i.e., the table is ready to be inserted into again
-            return resetCoursesResult == 1;
+            return true;
         } catch ( Exception error ) {
             // If the table is not found, or the database connection has failed
             System.out.println( "Database Error. Please try again later" );

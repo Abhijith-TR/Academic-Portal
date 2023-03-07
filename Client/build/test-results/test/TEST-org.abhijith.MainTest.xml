@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.MainTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-07T05:08:16" hostname="ADMIN" time="0.822">
+<testsuite name="org.abhijith.MainTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-07T17:32:27" hostname="ADMIN" time="0.818">
   <properties/>
-  <testcase name="main()" classname="org.abhijith.MainTest" time="0.822"/>
+  <testcase name="main()" classname="org.abhijith.MainTest" time="0.818"/>
   <system-out><![CDATA[
 Welcome to the Academic System
 Select your role

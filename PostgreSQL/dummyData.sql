@@ -1,18 +1,3 @@
--- Creating all the departments in the institute
-INSERT INTO department VALUES ('CS', 'COMPUTER SCIENCE AND ENGINEERING');
-INSERT INTO department VALUES ('BM', 'BIOMEDICAL ENGINEERING');
-INSERT INTO department VALUES ('CH', 'CHEMICAL ENGINEERING');
-INSERT INTO department VALUES ('CE', 'CIVIL ENGINEERING');
-INSERT INTO department VALUES ('EE', 'ELECTRICAL ENGINEERING');
-INSERT INTO department VALUES ('ME', 'MECHANICAL ENGINEERING');
-INSERT INTO department VALUES ('MME', 'METALLURGICAL AND MATERIALS ENGINEERING');
-INSERT INTO department VALUES ('CY', 'CHEMISTRY');
-INSERT INTO department VALUES ('PY', 'PHYSICS');
-INSERT INTO department VALUES ('MA', 'MATHEMATICS');
-INSERT INTO department VALUES ('HS', 'HUMANITIES AND SOCIAL SCIENCES');
--- And one additional department for Mathematics and Computing which comes under both maths and computer science
-INSERT INTO department VALUES ('MNC', 'MATHEMATICS AND COMPUTING');
-
 -- Creating the course catalog
 INSERT INTO course_catalog VALUES ('GE103', 'INTRODUCTION TO COMPUTING AND DATA STRUCTURES', 3, 0, 3, 7, 4.5, '{}');
 INSERT INTO faculty VALUES ('FAC1', 'DR SHIRSHENDU DAS', 'CS');

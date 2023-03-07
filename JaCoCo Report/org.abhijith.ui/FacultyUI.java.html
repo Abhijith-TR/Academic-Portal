@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FacultyUI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'client' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">org.abhijith.ui</a> &gt; <span class="el_source">FacultyUI.java</span></div><h1>FacultyUI.java</h1><pre class="source lang-java linenums">package org.abhijith.ui;
+
+import org.abhijith.users.Faculty;
+import org.abhijith.utils.CustomScanner;
+import org.abhijith.utils.Utils;
+
+import java.io.BufferedReader;
+import java.util.ArrayList;
+
+public class FacultyUI {
+    private Faculty       faculty;
+<span class="fc" id="L12">    private CustomScanner keyboardInput = null;</span>
+<span class="fc" id="L13">    String[] facultyChoices = {</span>
+            &quot;Register Course&quot;,
+            &quot;Update CG and Prerequisites&quot;,
+            &quot;Set course category for offering&quot;,
+            &quot;Deregister Course&quot;,
+            &quot;View Grades of Specific Student&quot;,
+            &quot;View Grades of Specific Course Offering&quot;,
+            &quot;Generate Grade Upload Sheet&quot;,
+            &quot;Upload Course Grades&quot;,
+            &quot;Change Phone Number&quot;,
+            &quot;Change Contact Email&quot;,
+            &quot;View Contact Details&quot;,
+            &quot;Change Password&quot;,
+            &quot;View Course Catalog&quot;,
+            &quot;View Instructor prerequisites&quot;,
+            &quot;Any other number to logout&quot;
+    };
+
+<span class="fc" id="L31">    public FacultyUI( String id ) {</span>
+<span class="fc" id="L32">        faculty = new Faculty( id );</span>
+<span class="fc" id="L33">    }</span>
+
+<span class="fc" id="L35">    public FacultyUI( String id, CustomScanner keyboardInput ) {</span>
+<span class="fc" id="L36">        faculty = new Faculty( id );</span>
+<span class="fc" id="L37">        this.keyboardInput = keyboardInput;</span>
+<span class="fc" id="L38">    }</span>
+
+    public void setFaculty( Faculty faculty ) {
+<span class="fc" id="L41">        this.faculty = faculty;</span>
+<span class="fc" id="L42">    }</span>
+
+    public void facultyInterfaceHomeScreen() {
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if ( keyboardInput == null ) keyboardInput = new CustomScanner();</span>
+        while ( true ) {
+
+<span class="fc" id="L48">            System.out.println();</span>
+<span class="fc" id="L49">            System.out.println( &quot;Select an option&quot; );</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            for ( int i = 1; i &lt;= facultyChoices.length; i++ ) {</span>
+<span class="fc" id="L51">                System.out.println( i + &quot;. &quot; + facultyChoices[i - 1] );</span>
+            }
+<span class="fc" id="L53">            int facultyChoice = keyboardInput.integerInput( &quot;Enter your choice&quot; );</span>
+
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            if ( facultyChoice == 1 ) {</span>
+<span class="fc" id="L56">                String  courseCode   = keyboardInput.stringInput( &quot;Enter the course code&quot; );</span>
+<span class="fc" id="L57">                String  departmentID = keyboardInput.stringInput( &quot;Enter the offering department&quot; );</span>
+<span class="fc" id="L58">                boolean status       = faculty.offerCourse( courseCode, departmentID );</span>
+
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                if ( status )</span>
+<span class="fc" id="L61">                    System.out.println( &quot;Course offered. Please update prerequisites and CG criteria manually&quot; );</span>
+                else
+<span class="fc" id="L63">                    System.out.println( &quot;Course not offered. Please verify that the course exists in the course catalog&quot; );</span>
+<span class="fc" id="L64">            }</span>
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            else if ( facultyChoice == 2 ) {</span>
+<span class="fc" id="L67">                String courseCode   = keyboardInput.stringInput( &quot;Enter the course code&quot; );</span>
+<span class="fc" id="L68">                String departmentID = keyboardInput.stringInput( &quot;Enter the offering department&quot; );</span>
+                double minimumCGPA;
+<span class="fc" id="L70">                minimumCGPA = keyboardInput.doubleInput( &quot;Enter the minimum CGPA criteria&quot; );</span>
+
+<span class="fc" id="L72">                ArrayList&lt;String[]&gt; prerequisites         = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L73">                int                 numberOfPrerequisites = keyboardInput.integerInput( &quot;Enter the number of prerequisites&quot; );</span>
+
+<span class="fc bfc" id="L75" title="All 2 branches covered.">                for ( int i = 1; i &lt;= numberOfPrerequisites; i++ ) {</span>
+<span class="fc" id="L76">                    System.out.println();</span>
+<span class="fc" id="L77">                    int               numberOfCourses = keyboardInput.integerInput( &quot;Enter the number of courses of type &quot; + i );</span>
+<span class="fc" id="L78">                    ArrayList&lt;String&gt; courses         = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">                    for ( int j = 0; j &lt; numberOfCourses; j++ ) {</span>
+<span class="fc" id="L81">                        String course = keyboardInput.stringInput( &quot;Enter the course code&quot; );</span>
+<span class="fc" id="L82">                        int prerequisite = keyboardInput.integerInput( &quot;Enter the grade cutoff (as a number)&quot; );</span>
+<span class="fc bfc" id="L83" title="All 4 branches covered.">                        if ( prerequisite &gt; 10 || prerequisite &lt; 0 ) {</span>
+<span class="fc" id="L84">                            System.out.println( &quot;Invalid grade requirement&quot; );</span>
+<span class="fc" id="L85">                            continue;</span>
+                        }
+<span class="fc" id="L87">                        courses.add( course );</span>
+<span class="fc" id="L88">                        courses.add( Integer.toString( prerequisite ) );</span>
+                    }
+<span class="fc" id="L90">                    prerequisites.add( courses.toArray( new String[courses.size()] ) );</span>
+                }
+<span class="fc" id="L92">                String[][] prerequisitesArray = prerequisites.toArray( new String[prerequisites.size()][] );</span>
+
+<span class="fc bfc" id="L94" title="All 2 branches covered.">                if ( faculty.setCGAndPrerequisites( courseCode, departmentID, minimumCGPA, prerequisitesArray ) )</span>
+<span class="fc" id="L95">                    System.out.println( &quot;Details Updated Successfully&quot; );</span>
+<span class="fc" id="L96">                else System.out.println( &quot;Criteria Update Failed&quot; );</span>
+<span class="fc" id="L97">            }</span>
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            else if ( facultyChoice == 3 ) {</span>
+<span class="fc" id="L100">                String courseCode         = keyboardInput.stringInput( &quot;Enter the course code&quot; );</span>
+<span class="fc" id="L101">                String offeringDepartment = keyboardInput.stringInput( &quot;Enter the offering department&quot; );</span>
+<span class="fc" id="L102">                String courseCategory     = keyboardInput.stringInput( &quot;Enter the course category&quot; );</span>
+<span class="fc" id="L103">                String department         = keyboardInput.stringInput( &quot;Enter the department for which you wish to offer the course&quot; );</span>
+<span class="fc" id="L104">                int    numberOfYears      = keyboardInput.integerInput( &quot;Enter the number of years&quot; );</span>
+
+<span class="fc" id="L106">                int[]  years              = new int[numberOfYears];</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">                for ( int i = 1; i &lt;= numberOfYears; i++ ) {</span>
+<span class="fc" id="L108">                    years[i - 1] = keyboardInput.integerInput( &quot;Enter year &quot; + i );</span>
+                }
+
+<span class="fc bfc" id="L111" title="All 2 branches covered.">                if ( faculty.setCourseCategory( courseCode, offeringDepartment, courseCategory, department, years ) )</span>
+<span class="fc" id="L112">                    System.out.println( &quot;Category set successfully&quot; );</span>
+                else
+<span class="fc" id="L114">                    System.out.println( &quot;Category setting failed. Please verify that you are not offering for the same batch twice.&quot; );</span>
+<span class="fc" id="L115">            }</span>
+
+<span class="fc bfc" id="L117" title="All 2 branches covered.">            else if ( facultyChoice == 4 ) {</span>
+<span class="fc" id="L118">                String courseCode   = keyboardInput.stringInput( &quot;Enter the course code&quot; );</span>
+<span class="fc" id="L119">                String departmentID = keyboardInput.stringInput( &quot;Enter the offering department&quot; );</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">                if ( faculty.dropCourseOffering( courseCode, departmentID ) )</span>
+<span class="fc" id="L122">                    System.out.println( &quot;Course offering dropped successfully&quot; );</span>
+<span class="fc" id="L123">                else System.out.println( &quot;Course offering not dropped. Please verify the course code&quot; );</span>
+<span class="fc" id="L124">            }</span>
+
+<span class="fc bfc" id="L126" title="All 2 branches covered.">            else if ( facultyChoice == 5 ) {</span>
+<span class="fc" id="L127">                String       entryNumber = keyboardInput.stringInput( &quot;Enter the entry number&quot; );</span>
+<span class="fc" id="L128">                int          year        = keyboardInput.integerInput( &quot;Enter the batch (year)&quot; );</span>
+<span class="fc" id="L129">                String[][][] records     = faculty.getGradesOfStudent( entryNumber );</span>
+<span class="fc" id="L130">                int          semester    = 1;</span>
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">                for ( String[][] record : records ) {</span>
+<span class="fc" id="L133">                    Utils.prettyPrintGrades( year, semester, record );</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">                    if ( semester == 2 ) year++;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">                    semester = ( semester == 1 ) ? 2 : 1;</span>
+                }
+<span class="fc" id="L137">            }</span>
+
+<span class="fc bfc" id="L139" title="All 2 branches covered.">            else if ( facultyChoice == 6 ) {</span>
+<span class="fc" id="L140">                String     courseCode   = keyboardInput.stringInput( &quot;Enter the course code&quot; );</span>
+<span class="fc" id="L141">                int        year         = keyboardInput.integerInput( &quot;Enter the year&quot; );</span>
+<span class="fc" id="L142">                int        semester     = keyboardInput.integerInput( &quot;Enter the semester&quot; );</span>
+<span class="fc" id="L143">                String     departmentID = keyboardInput.stringInput( &quot;Enter the offering department&quot; );</span>
+<span class="fc" id="L144">                String[][] records      = faculty.getGradesOfOffering( courseCode, year, semester, departmentID );</span>
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">                if ( records.length == 0 ) {</span>
+<span class="fc" id="L147">                    System.out.println( &quot;No course found with given specifications&quot; );</span>
+<span class="fc" id="L148">                    continue;</span>
+                }
+<span class="fc" id="L150">                Utils.prettyPrint( new String[]{ &quot;Entry Number&quot;, &quot;Grade&quot; }, records );</span>
+<span class="fc" id="L151">            }</span>
+
+<span class="fc bfc" id="L153" title="All 2 branches covered.">            else if ( facultyChoice == 7 ) {</span>
+<span class="fc" id="L154">                String  courseCode    = keyboardInput.stringInput( &quot;Enter the course code&quot; );</span>
+<span class="fc" id="L155">                int     year          = keyboardInput.integerInput( &quot;Enter the year&quot; );</span>
+<span class="fc" id="L156">                int     semester      = keyboardInput.integerInput( &quot;Enter the semester&quot; );</span>
+<span class="fc" id="L157">                String  departmentID  = keyboardInput.stringInput( &quot;Enter the offering department&quot; );</span>
+<span class="fc" id="L158">                boolean isFileCreated = faculty.generateGradeCSV( courseCode, year, semester, departmentID );</span>
+
+<span class="fc bfc" id="L160" title="All 2 branches covered.">                if ( isFileCreated ) System.out.println( &quot;File Generated Successfully&quot; );</span>
+<span class="fc" id="L161">                else System.out.println( &quot;File Not Generated. Only generate files for your own courses&quot; );</span>
+<span class="fc" id="L162">            }</span>
+
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            else if ( facultyChoice == 8 ) {</span>
+<span class="fc" id="L165">                String courseCode   = keyboardInput.stringInput( &quot;Enter the course code&quot; );</span>
+<span class="fc" id="L166">                int    year         = keyboardInput.integerInput( &quot;Enter the year&quot; );</span>
+<span class="fc" id="L167">                int    semester     = keyboardInput.integerInput( &quot;Enter the semester&quot; );</span>
+<span class="fc" id="L168">                String departmentID = keyboardInput.stringInput( &quot;Enter the offering department&quot; );</span>
+
+                try {
+<span class="fc" id="L171">                    BufferedReader gradeCSVFile = keyboardInput.openCourseCSVFile( courseCode, year, semester, departmentID, &quot;Enter the file path&quot; );</span>
+
+<span class="fc bfc" id="L173" title="All 2 branches covered.">                    if ( gradeCSVFile == null ) {</span>
+<span class="fc" id="L174">                        System.out.println( &quot;Enter valid file path&quot; );</span>
+<span class="fc" id="L175">                        continue;</span>
+                    }
+
+<span class="fc bfc" id="L178" title="All 2 branches covered.">                    if ( faculty.uploadGrades( courseCode, year, semester, gradeCSVFile, departmentID ) )</span>
+<span class="fc" id="L179">                        System.out.println( &quot;Grades inserted successfully&quot; );</span>
+                    else
+<span class="fc" id="L181">                        System.out.println( &quot;Please verify that all students exist and the course is offered by this id&quot; );</span>
+<span class="fc" id="L182">                    gradeCSVFile.close();</span>
+
+<span class="fc" id="L184">                } catch ( Exception error ) {</span>
+<span class="fc" id="L185">                    System.out.println( &quot;Please enter valid course code, year and semester&quot; );</span>
+<span class="fc" id="L186">                }</span>
+<span class="fc" id="L187">            }</span>
+
+<span class="fc bfc" id="L189" title="All 2 branches covered.">            else if ( facultyChoice == 9 ) {</span>
+<span class="fc" id="L190">                String newPhoneNumber = keyboardInput.stringInput( &quot;Enter the new phone number&quot; );</span>
+
+<span class="fc bfc" id="L192" title="All 2 branches covered.">                if ( faculty.setPhoneNumber( newPhoneNumber ) )</span>
+<span class="fc" id="L193">                    System.out.println( &quot;Phone Number Updated Successfully&quot; );</span>
+<span class="fc" id="L194">                else System.out.println( &quot;Phone Number Update Failed&quot; );</span>
+<span class="fc" id="L195">            }</span>
+
+<span class="fc bfc" id="L197" title="All 2 branches covered.">            else if ( facultyChoice == 10 ) {</span>
+<span class="fc" id="L198">                String email = keyboardInput.stringInput( &quot;Enter the email&quot; );</span>
+
+<span class="fc bfc" id="L200" title="All 2 branches covered.">                if ( faculty.setEmail( email ) ) System.out.println( &quot;Contact Email Updated Successfully&quot; );</span>
+<span class="fc" id="L201">                else System.out.println( &quot;Contact Email Not Updated&quot; );</span>
+<span class="fc" id="L202">            }</span>
+
+<span class="fc bfc" id="L204" title="All 2 branches covered.">            else if ( facultyChoice == 11 ) {</span>
+<span class="fc" id="L205">                String   userID        = keyboardInput.stringInput( &quot;Enter the id of the user&quot; );</span>
+<span class="fc" id="L206">                String[] emailAndPhone = faculty.getContactDetails( userID );</span>
+
+<span class="fc bfc" id="L208" title="All 2 branches covered.">                if ( emailAndPhone.length == 2 ) {</span>
+<span class="fc" id="L209">                    String email       = emailAndPhone[0];</span>
+<span class="fc" id="L210">                    String phoneNumber = emailAndPhone[1];</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">                    if ( email != null ) System.out.println( &quot;Email: &quot; + email );</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">                    if ( phoneNumber != null ) System.out.println( &quot;Phone: &quot; + phoneNumber );</span>
+<span class="fc bfc" id="L213" title="All 4 branches covered.">                    if ( email == null &amp;&amp; phoneNumber == null )</span>
+<span class="fc" id="L214">                        System.out.println( &quot;User has not provided contact details&quot; );</span>
+<span class="fc" id="L215">                }</span>
+<span class="fc" id="L216">                else System.out.println( &quot;Could not retrieve details of user&quot; );</span>
+<span class="fc" id="L217">            }</span>
+
+<span class="fc bfc" id="L219" title="All 2 branches covered.">            else if ( facultyChoice == 12 ) {</span>
+<span class="fc" id="L220">                String password       = keyboardInput.stringInput( &quot;Enter your new password&quot; );</span>
+<span class="fc" id="L221">                String verifyPassword = keyboardInput.stringInput( &quot;Reenter your password&quot; );</span>
+
+<span class="fc bfc" id="L223" title="All 2 branches covered.">                if ( !password.equals( verifyPassword ) ) {</span>
+<span class="fc" id="L224">                    System.out.println( &quot;Please reenter the same password&quot; );</span>
+<span class="fc" id="L225">                    continue;</span>
+                }
+
+<span class="fc bfc" id="L228" title="All 2 branches covered.">                if ( faculty.setPassword( password ) ) System.out.println( &quot;Password updated successfully&quot; );</span>
+<span class="fc" id="L229">                else System.out.println( &quot;Password Update Failed&quot; );</span>
+<span class="fc" id="L230">            }</span>
+
+<span class="fc bfc" id="L232" title="All 2 branches covered.">            else if ( facultyChoice == 13 ) {</span>
+<span class="fc" id="L233">                String[][] courses = faculty.getCourseCatalog();</span>
+<span class="fc" id="L234">                Utils.prettyPrint( new String[]{ &quot;Course Code&quot;, &quot;Course Title&quot;, &quot;L&quot;, &quot;T&quot;, &quot;P&quot;, &quot;S&quot;, &quot;C&quot;, &quot;Prerequisites&quot; }, courses );</span>
+<span class="fc" id="L235">            }</span>
+
+<span class="fc bfc" id="L237" title="All 2 branches covered.">            else if ( facultyChoice == 14 ) {</span>
+<span class="fc" id="L238">                String courseCode   = keyboardInput.stringInput( &quot;Enter the course code&quot; );</span>
+<span class="fc" id="L239">                int    year         = keyboardInput.integerInput( &quot;Enter the year&quot; );</span>
+<span class="fc" id="L240">                int    semester     = keyboardInput.integerInput( &quot;Enter the semester&quot; );</span>
+<span class="fc" id="L241">                String departmentID = keyboardInput.stringInput( &quot;Enter the department ID&quot; );</span>
+
+<span class="fc" id="L243">                String[][] prerequisiteCourses = faculty.getInstructorPrerequisites( courseCode, year, semester, departmentID );</span>
+<span class="fc" id="L244">                Utils.prettyPrint( new String[]{ &quot;Course Code&quot;, &quot;Grade Cutoff&quot; }, prerequisiteCourses );</span>
+            }
+
+            else break;
+<span class="fc" id="L248">        }</span>
+<span class="fc" id="L249">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

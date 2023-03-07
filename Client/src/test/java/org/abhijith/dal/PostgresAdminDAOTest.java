@@ -219,7 +219,7 @@ class PostgresAdminDAOTest {
     @Test
     void createCurriculum() {
         int      batch      = 9999;
-        double[] curriculum = new double[]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+        double[] curriculum = new double[]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
         // False because of invalid input parameters
         assertFalse( adminDAO.createCurriculum( -1, curriculum ) );

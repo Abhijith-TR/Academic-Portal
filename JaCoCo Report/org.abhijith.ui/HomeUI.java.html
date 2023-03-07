@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HomeUI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'client' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">org.abhijith.ui</a> &gt; <span class="el_source">HomeUI.java</span></div><h1>HomeUI.java</h1><pre class="source lang-java linenums">package org.abhijith.ui;
+
+import org.abhijith.dal.PasswordDAO;
+import org.abhijith.utils.CustomScanner;
+
+public class HomeUI {
+    private org.abhijith.daoInterfaces.PasswordDAO passwordAuthConnection;
+
+    // Roles in the database system - to allow easy extension
+<span class="fc" id="L10">    String[] roles = new String[]{</span>
+            &quot;STUDENT&quot;,
+            &quot;FACULTY&quot;,
+            &quot;ADMIN&quot;,
+            &quot;SHUT DOWN&quot;
+    };
+
+<span class="fc" id="L17">    public HomeUI() {</span>
+<span class="fc" id="L18">        passwordAuthConnection = new PasswordDAO();</span>
+<span class="fc" id="L19">    }</span>
+
+    public void setPasswordAuthConnection( org.abhijith.daoInterfaces.PasswordDAO passwordAuthConnection ) {
+<span class="fc" id="L22">        this.passwordAuthConnection = passwordAuthConnection;</span>
+<span class="fc" id="L23">    }</span>
+
+    public void mainInterface() {
+<span class="fc" id="L26">        CustomScanner keyboardInput = new CustomScanner();</span>
+        while ( true ) {
+            // Before displaying the prompt to enter the username and password, we have to ensure that no previous user is logged into the database
+<span class="fc" id="L29">            passwordAuthConnection.logoutPreviousUser();</span>
+
+<span class="fc" id="L31">            System.out.println();</span>
+<span class="fc" id="L32">            System.out.println( &quot;Welcome to the Academic System&quot; );</span>
+<span class="fc" id="L33">            System.out.println( &quot;Select your role&quot; );</span>
+
+            // Short-lived iterator variable
+<span class="fc" id="L36">            int i = 1;</span>
+            // Printing all the roles available in the database
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            for ( String role : roles ) {</span>
+<span class="fc" id="L39">                System.out.printf( &quot;%d. %s\n&quot;, i, role );</span>
+<span class="fc" id="L40">                i++;</span>
+            }
+
+            // Index of the role in the enum roles
+<span class="fc" id="L44">            int roleIndex = keyboardInput.integerInput( &quot;Enter the number corresponding to the role&quot; );</span>
+
+            // If the user has entered an invalid role index
+<span class="fc bfc" id="L47" title="All 4 branches covered.">            if ( roleIndex &gt; roles.length || roleIndex &lt;= 0 ) {</span>
+<span class="fc" id="L48">                System.out.println( &quot;Invalid Choice&quot; );</span>
+<span class="fc" id="L49">                continue;</span>
+            }
+
+            // Enter the id and password
+<span class="fc" id="L53">            String id       = keyboardInput.stringInput( &quot;Enter your id&quot; );</span>
+<span class="fc" id="L54">            String password = keyboardInput.stringInput( &quot;Enter your password&quot; );</span>
+
+            // We verify the username, password and role using the details entered
+<span class="fc bfc" id="L57" title="All 2 branches covered.">            String  role        = ( roleIndex == roles.length ) ? roles[2] : roles[roleIndex - 1];</span>
+<span class="fc" id="L58">            boolean isValidUser = passwordAuthConnection.authenticateUser( id, password, role );</span>
+            // If the verification reveals that the username or password or role is invalid
+<span class="fc bfc" id="L60" title="All 2 branches covered.">            if ( !isValidUser ) {</span>
+<span class="fc" id="L61">                System.out.println( &quot;Invalid Username or Password&quot; );</span>
+<span class="fc" id="L62">                continue;</span>
+            }
+
+            // Once the username and password have been verified, pass control over to the corresponding user interface
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            if ( roleIndex == 1 ) {</span>
+<span class="fc" id="L67">                StudentUI studentUI = new StudentUI( id, keyboardInput );</span>
+<span class="fc" id="L68">                studentUI.studentInterfaceHomeScreen();</span>
+<span class="fc" id="L69">            }</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">            else if ( roleIndex == 2 ) {</span>
+<span class="fc" id="L71">                FacultyUI facultyUI = new FacultyUI( id, keyboardInput );</span>
+<span class="fc" id="L72">                facultyUI.facultyInterfaceHomeScreen();</span>
+<span class="fc" id="L73">            }</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            else if ( roleIndex == 3 ) {</span>
+<span class="fc" id="L75">                AdminUI adminUI = new AdminUI( id, keyboardInput );</span>
+<span class="fc" id="L76">                adminUI.adminInterfaceHomeScreen();</span>
+            }
+            else {
+                break;
+            }
+
+            // Trying to log the logout of the user into the database. Logout is not successful until the log recognizes it
+            while ( true ) {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">                if ( passwordAuthConnection.logLogoutEntry( id, role ) )</span>
+<span class="fc" id="L85">                    break;</span>
+            }
+<span class="fc" id="L87">        }</span>
+<span class="fc" id="L88">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

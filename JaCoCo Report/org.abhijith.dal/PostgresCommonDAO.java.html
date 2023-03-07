@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PostgresCommonDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Tests in 'client' Coverage Results</a> &gt; <a href="index.source.html" class="el_package">org.abhijith.dal</a> &gt; <span class="el_source">PostgresCommonDAO.java</span></div><h1>PostgresCommonDAO.java</h1><pre class="source lang-java linenums">package org.abhijith.dal;
+
+import org.abhijith.daoInterfaces.CommonDAO;
+import org.abhijith.users.Student;
+import org.abhijith.utils.Utils;
+
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Properties;
+
+public class PostgresCommonDAO implements CommonDAO {
+    protected Connection databaseConnection;
+
+<span class="fc" id="L19">    public PostgresCommonDAO() {</span>
+        try {
+            // Load the class loader and the config.properties file to get the connection properties for the
+<span class="fc" id="L22">            Properties  databaseConfig = new Properties();</span>
+<span class="fc" id="L23">            ClassLoader classLoader    = Student.class.getClassLoader();</span>
+<span class="fc" id="L24">            InputStream inputStream    = classLoader.getResourceAsStream( &quot;config.properties&quot; );</span>
+<span class="fc" id="L25">            databaseConfig.load( inputStream );</span>
+
+            // Establish the database connection
+<span class="fc" id="L28">            String connectionURL = databaseConfig.getProperty( &quot;db.connectionURL&quot; );</span>
+<span class="fc" id="L29">            String username      = databaseConfig.getProperty( &quot;db.username&quot; );</span>
+<span class="fc" id="L30">            String password      = databaseConfig.getProperty( &quot;db.password&quot; );</span>
+<span class="fc" id="L31">            databaseConnection = DriverManager.getConnection(</span>
+                    connectionURL,
+                    username,
+                    password
+            );
+<span class="nc" id="L36">        } catch ( Exception error ) {</span>
+<span class="nc" id="L37">            System.out.println( &quot;Database error. Please try again later&quot; );</span>
+<span class="nc" id="L38">            System.exit( 0 );</span>
+<span class="fc" id="L39">        }</span>
+<span class="fc" id="L40">    }</span>
+
+    public Connection getDatabaseConnection() {
+<span class="fc" id="L43">        return databaseConnection;</span>
+    }
+
+    @Override
+    public int[] getCurrentAcademicSession() {
+        try {
+            // SQL query to fetch the latest entry from the current_year_and_semester table which is the current session
+<span class="fc" id="L50">            PreparedStatement getSessionQuery = databaseConnection.prepareStatement( &quot;SELECT * FROM current_year_and_semester ORDER BY year DESC, semester DESC LIMIT 1&quot; );</span>
+<span class="fc" id="L51">            ResultSet         currentSession  = getSessionQuery.executeQuery();</span>
+
+<span class="fc" id="L53">            currentSession.next();</span>
+<span class="fc" id="L54">            int currentYear     = currentSession.getInt( 1 );</span>
+<span class="fc" id="L55">            int currentSemester = currentSession.getInt( 2 );</span>
+
+<span class="fc" id="L57">            return new int[]{ currentYear, currentSemester };</span>
+<span class="fc" id="L58">        } catch ( Exception error ) {</span>
+            // On error, it returns a default session of { 2020, 1 }
+<span class="fc" id="L60">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L61">            return new int[]{ 2020, 1 };</span>
+        }
+    }
+
+    public String[][] getStudentGradesForSemester( String entryNumber, int year, int semester ) {
+        try {
+<span class="fc bfc" id="L67" title="All 6 branches covered.">            if ( entryNumber == null || year &lt; 0 || semester &lt; 0 ) return new String[][]{};</span>
+<span class="fc" id="L68">            entryNumber = entryNumber.toUpperCase();</span>
+
+            // SQL query to fetch the required details about the student from the database
+<span class="fc" id="L71">            PreparedStatement gradeQuery = databaseConnection.prepareStatement( &quot;SELECT course_code, course_title, grade, credits FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ? AND year = ? AND semester = ? ORDER BY course_code&quot; );</span>
+
+<span class="fc" id="L73">            gradeQuery.setString( 1, entryNumber );</span>
+<span class="fc" id="L74">            gradeQuery.setInt( 2, year );</span>
+<span class="fc" id="L75">            gradeQuery.setInt( 3, semester );</span>
+<span class="fc" id="L76">            ResultSet gradeQueryResult = gradeQuery.executeQuery();</span>
+
+            // Converting it into a array of string arrays
+<span class="fc" id="L79">            ArrayList&lt;String[]&gt; records = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            while ( gradeQueryResult.next() ) {</span>
+<span class="fc" id="L81">                String courseCode  = gradeQueryResult.getString( 1 );</span>
+<span class="fc" id="L82">                String courseTitle = gradeQueryResult.getString( 2 );</span>
+<span class="fc" id="L83">                String grade       = gradeQueryResult.getString( 3 );</span>
+<span class="fc" id="L84">                String credits     = gradeQueryResult.getString( 4 );</span>
+<span class="fc" id="L85">                records.add( new String[]{ courseCode, courseTitle, grade, credits } );</span>
+<span class="fc" id="L86">            }</span>
+<span class="fc" id="L87">            return records.toArray( new String[records.size()][] );</span>
+<span class="fc" id="L88">        } catch ( Exception error ) {</span>
+<span class="fc" id="L89">            System.out.println( &quot;Database Error. Try again later&quot; );</span>
+<span class="fc" id="L90">            return new String[][]{};</span>
+        }
+    }
+
+    @Override
+    public int getBatch( String entryNumber ) {
+        try {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">            if ( entryNumber == null ) return -1;</span>
+<span class="fc" id="L98">            entryNumber = entryNumber.toUpperCase();</span>
+
+            // SQL query to fetch the base of the corresponding entry number from the database
+<span class="fc" id="L101">            PreparedStatement batchQuery = databaseConnection.prepareStatement( &quot;SELECT batch FROM student WHERE entry_number = ?&quot; );</span>
+<span class="fc" id="L102">            batchQuery.setString( 1, entryNumber );</span>
+<span class="fc" id="L103">            ResultSet batchQueryResult = batchQuery.executeQuery();</span>
+
+            // If the student does not exist, return -1
+<span class="fc" id="L106">            boolean studentExists = batchQueryResult.next();</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            if ( !studentExists ) return -1;</span>
+
+<span class="fc" id="L109">            return batchQueryResult.getInt( 1 );</span>
+<span class="fc" id="L110">        } catch ( Exception error ) {</span>
+<span class="fc" id="L111">            System.out.println( &quot;Database Error. Try again later&quot; );</span>
+<span class="fc" id="L112">            return -1;</span>
+        }
+    }
+
+    @Override
+    public boolean checkCourseCatalog( String courseCode ) {
+        try {
+<span class="fc bfc" id="L119" title="All 2 branches covered.">            if ( courseCode == null ) return false;</span>
+<span class="fc" id="L120">            courseCode = courseCode.toUpperCase();</span>
+
+            // SQL query to fetch the course code from the course catalog. This is done to check if the course code exists
+<span class="fc" id="L123">            PreparedStatement checkCourseCatalogQuery = databaseConnection.prepareStatement( &quot;SELECT course_code FROM course_catalog WHERE course_code = ?&quot; );</span>
+<span class="fc" id="L124">            checkCourseCatalogQuery.setString( 1, courseCode );</span>
+<span class="fc" id="L125">            ResultSet checkCourseCatalogQueryResult = checkCourseCatalogQuery.executeQuery();</span>
+<span class="fc" id="L126">            return checkCourseCatalogQueryResult.next();</span>
+<span class="fc" id="L127">        } catch ( Exception error ) {</span>
+<span class="fc" id="L128">            System.out.println( &quot;Database Error. Try again later&quot; );</span>
+<span class="fc" id="L129">            return false;</span>
+        }
+    }
+
+    @Override
+    public HashMap&lt;String, Double&gt; getUGCurriculum( int batch ) {
+        try {
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            if ( batch &lt; 0 ) return null;</span>
+
+            // Execute the SQL statement that will fetch the corresponding columns from the UG curriculum table
+<span class="fc" id="L139">            PreparedStatement getCurriculumQuery = databaseConnection.prepareStatement( &quot;SELECT sc, se, gr, pc, pe, hc, he, cp, ii, nn, oe FROM ug_curriculum WHERE year = ?&quot; );</span>
+<span class="fc" id="L140">            getCurriculumQuery.setInt( 1, batch );</span>
+<span class="fc" id="L141">            ResultSet getCurriculumQueryResult = getCurriculumQuery.executeQuery();</span>
+<span class="fc" id="L142">            getCurriculumQueryResult.next();</span>
+
+            // Now insert the categories into the hashmap along with the corresponding credit requirements
+<span class="fc" id="L145">            String[]                categories         = new String[]{ &quot;SC&quot;, &quot;SE&quot;, &quot;GR&quot;, &quot;PC&quot;, &quot;PE&quot;, &quot;HC&quot;, &quot;HE&quot;, &quot;CP&quot;, &quot;II&quot;, &quot;NN&quot;, &quot;OE&quot; };</span>
+<span class="fc" id="L146">            HashMap&lt;String, Double&gt; creditRequirements = new HashMap&lt;&gt;();</span>
+
+            // Just read the values from the returned set of columns and insert them into the hashmap
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            for ( int i = 0; i &lt; categories.length; i++ ) {</span>
+<span class="fc" id="L150">                Double categoryRequirement = getCurriculumQueryResult.getDouble( i + 1 );</span>
+<span class="fc" id="L151">                creditRequirements.put( categories[i], categoryRequirement );</span>
+            }
+<span class="fc" id="L153">            return creditRequirements;</span>
+<span class="fc" id="L154">        } catch ( Exception error ) {</span>
+<span class="fc" id="L155">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L156">            return null;</span>
+        }
+    }
+
+    @Override
+    public HashMap&lt;String, Double&gt; getCreditsInAllCategories( String entryNumber ) {
+        try {
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            if ( entryNumber == null ) return null;</span>
+            // SQL query to get the categories and the corresponding credits completed in all of them
+            // Note that the SQL query contains the grades that will allow the course to be marked as passed
+<span class="fc" id="L166">            PreparedStatement getCreditsQuery = databaseConnection.prepareStatement( &quot;SELECT UPPER(category), sum(credits) FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ? AND grade IN ('A', 'A-', 'B', 'B-', 'C', 'C-', 'D') GROUP BY category&quot; );</span>
+<span class="fc" id="L167">            getCreditsQuery.setString( 1, entryNumber );</span>
+<span class="fc" id="L168">            ResultSet getCreditsQueryResult = getCreditsQuery.executeQuery();</span>
+
+            // Now you just have to insert all the records that were returned into the hashmap and return it
+<span class="fc" id="L171">            HashMap&lt;String, Double&gt; categoryCredits = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">            while ( getCreditsQueryResult.next() ) {</span>
+<span class="fc" id="L173">                String category        = getCreditsQueryResult.getString( 1 );</span>
+<span class="fc" id="L174">                Double creditsObtained = getCreditsQueryResult.getDouble( 2 );</span>
+<span class="fc" id="L175">                categoryCredits.put( category, creditsObtained );</span>
+<span class="fc" id="L176">            }</span>
+<span class="fc" id="L177">            return categoryCredits;</span>
+<span class="fc" id="L178">        } catch ( Exception error ) {</span>
+<span class="fc" id="L179">            System.out.println( &quot;Database Error. Please try again later &quot; );</span>
+<span class="fc" id="L180">            return null;</span>
+        }
+    }
+
+    @Override
+    public boolean setPhoneNumber( String id, String phoneNumber ) {
+        try {
+<span class="fc bfc" id="L187" title="All 4 branches covered.">            if ( id == null || phoneNumber == null ) return false;</span>
+
+            // SQL query to update this particular id with the phone number that is provided
+<span class="fc" id="L190">            PreparedStatement setPhoneNumberQuery = databaseConnection.prepareStatement( &quot;UPDATE common_user_details SET phone = ? WHERE id = ?&quot; );</span>
+<span class="fc" id="L191">            setPhoneNumberQuery.setString( 1, phoneNumber );</span>
+<span class="fc" id="L192">            setPhoneNumberQuery.setString( 2, id );</span>
+<span class="fc" id="L193">            setPhoneNumberQuery.executeUpdate();</span>
+
+            // If the query was successfully executed return true ( the only case where the update would affect 0 rows would be when the same phone number is there in the database, which is fine )
+<span class="fc" id="L196">            return true;</span>
+<span class="fc" id="L197">        } catch ( Exception error ) {</span>
+<span class="fc" id="L198">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L199">            return false;</span>
+        }
+    }
+
+    @Override
+    public boolean setEmail( String id, String email ) {
+        try {
+<span class="fc bfc" id="L206" title="All 4 branches covered.">            if ( id == null || email == null ) return false;</span>
+
+            // Create an SQL query to set the email of the specified user
+<span class="fc" id="L209">            PreparedStatement setEmailQuery = databaseConnection.prepareStatement( &quot;UPDATE common_user_details SET email = ? WHERE id = ?&quot; );</span>
+<span class="fc" id="L210">            setEmailQuery.setString( 1, email );</span>
+<span class="fc" id="L211">            setEmailQuery.setString( 2, id );</span>
+<span class="fc" id="L212">            int setEmailResult = setEmailQuery.executeUpdate();</span>
+
+            // If the query is successful, return true
+<span class="fc bfc" id="L215" title="All 2 branches covered.">            return setEmailResult == 1;</span>
+<span class="fc" id="L216">        } catch ( Exception error ) {</span>
+<span class="fc" id="L217">            System.out.println( &quot;Database error. Please try again later&quot; );</span>
+<span class="fc" id="L218">            return false;</span>
+        }
+    }
+
+    @Override
+    public String[] getContactDetails( String userID ) {
+        try {
+<span class="fc bfc" id="L225" title="All 2 branches covered.">            if ( userID == null ) return new String[]{};</span>
+
+            // SQL query to fetch the contact details of the specified ID from the database
+<span class="fc" id="L228">            PreparedStatement getContactDetailsQuery = databaseConnection.prepareStatement( &quot;SELECT email, phone FROM common_user_details WHERE id = ?&quot; );</span>
+<span class="fc" id="L229">            getContactDetailsQuery.setString( 1, userID );</span>
+<span class="fc" id="L230">            ResultSet getContactDetailsQueryResult = getContactDetailsQuery.executeQuery();</span>
+
+            // Check if the user ID is actually valid and any records were returned
+<span class="fc" id="L233">            boolean isIDValid = getContactDetailsQueryResult.next();</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">            if ( !isIDValid ) return new String[]{};</span>
+
+            // If the user id that was entered is valid, get the email and phone number and return it
+<span class="fc" id="L237">            String email = getContactDetailsQueryResult.getString( 1 );</span>
+<span class="fc" id="L238">            String phone = getContactDetailsQueryResult.getString( 2 );</span>
+<span class="fc" id="L239">            return new String[]{ email, phone };</span>
+<span class="fc" id="L240">        } catch ( Exception error ) {</span>
+<span class="fc" id="L241">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L242">            return new String[]{};</span>
+        }
+    }
+
+    @Override
+    public boolean setPassword( String id, String password ) {
+        try {
+<span class="fc bfc" id="L249" title="All 4 branches covered.">            if ( id == null || password == null ) return false;</span>
+
+            // SQL statement to update the password in the database
+<span class="fc" id="L252">            PreparedStatement setPasswordQuery = databaseConnection.prepareStatement( &quot;UPDATE common_user_details SET password = ? WHERE id = ?&quot; );</span>
+<span class="fc" id="L253">            setPasswordQuery.setString( 1, password );</span>
+<span class="fc" id="L254">            setPasswordQuery.setString( 2, id );</span>
+<span class="fc" id="L255">            int setPasswordResult = setPasswordQuery.executeUpdate();</span>
+
+            // If the query executes successfully, simply return true
+<span class="fc bfc" id="L258" title="All 2 branches covered.">            return setPasswordResult == 1;</span>
+<span class="fc" id="L259">        } catch ( Exception error ) {</span>
+<span class="fc" id="L260">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L261">            return false;</span>
+        }
+    }
+
+    @Override
+    public String[][] getCourseCatalog() {
+        try {
+            // SQL statement to fetch the entire course catalog from the database
+<span class="fc" id="L269">            PreparedStatement getCatalogQuery       = databaseConnection.prepareStatement( &quot;SELECT * FROM course_catalog ORDER BY course_code&quot; );</span>
+<span class="fc" id="L270">            ResultSet         getCatalogQueryResult = getCatalogQuery.executeQuery();</span>
+
+            // Fetch the records from the reulst set and put them into the required format
+<span class="fc" id="L273">            ArrayList&lt;String[]&gt; courseList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">            while ( getCatalogQueryResult.next() ) {</span>
+                // The results in order are { Course Code, Course Title, L, T, P, S, C, Prerequisites }
+<span class="fc" id="L276">                ArrayList&lt;String&gt; course = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L277">                course.add( getCatalogQueryResult.getString( 1 ) );</span>
+<span class="fc" id="L278">                course.add( getCatalogQueryResult.getString( 2 ) );</span>
+<span class="fc" id="L279">                course.add( getCatalogQueryResult.getString( 3 ) );</span>
+<span class="fc" id="L280">                course.add( getCatalogQueryResult.getString( 4 ) );</span>
+<span class="fc" id="L281">                course.add( getCatalogQueryResult.getString( 5 ) );</span>
+<span class="fc" id="L282">                course.add( getCatalogQueryResult.getString( 6 ) );</span>
+<span class="fc" id="L283">                course.add( getCatalogQueryResult.getString( 7 ) );</span>
+<span class="fc" id="L284">                course.add( getCatalogQueryResult.getString( 8 ) );</span>
+<span class="fc" id="L285">                courseList.add( course.toArray( new String[course.size()] ) );</span>
+<span class="fc" id="L286">            }</span>
+<span class="fc" id="L287">            return courseList.toArray( new String[courseList.size()][] );</span>
+<span class="fc" id="L288">        } catch ( Exception error ) {</span>
+<span class="fc" id="L289">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L290">            return new String[][]{};</span>
+        }
+    }
+
+    @Override
+    public String getCourseGrade( String entryNumber, String courseCode ) {
+        try {
+<span class="fc bfc" id="L297" title="All 4 branches covered.">            if ( entryNumber == null || courseCode == null ) return &quot;&quot;;</span>
+
+            // Setting up the SQL statement
+<span class="fc" id="L300">            PreparedStatement getGradeQuery = databaseConnection.prepareStatement( &quot;SELECT grade FROM student_course_registration WHERE entry_number = ? AND course_code = ?&quot; );</span>
+<span class="fc" id="L301">            getGradeQuery.setString( 1, entryNumber );</span>
+<span class="fc" id="L302">            getGradeQuery.setString( 2, courseCode );</span>
+<span class="fc" id="L303">            ResultSet getGradeQueryResult = getGradeQuery.executeQuery();</span>
+
+            // If the student has done the course before, he may have done it multiple times. Get the highest possible grade
+            // In the worst case, the student has not done the course before and his grade is &quot;-&quot; which is the not applicable symbol
+<span class="fc" id="L307">            String maximumGrade      = &quot;F&quot;;</span>
+<span class="fc" id="L308">            int    maximumGradeValue = 0;</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">            while ( getGradeQueryResult.next() ) {</span>
+                // Convert the grade to a number to determine what the highest grade was
+<span class="fc" id="L311">                String grade = getGradeQueryResult.getString( 1 );</span>
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">                if ( Utils.getGradeValue( grade ) &gt;= maximumGradeValue ) {</span>
+<span class="fc" id="L313">                    maximumGrade = grade;</span>
+<span class="fc" id="L314">                    maximumGradeValue = Utils.getGradeValue( grade );</span>
+                }
+<span class="fc" id="L316">            }</span>
+            // Return the maximum grade that was found
+<span class="fc" id="L318">            return maximumGrade;</span>
+<span class="fc" id="L319">        } catch ( Exception error ) {</span>
+<span class="fc" id="L320">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L321">            return &quot;&quot;;</span>
+        }
+    }
+
+    @Override
+    public String getStudentDepartment( String entryNumber ) {
+        try {
+<span class="fc bfc" id="L328" title="All 2 branches covered.">            if ( entryNumber == null ) return &quot;&quot;;</span>
+
+            // SQL query to fetch the department from the database
+<span class="fc" id="L331">            PreparedStatement studentBranchQuery = databaseConnection.prepareStatement( &quot;SELECT department_id FROM student WHERE entry_number = ?&quot; );</span>
+<span class="fc" id="L332">            studentBranchQuery.setString( 1, entryNumber );</span>
+<span class="fc" id="L333">            ResultSet studentBranchQueryResult = studentBranchQuery.executeQuery();</span>
+
+            // If the student is not found, return &quot;&quot;
+<span class="fc" id="L336">            boolean doesStudentExist = studentBranchQueryResult.next();</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">            if ( !doesStudentExist ) return &quot;&quot;;</span>
+
+            // If the student exists, return the corresponding branch
+<span class="fc" id="L340">            return studentBranchQueryResult.getString( 1 );</span>
+<span class="fc" id="L341">        } catch ( Exception error ) {</span>
+<span class="fc" id="L342">            System.out.println( &quot;Database Error. Please try again later&quot; );</span>
+<span class="fc" id="L343">            return &quot;&quot;;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
