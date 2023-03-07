@@ -18,11 +18,13 @@ public class PostgresCommonDAO implements CommonDAO {
 
     public PostgresCommonDAO() {
         try {
+            // Load the class loader and the config.properties file to get the connection properties for the
             Properties  databaseConfig = new Properties();
             ClassLoader classLoader    = Student.class.getClassLoader();
             InputStream inputStream    = classLoader.getResourceAsStream( "config.properties" );
             databaseConfig.load( inputStream );
 
+            // Establish the database connection
             String connectionURL = databaseConfig.getProperty( "db.connectionURL" );
             String username      = databaseConfig.getProperty( "db.username" );
             String password      = databaseConfig.getProperty( "db.password" );
@@ -42,10 +44,9 @@ public class PostgresCommonDAO implements CommonDAO {
     }
 
     @Override
-    // Returns the current year and semester if successful
-    // Otherwise returns default year and session i.e., 2020-1
     public int[] getCurrentAcademicSession() {
         try {
+            // SQL query to fetch the latest entry from the current_year_and_semester table which is the current session
             PreparedStatement getSessionQuery = databaseConnection.prepareStatement( "SELECT * FROM current_year_and_semester ORDER BY year DESC, semester DESC LIMIT 1" );
             ResultSet         currentSession  = getSessionQuery.executeQuery();
 
@@ -55,6 +56,7 @@ public class PostgresCommonDAO implements CommonDAO {
 
             return new int[]{ currentYear, currentSemester };
         } catch ( Exception error ) {
+            // On error, it returns a default session of { 2020, 1 }
             System.out.println( "Database Error. Please try again later" );
             return new int[]{ 2020, 1 };
         }
@@ -65,6 +67,7 @@ public class PostgresCommonDAO implements CommonDAO {
             if ( entryNumber == null || year < 0 || semester < 0 ) return new String[][]{};
             entryNumber = entryNumber.toUpperCase();
 
+            // SQL query to fetch the required details about the student from the database
             PreparedStatement gradeQuery = databaseConnection.prepareStatement( "SELECT course_code, course_title, grade, credits FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ? AND year = ? AND semester = ? ORDER BY course_code" );
 
             gradeQuery.setString( 1, entryNumber );
@@ -72,6 +75,7 @@ public class PostgresCommonDAO implements CommonDAO {
             gradeQuery.setInt( 3, semester );
             ResultSet gradeQueryResult = gradeQuery.executeQuery();
 
+            // Converting it into a array of string arrays
             ArrayList<String[]> records = new ArrayList<>();
             while ( gradeQueryResult.next() ) {
                 String courseCode  = gradeQueryResult.getString( 1 );
@@ -93,10 +97,12 @@ public class PostgresCommonDAO implements CommonDAO {
             if ( entryNumber == null ) return -1;
             entryNumber = entryNumber.toUpperCase();
 
+            // SQL query to fetch the base of the corresponding entry number from the database
             PreparedStatement batchQuery = databaseConnection.prepareStatement( "SELECT batch FROM student WHERE entry_number = ?" );
             batchQuery.setString( 1, entryNumber );
             ResultSet batchQueryResult = batchQuery.executeQuery();
 
+            // If the student does not exist, return -1
             boolean studentExists = batchQueryResult.next();
             if ( !studentExists ) return -1;
 
@@ -114,6 +120,7 @@ public class PostgresCommonDAO implements CommonDAO {
             if ( courseCode == null ) return false;
             courseCode = courseCode.toUpperCase();
 
+            // SQL query to fetch the course code from the course catalog. This is done to check if the course code exists
             PreparedStatement checkCourseCatalogQuery = databaseConnection.prepareStatement( "SELECT course_code FROM course_catalog WHERE course_code = ?" );
             checkCourseCatalogQuery.setString( 1, courseCode );
             ResultSet checkCourseCatalogQueryResult = checkCourseCatalogQuery.executeQuery();
@@ -203,10 +210,10 @@ public class PostgresCommonDAO implements CommonDAO {
             PreparedStatement setEmailQuery = databaseConnection.prepareStatement( "UPDATE common_user_details SET email = ? WHERE id = ?" );
             setEmailQuery.setString( 1, email );
             setEmailQuery.setString( 2, id );
-            setEmailQuery.executeUpdate();
+            int setEmailResult = setEmailQuery.executeUpdate();
 
             // If the query is successful, return true
-            return true;
+            return setEmailResult == 1;
         } catch ( Exception error ) {
             System.out.println( "Database error. Please try again later" );
             return false;
@@ -246,10 +253,10 @@ public class PostgresCommonDAO implements CommonDAO {
             PreparedStatement setPasswordQuery = databaseConnection.prepareStatement( "UPDATE common_user_details SET password = ? WHERE id = ?" );
             setPasswordQuery.setString( 1, password );
             setPasswordQuery.setString( 2, id );
-            setPasswordQuery.executeUpdate();
+            int setPasswordResult = setPasswordQuery.executeUpdate();
 
             // If the query executes successfully, simply return true
-            return true;
+            return setPasswordResult == 1;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return false;
@@ -263,8 +270,10 @@ public class PostgresCommonDAO implements CommonDAO {
             PreparedStatement getCatalogQuery       = databaseConnection.prepareStatement( "SELECT * FROM course_catalog ORDER BY course_code" );
             ResultSet         getCatalogQueryResult = getCatalogQuery.executeQuery();
 
+            // Fetch the records from the reulst set and put them into the required format
             ArrayList<String[]> courseList = new ArrayList<>();
             while ( getCatalogQueryResult.next() ) {
+                // The results in order are { Course Code, Course Title, L, T, P, S, C, Prerequisites }
                 ArrayList<String> course = new ArrayList<>();
                 course.add( getCatalogQueryResult.getString( 1 ) );
                 course.add( getCatalogQueryResult.getString( 2 ) );

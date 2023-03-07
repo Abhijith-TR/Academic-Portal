@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.abhijith.users.FacultyTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2023-03-06T18:07:18" hostname="ADMIN" time="0.393">
+<testsuite name="org.abhijith.users.FacultyTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2023-03-07T05:08:27" hostname="ADMIN" time="0.439">
   <properties/>
-  <testcase name="uploadGrades()" classname="org.abhijith.users.FacultyTest" time="0.031"/>
+  <testcase name="uploadGrades()" classname="org.abhijith.users.FacultyTest" time="0.061"/>
   <testcase name="setCourseCategory()" classname="org.abhijith.users.FacultyTest" time="0.002"/>
-  <testcase name="getGradesOfStudent()" classname="org.abhijith.users.FacultyTest" time="0.001"/>
+  <testcase name="getGradesOfStudent()" classname="org.abhijith.users.FacultyTest" time="0.002"/>
   <testcase name="getInstructorPrerequisites()" classname="org.abhijith.users.FacultyTest" time="0.001"/>
-  <testcase name="setCGAndPrerequisites()" classname="org.abhijith.users.FacultyTest" time="0.003"/>
+  <testcase name="setCGAndPrerequisites()" classname="org.abhijith.users.FacultyTest" time="0.004"/>
   <testcase name="offerCourse()" classname="org.abhijith.users.FacultyTest" time="0.002"/>
-  <testcase name="dropCourseOffering()" classname="org.abhijith.users.FacultyTest" time="0.001"/>
-  <testcase name="getGradesOfOffering()" classname="org.abhijith.users.FacultyTest" time="0.0"/>
-  <testcase name="generateGradeCSV()" classname="org.abhijith.users.FacultyTest" time="0.011"/>
+  <testcase name="dropCourseOffering()" classname="org.abhijith.users.FacultyTest" time="0.002"/>
+  <testcase name="getGradesOfOffering()" classname="org.abhijith.users.FacultyTest" time="0.001"/>
+  <testcase name="generateGradeCSV()" classname="org.abhijith.users.FacultyTest" time="0.02"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

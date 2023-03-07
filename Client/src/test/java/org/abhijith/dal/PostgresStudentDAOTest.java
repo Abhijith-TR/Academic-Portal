@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -104,10 +105,20 @@ class PostgresStudentDAOTest {
         assertNull( postgresStudentDAO.getCourseCatalogPrerequisites( null ) );
 
         try {
+            // [][] as the course code has a null as the course catalog prerequisites
             Connection conn = postgresStudentDAO.getDatabaseConnection();
+            PreparedStatement insertQuery = conn.prepareStatement( "INSERT INTO course_catalog VALUES ('CS888', 'RANDOM', 1, 1, 1, 1, 1, null)" );
+            insertQuery.executeUpdate();
+
+            assertArrayEquals( new String[][]{}, postgresStudentDAO.getCourseCatalogPrerequisites( "CS888" ) );
+
+            insertQuery = conn.prepareStatement( "DELETE FROM course_catalog WHERE course_code = 'CS888'" );
+            insertQuery.executeUpdate();
+
             conn.close();
             assertNull( postgresStudentDAO.getCourseCatalogPrerequisites( courseCode ) );
         } catch ( Exception error ) {
+            System.out.println( error.getMessage() );
             fail( "Database connection could not be closed" );
         }
 
@@ -119,7 +130,7 @@ class PostgresStudentDAOTest {
         String     department             = "CS";
         int        year                   = 2023;
         int        semester               = 2;
-        String[][] instructorPrerequisite = new String[][]{ { "CS303", "8" } };
+        String[][] instructorPrerequisite = new String[][]{ {  "CS301", "7", "CS303", "8" } };
 
         // null because of invalid input parameters
         assertNull( postgresStudentDAO.getInstructorPrerequisites( null, year, semester, department ) );
@@ -142,7 +153,7 @@ class PostgresStudentDAOTest {
     @Test
     void getCreditsOfCourse() {
         String courseCode      = "CS302";
-        int    maximumCredits  = 24;
+        int    maximumCredits  = 25;
         int    expectedCredits = 3;
 
         // 24 because of invalid input
@@ -256,6 +267,9 @@ class PostgresStudentDAOTest {
         assertFalse( postgresStudentDAO.dropCourse( courseCode, entryNumber, -1, currentSemester ) );
         assertFalse( postgresStudentDAO.dropCourse( courseCode, entryNumber, currentYear, -1 ) );
 
+        // False because student is not enrolled in such a course
+        assertFalse( postgresStudentDAO.dropCourse( "CS888", entryNumber, currentYear, currentSemester ) );
+
         // Successful drop
         adminDAO.setSessionEvent( enrollingEvent, currentYear, currentSemester );
         facultyDAO.setCourseCategory( courseCode, currentYear, currentSemester, courseCategory, offeredDepartment, offeredBatches, offeringDepartment );
@@ -357,6 +371,9 @@ class PostgresStudentDAOTest {
         // True
         assertEquals( 0, postgresStudentDAO.getCGPACriteria( "HS507", 2023, 2, "HS" ) );
 
+        // False as the course code is not found in the database
+        assertEquals( 11, postgresStudentDAO.getCGPACriteria( "CS888", 2023, 2, "CS" ) );
+
         try {
             Connection conn = postgresStudentDAO.getDatabaseConnection();
             conn.close();
@@ -375,6 +392,9 @@ class PostgresStudentDAOTest {
         assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", 2023, 2, null, "CS", 2021 ) );
         assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", 2023, 2, "HS", null, 2021 ) );
         assertEquals( "", postgresStudentDAO.getCourseCategory( "HS301", 2023, 2, "HS", "CS", -1 ) );
+
+        // Entry for the student does not exist
+        assertEquals( "", postgresStudentDAO.getCourseCategory( "CS888", 2020, 1, "CS", "CS", 2020 ) );
 
         // The course category has been set up in the test database
         assertEquals( "PC", postgresStudentDAO.getCourseCategory( "CS101", 2020, 1, "CS", "CS", 2020 ) );

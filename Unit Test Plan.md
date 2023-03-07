@@ -36,8 +36,6 @@ The following are the software available on the system that was used to run the 
   - Junit - Version 5.8.1
   - Mockito - Version 5.1.1
 
-### **Test Cases and Methods**
+### **Test Files and Cases**
 ---
-- Mockito was used throughout the testing process to mock out the dependencies and ensure isolation of the units to prevent errors in other units from affecting the tests of any other unit. 
-- User Interface - The faculty, student and admin interfaces involved the same premise of taking user input, invoking the corresponding logical object and displaying results based on the returned value. The system input was replaced by a string from which the input was read. The system output was collected in a ByteArrayOutputStream. 
-- Enroll - 
+Mockito was used throughout the testing process to mock out dependencies 

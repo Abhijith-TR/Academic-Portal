@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -85,6 +86,12 @@ class UtilsTest {
         assertEquals( "", extractOutput( 0 ) );
 
         Utils.prettyPrintGrades( 2023, 2, 8.5, null );
+        assertEquals( "", extractOutput( 0 ) );
+
+        Utils.prettyPrintCreditRequirements( null );
+        assertEquals( "", extractOutput( 0 ) );
+
+        Utils.prettyPrintCreditRequirements( new HashMap<>() );
         assertEquals( "", extractOutput( 0 ) );
     }
 }

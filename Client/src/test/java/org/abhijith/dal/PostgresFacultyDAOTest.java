@@ -394,7 +394,7 @@ class PostgresFacultyDAOTest {
         assertArrayEquals( new String[][]{}, facultyDAO.getInstructorPrerequisites(courseCode, year, semester, null) );
 
         // Expected result
-        assertArrayEquals( new String[][]{ {"CS303", "8" }}, facultyDAO.getInstructorPrerequisites(courseCode, year, semester, departmentID) );
+        assertArrayEquals( new String[][]{ {"CS301", "7" }, {"CS303", "8"}}, facultyDAO.getInstructorPrerequisites(courseCode, year, semester, departmentID) );
 
         try {
             Connection connection = facultyDAO.getDatabaseConnection();

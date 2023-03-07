@@ -198,6 +198,9 @@ class PostgresCommonDAOTest {
         // True as the email is set
         assertTrue( commonDAO.setEmail( id, email ) );
 
+        // False as the id is invalid
+        assertFalse( commonDAO.setEmail( "1", email ) );
+
         try {
             Connection connection = commonDAO.getDatabaseConnection();
             connection.close();
@@ -242,6 +245,9 @@ class PostgresCommonDAOTest {
 
         // True as the password is set
         assertTrue( commonDAO.setPassword( id, password ) );
+
+        // False as the user does not exist
+        assertFalse( commonDAO.setPassword( "1", password ) );
 
         try {
             Connection connection = commonDAO.getDatabaseConnection();

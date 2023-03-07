@@ -3,9 +3,10 @@ package org.abhijith.users;
 import org.abhijith.daoInterfaces.CommonDAO;
 
 public class User {
-    protected final String id;
-    private CommonDAO commonDAO;
-    public User(String id) {
+    protected final String    id;
+    private         CommonDAO commonDAO;
+
+    public User( String id ) {
         this.id = id;
     }
 
@@ -25,8 +26,8 @@ public class User {
         return commonDAO.setEmail( this.id, email );
     }
 
-    // Returns { email, phoneNumber }
     public String[] getContactDetails( String userID ) {
+        if ( userID == null ) return new String[]{};
         return commonDAO.getContactDetails( userID );
     }
 

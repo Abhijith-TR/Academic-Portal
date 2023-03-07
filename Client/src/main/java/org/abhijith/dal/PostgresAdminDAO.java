@@ -29,6 +29,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             // Get the records from the ResultSet and put them into the required format
             ArrayList<String[]> records = new ArrayList<>();
             while ( getGradesQueryResult.next() ) {
+                // Every array is going to be { Entry Number, Grade }
                 String entry_number = getGradesQueryResult.getString( 1 );
                 String grade        = getGradesQueryResult.getString( 2 );
                 records.add( new String[]{ entry_number, grade } );
@@ -49,6 +50,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             name = name.toUpperCase();
             departmentID = departmentID.toUpperCase();
 
+            // The default username and password for the STUDENT role
             final String DEFAULT_PASSWORD = "iitropar";
             final String STUDENT_ROLE     = "STUDENT";
 
@@ -63,11 +65,12 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             // SQL query to insert the student into the common_user_details relation to allow him to log into the database
             PreparedStatement insertPasswordQuery = databaseConnection.prepareStatement( "INSERT INTO common_user_details VALUES (?, ?, ?)" );
             insertPasswordQuery.setString( 1, entryNumber );
-            // the default password is set here
+            // The default password is set here
             insertPasswordQuery.setString( 2, DEFAULT_PASSWORD );
             insertPasswordQuery.setString( 3, STUDENT_ROLE );
             successStatus &= insertPasswordQuery.executeUpdate();
 
+            // Returns true only if both queries execute successfully
             return successStatus == 1;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
@@ -82,21 +85,26 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             name = name.toUpperCase();
             departmentID = departmentID.toUpperCase();
 
+            // The default password for the FACULTY is set here
             final String DEFAULT_PASSWORD = "iitropar";
             final String FACULTY_ROLE     = "FACULTY";
 
+            // SQL query to insert a faculty into the faculty table
             PreparedStatement insertFacultyQuery = databaseConnection.prepareStatement( "INSERT INTO faculty(faculty_id, name, department_id) VALUES (?, ?, ?)" );
             insertFacultyQuery.setString( 1, facultyID );
             insertFacultyQuery.setString( 2, name );
             insertFacultyQuery.setString( 3, departmentID );
             int successStatus = insertFacultyQuery.executeUpdate();
 
+            // SQL table to insert the login details for the new FACULTY
             PreparedStatement insertPasswordQuery = databaseConnection.prepareStatement( "INSERT INTO common_user_details VALUES (?, ?, ?)" );
             insertPasswordQuery.setString( 1, facultyID );
             // the default password is set here
-            insertPasswordQuery.setString( 2, "iitropar" );
-            insertPasswordQuery.setString( 3, "FACULTY" );
+            insertPasswordQuery.setString( 2, DEFAULT_PASSWORD );
+            insertPasswordQuery.setString( 3, FACULTY_ROLE );
             successStatus &= insertPasswordQuery.executeUpdate();
+
+            // Returns true only if both statements execute successfully
             return successStatus == 1;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
@@ -106,9 +114,12 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
 
     public boolean insertCourse( String courseCode, String courseTitle, double[] creditStructure, String[] prerequisites ) {
         try {
+            // Verify that the input parameters are valid
             if ( courseCode == null || courseTitle == null || creditStructure == null || creditStructure.length != 5 || prerequisites == null )
                 return false;
-            for ( int i = 0; i < creditStructure.length; i++ ) if ( creditStructure[i] < 0 ) return false;
+            // The course parameters cannot be negative
+            for ( double field : creditStructure ) if ( field < 0 ) return false;
+            // Converting all the course codes to uppercase
             for ( int i = 0; i < prerequisites.length; i++ ) {
                 if ( prerequisites[i] == null ) return false;
                 prerequisites[i] = prerequisites[i].toUpperCase();
@@ -116,6 +127,7 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             courseCode = courseCode.toUpperCase();
             courseTitle = courseTitle.toUpperCase();
 
+            // SQL query to insert a course into the course catalog
             PreparedStatement insertCourseQuery = databaseConnection.prepareStatement( "INSERT INTO course_catalog VALUES(?, ?, ?, ?, ?, ?, ?, ?)" );
             insertCourseQuery.setString( 1, courseCode );
             insertCourseQuery.setString( 2, courseTitle );
@@ -126,6 +138,8 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             insertCourseQuery.setDouble( 7, creditStructure[4] );
             insertCourseQuery.setObject( 8, prerequisites );
             int insertCourseQueryResult = insertCourseQuery.executeUpdate();
+
+            // Returns 1 if the course could not be inserted into the course catalog
             return insertCourseQueryResult == 1;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
@@ -142,8 +156,10 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
                 prerequisites[i] = prerequisites[i].toUpperCase();
             }
 
+            // Iterate through the list of prerequisites
             boolean coursesFound = true;
             for ( String course : prerequisites ) {
+                // True only if all the course codes are found in the course catalog
                 PreparedStatement findCourseQuery = databaseConnection.prepareStatement( "SELECT course_code FROM course_catalog WHERE course_code = ?" );
                 findCourseQuery.setString( 1, course );
                 ResultSet findCourseQueryResult = findCourseQuery.executeQuery();
@@ -161,9 +177,12 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
         try {
             if ( courseCode == null ) return false;
 
+            // SQL query to delete the course from the course catalog
             PreparedStatement dropCourseQuery = databaseConnection.prepareStatement( "DELETE FROM course_catalog WHERE course_code = ?" );
             dropCourseQuery.setString( 1, courseCode );
             int dropCourseQueryResult = dropCourseQuery.executeUpdate();
+
+            // Returns true if the course was deleted, false otherwise
             return dropCourseQueryResult == 1;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
@@ -176,10 +195,13 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
         try {
             if ( batchYear < 0 ) return false;
 
+            // SQL query to insert a batch into the database
             PreparedStatement createBatchQuery = databaseConnection.prepareStatement( "INSERT INTO batch VALUES(?)" );
             createBatchQuery.setInt( 1, batchYear );
-            createBatchQuery.executeUpdate();
-            return true;
+            int createBatchQueryResult = createBatchQuery.executeUpdate();
+
+            // Returns true as long as the course executes. If a batch is repeated, the error is triggered and a false is returned
+            return createBatchQueryResult == 1;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Something went wrong" );
             return false;
@@ -190,14 +212,17 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
     public boolean createCurriculum( int batchYear, double[] creditRequirements ) {
         try {
             if ( batchYear < 0 || creditRequirements == null || creditRequirements.length != 12 ) return false;
-            for ( int i = 0; i < creditRequirements.length; i++ ) if ( creditRequirements[i] < 0 ) return false;
+            for ( double creditRequirement : creditRequirements ) if ( creditRequirement < 0 ) return false;
 
+            // SQL query to insert the curriculum into the database for the corresponding batch
             PreparedStatement createCurriculumQuery = databaseConnection.prepareStatement( "INSERT INTO ug_curriculum VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" );
             createCurriculumQuery.setInt( 1, batchYear );
+            // Iterate through all the categories and set them
             for ( int i = 2; i <= 12; i++ ) {
                 createCurriculumQuery.setDouble( i, creditRequirements[i - 2] );
             }
             int createCurriculumQueryResult = createCurriculumQuery.executeUpdate();
+            // Returns true if the curriculum was inserted successfully
             return createCurriculumQueryResult == 1;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Something went wrong" );
@@ -217,10 +242,12 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             courseCode = courseCode.toUpperCase();
 
             int               insertCourseQueryResult = 1;
+            // SQL query to insert the course code into the database
             PreparedStatement insertCourseQuery       = databaseConnection.prepareStatement( "INSERT INTO core_courses VALUES (?, ?, ?, ?)" );
             insertCourseQuery.setString( 1, courseCode );
             insertCourseQuery.setInt( 3, batch );
             insertCourseQuery.setString( 4, courseCategory );
+            // Set the department of the corresponding course into the database
             for ( String department : departmentCodes ) {
                 insertCourseQuery.setString( 2, department );
                 insertCourseQueryResult &= insertCourseQuery.executeUpdate();
@@ -238,10 +265,10 @@ public class PostgresAdminDAO extends PostgresCommonDAO implements AdminDAO {
             // Delete all the core courses of the particular batch from the core_courses table
             PreparedStatement resetCoreCoursesQuery = databaseConnection.prepareStatement( "DELETE FROM core_courses WHERE batch = ?" );
             resetCoreCoursesQuery.setInt( 1, batch );
-            resetCoreCoursesQuery.executeUpdate();
+            int resetCoursesResult = resetCoreCoursesQuery.executeUpdate();
 
             // If the query executes successfully return true i.e., the table is ready to be inserted into again
-            return true;
+            return resetCoursesResult == 1;
         } catch ( Exception error ) {
             // If the table is not found, or the database connection has failed
             System.out.println( "Database Error. Please try again later" );

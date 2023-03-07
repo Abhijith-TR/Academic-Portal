@@ -276,13 +276,19 @@ class PostgresAdminDAOTest {
 
     @Test
     void resetCoreCoursesList() {
-        // Always returns true if the query was successfully updated
-        assertTrue( adminDAO.resetCoreCoursesList( 9999 ) );
-
-        // False only when an exception occurs
         try {
             Connection connection = adminDAO.getDatabaseConnection();
+            PreparedStatement tempQuery = connection.prepareStatement( "INSERT INTO batch VALUES( 9999 )" );
+            tempQuery.executeUpdate();
+            tempQuery = connection.prepareStatement( "INSERT INTO core_courses VALUES( 'CS101', 'CS', 9999, 'SC')" );
+            tempQuery.executeUpdate();
+
+            assertTrue( adminDAO.resetCoreCoursesList( 9999 ) );
+            tempQuery = connection.prepareStatement( "DELETE FROM batch WHERE year = 9999" );
+            tempQuery.executeUpdate();
+
             connection.close();
+            // False when an exception occurs
             assertFalse( adminDAO.resetCoreCoursesList( 9999 ) );
         } catch ( Exception error ) {
             fail( "Could not close database connection" );
@@ -458,6 +464,14 @@ class PostgresAdminDAOTest {
         // False due to the exception
         try {
             Connection connection = adminDAO.getDatabaseConnection();
+
+            PreparedStatement tempQuery = connection.prepareStatement( "INSERT INTO student_course_registration VALUES('2020CSB1062', 'HS507', 2023, 2, '-', 'HS', 'HE')" );
+            tempQuery.executeUpdate();
+            // False as there are unentered grades in this semester
+            assertFalse( adminDAO.verifyNoMissingGrades( currentYear, currentSemester ) );
+            tempQuery = connection.prepareStatement("DELETE FROM student_course_registration WHERE entry_number = '2020CSB1062' AND course_code = 'HS507'");
+            tempQuery.executeUpdate();
+
             connection.close();
             assertFalse( adminDAO.verifyNoMissingGrades( currentYear, currentSemester ) );
         } catch ( Exception error ) {

@@ -55,6 +55,8 @@ class UserTest {
 
     @Test
     void getContactDetails() {
+        assertArrayEquals( new String[]{}, user.getContactDetails( null ) );
+
         // Returns whatever the DAO returns
         when( commonDAO.getContactDetails( userID ) ).thenReturn( new String[]{} );
         assertArrayEquals( new String[]{}, user.getContactDetails( userID ) );
@@ -72,5 +74,15 @@ class UserTest {
         // True when the DAO returns true
         when( commonDAO.setPassword( userID, "" ) ).thenReturn( true );
         assertTrue( user.setPassword( "" ) );
+    }
+
+    @Test
+    void getCourseCatalog() {
+        // Returns whatever the DAO returns
+        when( commonDAO.getCourseCatalog() ).thenReturn( new String[][]{} );
+        assertArrayEquals( new String[][]{}, user.getCourseCatalog() );
+
+        when( commonDAO.getCourseCatalog() ).thenReturn( new String[][]{ { "CS101", "DISCRETE MATHEMATICS" } } );
+        assertArrayEquals( new String[][]{ { "CS101", "DISCRETE MATHEMATICS" } }, user.getCourseCatalog() );
     }
 }

@@ -5,12 +5,10 @@ import org.abhijith.daoInterfaces.FacultyDAO;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Properties;
 
 public class Faculty extends User {
     private FacultyDAO facultyDAO;
@@ -83,6 +81,7 @@ public class Faculty extends User {
                     isPrerequisitesValid &= facultyDAO.checkCourseCatalog( courseBatch[i] );
                 }
             }
+            // Only set the prerequisites if all the course codes entered are valid
             if ( !isPrerequisitesValid ) return false;
             return facultyDAO.setInstructorPrerequisites( offeringDepartment, courseCode, prerequisites, currentAcademicSession );
         } catch ( Exception error ) {
@@ -232,6 +231,7 @@ public class Faculty extends User {
             ArrayList<String> arraylistOfGrades       = new ArrayList<>();
             String            courseRecord;
 
+            // Copy the contents of the file into the two lists that were created
             while ( ( courseRecord = gradeCSVFile.readLine() ) != null ) {
                 String[] lineContents = courseRecord.split( "," );
                 arraylistOfEntryNumbers.add( lineContents[1] );

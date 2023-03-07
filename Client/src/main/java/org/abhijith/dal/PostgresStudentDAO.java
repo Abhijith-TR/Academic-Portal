@@ -44,16 +44,19 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             courseCode = courseCode.toUpperCase();
             entryNumber = entryNumber.toUpperCase();
 
-            PreparedStatement gradeQuery = databaseConnection.prepareStatement( "SELECT grade FROM student_course_registration WHERE entry_number = ? AND course_code = ?" );
+            // SQL query to fetch the grade of the corresponding student of the corresponding course code
+            PreparedStatement gradeQuery = databaseConnection.prepareStatement( "SELECT grade FROM student_course_registration WHERE entry_number = ? AND course_code = ? ORDER BY grade ASC" );
             gradeQuery.setString( 1, entryNumber );
             gradeQuery.setString( 2, courseCode );
             ResultSet courseQueryResult = gradeQuery.executeQuery();
-            boolean   studentCredited   = courseQueryResult.next();
-            if ( !studentCredited ) {
-                return false;
+
+            // The student may have enrolled in the course many times, return the highest possible grade
+            while ( courseQueryResult.next() ) {
+                String grade = courseQueryResult.getString( 1 );
+                if ( Utils.getGradeValue( grade ) >= gradeCutoff ) return true;
             }
-            String grade = courseQueryResult.getString( 1 );
-            return Utils.getGradeValue( grade ) >= gradeCutoff;
+            // If no records are found, return false
+            return false;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
             return false;
@@ -66,14 +69,17 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             if ( courseCode == null ) return null;
             courseCode = courseCode.toUpperCase();
 
+            // SQL query to fetch all the prerequisites from the course catalog for this particular course code
             PreparedStatement prerequisiteQuery = databaseConnection.prepareStatement( "SELECT pre_requisites FROM course_catalog WHERE course_code = ?" );
             prerequisiteQuery.setString( 1, courseCode );
             ResultSet courseCatalogResult = prerequisiteQuery.executeQuery();
             boolean   subjectExists       = courseCatalogResult.next();
+            // If the subject does not exist, return null
             if ( !subjectExists ) {
                 return null;
             }
             Array prerequisites = courseCatalogResult.getArray( 1 );
+            // If the course code exists but no prerequisites exist, return an empty string to denote there are no prerequisites
             if ( prerequisites == null ) return new String[]{};
             return (String[]) prerequisites.getArray();
         } catch ( Exception error ) {
@@ -90,25 +96,28 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             courseDepartment = courseDepartment.toUpperCase();
 
             // SQL query to get the prerequisites of a particular offering from the database
-            PreparedStatement prerequisiteQuery = databaseConnection.prepareStatement( "SELECT prereq, grade_criteria, type FROM instructor_prerequisites WHERE course_code = ? AND semester = ? AND year = ? AND department_id = ? ORDER BY type ASC" );
+            PreparedStatement prerequisiteQuery = databaseConnection.prepareStatement( "SELECT prereq, grade_criteria, type FROM instructor_prerequisites WHERE course_code = ? AND semester = ? AND year = ? AND department_id = ? ORDER BY type ASC, course_code ASC" );
             prerequisiteQuery.setString( 1, courseCode );
             prerequisiteQuery.setInt( 2, semester );
             prerequisiteQuery.setInt( 3, year );
             prerequisiteQuery.setString( 4, courseDepartment );
             ResultSet prerequisiteResult = prerequisiteQuery.executeQuery();
 
+            // Convert the result set into the required format
             ArrayList<ArrayList<String>> prerequisites = new ArrayList<>();
             while ( prerequisiteResult.next() ) {
+                // The array contains { Prerequisite Course Code, Grade Criteria }
                 String course        = prerequisiteResult.getString( 1 );
                 String gradeCriteria = prerequisiteResult.getString( 2 );
                 int    type          = prerequisiteResult.getInt( 3 );
+                // If the type has not been encountered so far, add a new entry into the array list
                 if ( type > prerequisites.size() ) {
                     prerequisites.add( new ArrayList<>() );
                 }
                 prerequisites.get( type - 1 ).add( course );
                 prerequisites.get( type - 1 ).add( gradeCriteria );
             }
-
+            // Converting the array list to the proper 2D array format
             ArrayList<String[]> arrayToReturn = new ArrayList<>();
             for ( ArrayList<String> temp : prerequisites ) arrayToReturn.add( temp.toArray( new String[temp.size()] ) );
             return arrayToReturn.toArray( new String[arrayToReturn.size()][] );
@@ -118,43 +127,44 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
         }
     }
 
-    // The 24 is being returned to prevent you from enrolling in the course due to the exception that occurred
     @Override
     public double getCreditsOfCourse( String courseCode ) {
         try {
-            if ( courseCode == null ) return 24;
+            if ( courseCode == null ) return 25;
             courseCode = courseCode.toUpperCase();
 
+            // SQL query to fetch the credits for the corresponding course from the database
             PreparedStatement creditQuery = databaseConnection.prepareStatement( "SELECT credits FROM course_catalog WHERE course_code = ?" );
             creditQuery.setString( 1, courseCode );
             ResultSet creditQueryResult  = creditQuery.executeQuery();
             boolean   querySuccessStatus = creditQueryResult.next();
-            if ( !querySuccessStatus ) return 24;
+            // If the course code cannot exist, return 25 to denote the fact that nobody can enroll in it
+            if ( !querySuccessStatus ) return 25;
             return creditQueryResult.getInt( 1 );
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
-            return 24;
+            return 25;
         }
     }
 
-    // The minimum credit limit is set to 18 and the maximum is set to 24
     @Override
     public double getCreditsInSession( String entryNumber, int currentYear, int currentSemester ) {
         try {
-            if ( entryNumber == null || currentSemester <= 0 || currentYear <= 0 ) return 25;
+            if ( entryNumber == null || currentSemester < 0 || currentYear < 0 ) return 25;
             entryNumber = entryNumber.toUpperCase();
 
+            // SQL query to fetch the total number of credits that the student has enrolled in the current semester
             PreparedStatement creditQuery = databaseConnection.prepareStatement( "SELECT SUM(credits) FROM course_catalog WHERE course_code IN (SELECT course_code FROM student_course_registration WHERE entry_number = ? AND year = ? AND semester = ?)" );
             creditQuery.setString( 1, entryNumber );
             creditQuery.setInt( 2, currentYear );
             creditQuery.setInt( 3, currentSemester );
             ResultSet creditQueryResult = creditQuery.executeQuery();
 
+            // If no results are found, return 0 to indicate that the student has not enrolled in any course so far
             boolean coursesFound = creditQueryResult.next();
             return ( coursesFound ) ? creditQueryResult.getInt( 1 ) : 0;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );
-            // You should be setting the credit limit over here
             return 25;
         }
     }
@@ -169,6 +179,7 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             offeringDepartment = offeringDepartment.toUpperCase();
             courseCategory = courseCategory.toUpperCase();
 
+            // SQL query to insert the enrollment into the student_course_registration_table in the database
             PreparedStatement enrollmentQuery = databaseConnection.prepareStatement( "INSERT INTO student_course_registration(entry_number, course_code, year, semester, department_id, category) VALUES (?, ?, ?, ?, ?, ?)" );
             enrollmentQuery.setString( 1, entryNumber );
             enrollmentQuery.setString( 2, courseCode );
@@ -176,10 +187,9 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             enrollmentQuery.setInt( 4, currentSemester );
             enrollmentQuery.setString( 5, offeringDepartment );
             enrollmentQuery.setString( 6, courseCategory );
-            // Maybe parameterize the default grade later on? Currently, the database will set the default grade by itself if you don't give it anything
-            // Do I just assume that the call to insert was successful?
-            enrollmentQuery.executeUpdate();
-            return true;
+            int enrollmentResult = enrollmentQuery.executeUpdate();
+            // Returns true only if the insertion was successful in the database
+            return enrollmentResult == 1;
         } catch ( Exception error ) {
             System.out.println( "Enrollment Request Failed" );
             return false;
@@ -193,12 +203,14 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             courseCode = courseCode.toUpperCase();
             entryNumber = entryNumber.toUpperCase();
 
+            // SQL query to delete the corresponding entry of the corresponding student from the database
             PreparedStatement dropQuery = databaseConnection.prepareStatement( "DELETE FROM student_course_registration WHERE course_code = ? AND entry_number = ? AND year = ? AND semester = ?" );
             dropQuery.setString( 1, courseCode );
             dropQuery.setString( 2, entryNumber );
             dropQuery.setInt( 3, currentYear );
             dropQuery.setInt( 4, currentSemester );
             int dropQueryResult = dropQuery.executeUpdate();
+            // Returns true if the entry was deleted, false otherwise
             return dropQueryResult == 1;
         } catch ( Exception error ) {
             System.out.println( "Database Error. Try again later" );
@@ -212,10 +224,12 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             if ( entryNumber == null ) return new String[][]{};
             entryNumber = entryNumber.toUpperCase();
 
+            // SQL query to fetch the credits and grade of the given entry number from the database
             PreparedStatement recordsQuery = databaseConnection.prepareStatement( "SELECT credits, grade FROM student_course_registration NATURAL JOIN course_catalog WHERE entry_number = ?" );
             recordsQuery.setString( 1, entryNumber );
             ResultSet recordsQueryResult = recordsQuery.executeQuery();
 
+            // Converting data from the result set into the required format
             ArrayList<String[]> records = new ArrayList<>();
             while ( recordsQueryResult.next() ) {
                 String credits = recordsQueryResult.getString( 1 );
@@ -286,7 +300,11 @@ public class PostgresStudentDAO extends PostgresCommonDAO implements StudentDAO 
             getCriteriaQuery.setInt( 3, currentSemester );
             getCriteriaQuery.setString( 4, courseDepartment );
             ResultSet getCriteriaQueryResult = getCriteriaQuery.executeQuery();
-            getCriteriaQueryResult.next();
+            boolean courseExist = getCriteriaQueryResult.next();
+
+            // If the course is not found in the database, it returns 11 to denote that you cannot enroll in the course
+            if ( !courseExist ) return 11;
+            // Returns the CGPA criteria if found from the database
             return getCriteriaQueryResult.getDouble( 1 );
         } catch ( Exception error ) {
             System.out.println( "Database Error. Please try again later" );

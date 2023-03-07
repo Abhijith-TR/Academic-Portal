@@ -19,11 +19,13 @@ public class PasswordDatabase implements PasswordDAO {
 
     public PasswordDatabase() {
         try {
+            // Fetches the class loader and uses this to load the properties from the config file
             Properties databaseConfig = new Properties();
             ClassLoader classLoader = PasswordDatabase.class.getClassLoader();
             InputStream inputStream = classLoader.getResourceAsStream( "config.properties" );
             databaseConfig.load( inputStream );
 
+            // Establishes a connection with the database
             String connectionURL = databaseConfig.getProperty( "connectionURL" );
             String username      = databaseConfig.getProperty( "username" );
             String password      = databaseConfig.getProperty( "password" );
@@ -33,6 +35,7 @@ public class PasswordDatabase implements PasswordDAO {
                     password
             );
         } catch ( Exception error ) {
+            // If the connection cannot be established, the system simply shuts down
             System.err.println( "Configuration Error. Could not connect to database. Shutting down." );
             System.exit( 0 );
         }

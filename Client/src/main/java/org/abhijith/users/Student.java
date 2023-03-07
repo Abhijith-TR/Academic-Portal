@@ -4,10 +4,8 @@ import org.abhijith.dal.PostgresStudentDAO;
 import org.abhijith.daoInterfaces.StudentDAO;
 import org.abhijith.utils.Utils;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Properties;
 
 public class Student extends User {
     private StudentDAO studentDAO;
@@ -24,9 +22,11 @@ public class Student extends User {
 
     // The default cutoff of 4 is implemented here.
     private boolean checkCourseCatalogPrerequisites( String courseCode ) {
+        // Get all the course catalog prerequisites from the database
         String[] prerequisites = studentDAO.getCourseCatalogPrerequisites( courseCode );
         if ( prerequisites == null ) return false;
 
+        // Go through all the prerequisites, and check whether the student has passed all of them
         for ( String course : prerequisites ) {
             boolean hasPassed = studentDAO.checkStudentPassStatus( course, 4, id );
             if ( !hasPassed ) {
@@ -36,20 +36,23 @@ public class Student extends User {
         return true;
     }
 
-    // A database error and no prerequisites will both return null. But student should not be allowed to enroll if there is a database error
     private boolean checkInstructorPrerequisites( String courseCode, int[] currentSession, String courseDepartment ) {
+        // Fetch all the instructor prerequisites of this particular course offering
         int        currentYear     = currentSession[0];
         int        currentSemester = currentSession[1];
         String[][] prerequisites   = studentDAO.getInstructorPrerequisites( courseCode, currentYear, currentSemester, courseDepartment );
         if ( prerequisites == null ) return false;
 
+        // Iterate through all the courses
         for ( String[] listOfCourses : prerequisites ) {
             boolean isEligible = false;
+            // Ensure that the student has passed each of these courses with the required grade cutoff mentioned
             for ( int i = 0; i < listOfCourses.length; i += 2 ) {
                 String course      = listOfCourses[i];
                 int    gradeCutoff = Integer.parseInt( listOfCourses[i + 1] );
                 isEligible |= studentDAO.checkStudentPassStatus( course, gradeCutoff, id );
             }
+            // If the student does not fulfill the criteria, return false
             if ( !isEligible ) return false;
         }
         return true;
@@ -67,13 +70,15 @@ public class Student extends User {
         int currentYear     = currentSession[0];
         int currentSemester = currentSession[1];
 
-        // We might want to store this in the database if necessary
+        // The minimum and maximum credit limit of the student are 18 and 24 respectively
         double minimumCreditLimit = 18;
         double maximumCreditLimit = 24;
 
+        // Get the credits that the student has enrolled in the current semester
         double creditsInCurrentSemester = studentDAO.getCreditsInSession( id, currentYear, currentSemester );
         double creditsInPreviousSemester, creditsInSemesterBefore;
 
+        // Get the credits that the student has enrolled in the previous two semesters
         if ( currentSemester == 2 ) {
             creditsInPreviousSemester = studentDAO.getCreditsInSession( id, currentYear, currentSemester - 1 );
             creditsInSemesterBefore = studentDAO.getCreditsInSession( id, currentYear - 1, 2 );
@@ -83,11 +88,15 @@ public class Student extends User {
             creditsInSemesterBefore = studentDAO.getCreditsInSession( id, currentYear - 1, 1 );
         }
 
+        // The credit limit is 1.25 times the average of the credits in the previous two semesters
         double creditLimit = ( creditsInSemesterBefore + creditsInPreviousSemester ) / 2 * 1.25;
         creditLimit = Math.max( creditLimit, minimumCreditLimit );
         creditLimit = Math.min( creditLimit, maximumCreditLimit );
 
+        // Get the credits of the course that the student wishes to enroll in
         double creditsOfCourse = studentDAO.getCreditsOfCourse( courseCode );
+
+        // Returns true if the student will exceed the credit limit by enrolling in the mentioned course
         return ( creditsInCurrentSemester + creditsOfCourse ) > creditLimit;
     }
 
@@ -267,6 +276,7 @@ public class Student extends User {
 
         // Getting the courses that were offered in the current session
         String[][] coursesOffered = studentDAO.getOfferedCourses( currentYear, currentSemester );
+        // Getting the course category for all the courses that were found in the previous query
         for ( String[] course : coursesOffered ) {
             course[course.length - 1] = studentDAO.getCourseCategory( course[0], currentYear, currentSemester, course[4], studentDepartment, studentBatch );
         }
@@ -305,6 +315,7 @@ public class Student extends User {
                 }
             }
             else {
+                // If the student has done no courses in a particular category
                 categoryCreditsLeft.put( category, ugCurriculum.get( category ) );
             }
         }

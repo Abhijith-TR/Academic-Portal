@@ -407,6 +407,7 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
             // Now iterate through the list of students and grades and set the grade and entry number of the student
             boolean insertResult = true;
             for ( int i = 0; i < listOfStudents.length; i++ ) {
+                // If the grade is not mentioned, then do not insert it into the database and notify the user that all students grades have not been uploaded
                 if ( listOfGrades[i] == null || listOfStudents[i] == null ) {
                     insertResult = false;
                     continue;
@@ -458,8 +459,10 @@ public class PostgresFacultyDAO extends PostgresCommonDAO implements FacultyDAO 
             getPrerequisiteQuery.setString( 4, departmentID );
             ResultSet getPrerequisiteQueryResult = getPrerequisiteQuery.executeQuery();
 
+            // Convert the result set into the required format
             ArrayList<String[]> courseList = new ArrayList<>();
             while ( getPrerequisiteQueryResult.next() ) {
+                // The arrays contain { Prerequisite Course Code, Grade Criteria }
                 ArrayList<String> course = new ArrayList<>();
                 course.add( getPrerequisiteQueryResult.getString( 1 ) );
                 course.add( getPrerequisiteQueryResult.getString( 2 ) );

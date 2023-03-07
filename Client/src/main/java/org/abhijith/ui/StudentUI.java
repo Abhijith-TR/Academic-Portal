@@ -42,6 +42,7 @@ public class StudentUI {
     public void studentInterfaceHomeScreen() {
         if ( keyboardInput == null ) keyboardInput = new CustomScanner();
         while ( true ) {
+
             System.out.println();
             System.out.println( "Select an option" );
             for ( int i = 1; i <= studentChoices.length; i++ ) {
@@ -66,6 +67,7 @@ public class StudentUI {
             else if ( studentChoice == 2 ) {
                 // Read the course code
                 String courseCode = keyboardInput.stringInput( "Enter the course code" );
+
                 // Print the response from the drop function
                 if ( student.drop( courseCode ) ) System.out.println( "Course dropped successfully" );
                 else System.out.println( "Course drop failed. Please verify that you are enrolled in this course" );
@@ -75,6 +77,7 @@ public class StudentUI {
                 String[][][] completeStudentRecords = student.getGradesForDegree();
                 int          year                   = student.getBatch();
                 int          semester               = 1;
+
                 for ( String[][] records : completeStudentRecords ) {
                     Utils.prettyPrintGrades( year, semester, student.getSGPA( records ), records );
                     if ( semester == 2 ) year++;
@@ -86,6 +89,7 @@ public class StudentUI {
                 int        year           = keyboardInput.integerInput( "Enter the year" );
                 int        semester       = keyboardInput.integerInput( "Enter the semester" );
                 String[][] semesterGrades = student.getGrades( year, semester );
+
                 if ( semesterGrades.length == 0 ) {
                     System.out.printf( "No records found for session %d-%d\n\n", year, semester );
                     continue;
@@ -114,6 +118,7 @@ public class StudentUI {
 
             else if ( studentChoice == 8 ) {
                 String newPhoneNumber = keyboardInput.stringInput( "Enter the new phone number" );
+
                 if ( student.setPhoneNumber( newPhoneNumber ) )
                     System.out.println( "Phone Number Updated Successfully" );
                 else System.out.println( "Phone Number Update Failed" );
@@ -121,6 +126,7 @@ public class StudentUI {
 
             else if ( studentChoice == 9 ) {
                 String email = keyboardInput.stringInput( "Enter the email" );
+
                 if ( student.setEmail( email ) ) System.out.println( "Contact Email Updated Successfully" );
                 else System.out.println( "Contact Email Not Updated" );
             }
