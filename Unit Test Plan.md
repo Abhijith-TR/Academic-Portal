@@ -38,4 +38,9 @@ The following are the software available on the system that was used to run the 
 
 ### **Test Files and Cases**
 ---
-Mockito was used throughout the testing process to mock out dependencies 
+Mockito was used throughout the testing process to mock out dependencies to ensure that each unit was isolated during the unit testing. The test cases corresponding to each module are in the test file that carries the same name. <br> The test cases were generated such that each of the corner cases were covered, such as null arguments, negative batches, years and numbers, invalid file input and differering lengths from expected arguments. <br>
+Further test cases were generated based on the expected outputs of each individual function on specific inputs from different modules to verify expected behaviour. 
+
+1. User Interface - Unit tests considered all possible user input, results from other modules and the expected output that the user interface should generate.
+2. Business Logic - The test cases considered all logical flows through the various functions in each use case. The inputs from other modules as well as the database were mocked. The outputs corresponding to irregular input parameters were also tested. 
+3. DAO - The test cases considered various configurations of the database as well the return values if the database connection fails or some other error is returned by the connection. Running the tests requires initialization with the dummy data.
