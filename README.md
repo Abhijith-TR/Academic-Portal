@@ -7,11 +7,11 @@ Note - You should not be in a database named temp or mini_project during this st
 
 2. Navigate to the 'client' folder. Now open the src/main/resources/config.properties and set the connection string, username and password of the database to connectionURL and db.connectionURL, username and db.username, password and db.password respectively.
 
-3. You can run ``` ./gradlew build ``` to build the jar file. The jar file will be present in the client\build\libs under the name **client-1.0.jar**. Note - If there is an error associated with running the ./gradlew command, try running ``` chmod +x gradlew ``` in the folder.
+3. You can run ``` ./gradlew build ``` to build the jar file in the current folder. The jar file will be present in the client\build\libs under the name **client-1.0.jar**. Note - If there is an error associated with running the ./gradlew command, try running ``` chmod +x gradlew ``` in the folder.
 
-4. Copy this file to a folder of your choice. Unzip the file using ``` unzip client-1.0.jar ```. Now in the same folder run ``` unzip postgresql-42.5.4.jar ``` ( Click yes if overwrite permissions are asked )
+4. Copy this file to a folder of your choice. Unzip the file using ``` unzip client-1.0.jar ```. Now in the same folder run ``` unzip postgresql-42.5.4.jar ``` ( Click yes if overwrite permissions are asked ). Note - unzip may not be installed on the ubuntu machine by default. You can install using sudo apt-get install unzip.
 
-5. If all steps are followed properly, you can run the file using ```java org.abhijith.Main```. The user name will be **staffdeanoffice** and the password will be **iitropar**. This is an admin role. Note that only an admin username and password can shut down the system.
+5. If all steps are followed properly, you can run the file using ```java org.abhijith.Main``` in the same folder as in Step 4. The user name will be **staffdeanoffice** and the password will be **iitropar**. This is an admin role. Note that only an admin username and password can shut down the system.
 
 ### **Running Tests**
 ---
@@ -22,3 +22,6 @@ In order to run the tests, the same has to be done as the compilation. However, 
 1. Inserting core courses - A CSV file is necessary such that all of the courses appear in the first column, the course category appears in the second column and this is followed by comma separated departments. Every new course starts on a new line.
 
 2. Uploading grades - Simply enter the grade at the end of the file that is generated. Do not insert any new lines or commas.
+
+### **Additional Instructions**
+- The steps mentioned above are meant for an ubuntu machine. Steps 1, 2 and 3 are same for a windows machine. You can unzip a file using the GUI on a windows machine. The instruction to run the file is also the same. 

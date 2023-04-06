@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.ui.StudentUITest" tests="12" skipped="0" failures="0" errors="0" timestamp="2023-04-05T16:34:10" hostname="ADMIN" time="0.684">
+  <properties/>
+  <testcase name="getAvailableCoursesTest()" classname="org.abhijith.ui.StudentUITest" time="0.043"/>
+  <testcase name="viewGradesForParticularSessionTest()" classname="org.abhijith.ui.StudentUITest" time="0.009"/>
+  <testcase name="updateEmailTest()" classname="org.abhijith.ui.StudentUITest" time="0.002"/>
+  <testcase name="getCGPATest()" classname="org.abhijith.ui.StudentUITest" time="0.002"/>
+  <testcase name="dropTest()" classname="org.abhijith.ui.StudentUITest" time="0.004"/>
+  <testcase name="updatePasswordTest()" classname="org.abhijith.ui.StudentUITest" time="0.004"/>
+  <testcase name="getContactDetailsTest()" classname="org.abhijith.ui.StudentUITest" time="0.004"/>
+  <testcase name="getRemainingCreditRequirementsTest()" classname="org.abhijith.ui.StudentUITest" time="0.005"/>
+  <testcase name="enrollTest()" classname="org.abhijith.ui.StudentUITest" time="0.003"/>
+  <testcase name="updatePhoneNumberTest()" classname="org.abhijith.ui.StudentUITest" time="0.005"/>
+  <testcase name="viewCourseCatalogTest()" classname="org.abhijith.ui.StudentUITest" time="0.004"/>
+  <testcase name="viewGradesForEntireDegree()" classname="org.abhijith.ui.StudentUITest" time="0.007"/>
+  <system-out><![CDATA[
+Select an option
+1. Enroll
+2. Drop
+3. View Grades for Entire Course
+4. View Grades for Particular Session
+5. Get CGPA
+6. View Available Courses
+7. View Credit Requirements Left
+8. Change Phone Number
+9. Change Contact Email
+10. View Contact Details
+11. Change Password
+12. View Course Catalog
+13. Any other number to log out
+Enter your choice: Records - Year: 2020 Semester: 1 SGPA: 10.00
+Course Code   Course Title           Grade   Credits   
+CS101         DISCRETE MATHEMATICS   A       4.5       
+
+Records - Year: 2020 Semester: 2 SGPA: 9.00
+Course Code   Course Title      Grade   Credits   
+CS201         DATA STRUCTURES   A       4         
+
+
+Select an option
+1. Enroll
+2. Drop
+3. View Grades for Entire Course
+4. View Grades for Particular Session
+5. Get CGPA
+6. View Available Courses
+7. View Credit Requirements Left
+8. Change Phone Number
+9. Change Contact Email
+10. View Contact Details
+11. Change Password
+12. View Course Catalog
+13. Any other number to log out
+Enter your choice: 
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

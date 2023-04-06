@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.users.AdminTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2023-04-05T16:34:11" hostname="ADMIN" time="0.835">
+  <properties/>
+  <testcase name="dropCourseFromCatalog()" classname="org.abhijith.users.AdminTest" time="0.076"/>
+  <testcase name="generateTranscripts()" classname="org.abhijith.users.AdminTest" time="0.023"/>
+  <testcase name="getGradesOfStudent()" classname="org.abhijith.users.AdminTest" time="0.003"/>
+  <testcase name="insertFaculty()" classname="org.abhijith.users.AdminTest" time="0.003"/>
+  <testcase name="insertCoreCourses()" classname="org.abhijith.users.AdminTest" time="0.006"/>
+  <testcase name="insertCourseIntoCatalog()" classname="org.abhijith.users.AdminTest" time="0.001"/>
+  <testcase name="createBatch()" classname="org.abhijith.users.AdminTest" time="0.002"/>
+  <testcase name="startNewSession()" classname="org.abhijith.users.AdminTest" time="0.003"/>
+  <testcase name="checkStudentPassStatus()" classname="org.abhijith.users.AdminTest" time="0.006"/>
+  <testcase name="setCurrentSessionStatus()" classname="org.abhijith.users.AdminTest" time="0.002"/>
+  <testcase name="getGradesOfOffering()" classname="org.abhijith.users.AdminTest" time="0.002"/>
+  <testcase name="insertStudent()" classname="org.abhijith.users.AdminTest" time="0.002"/>
+  <testcase name="testConstructor()" classname="org.abhijith.users.AdminTest" time="0.068"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

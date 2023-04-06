@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.MainTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-04-05T16:33:57" hostname="ADMIN" time="0.582">
+  <properties/>
+  <testcase name="main()" classname="org.abhijith.MainTest" time="0.582"/>
+  <system-out><![CDATA[
+Welcome to the Academic System
+Select your role
+1. STUDENT
+2. FACULTY
+3. ADMIN
+4. SHUT DOWN
+Enter the number corresponding to the role: Enter your id: Enter your password: ]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

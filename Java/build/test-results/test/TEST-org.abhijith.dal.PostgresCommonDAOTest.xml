@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.dal.PostgresCommonDAOTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2023-04-05T16:34:00" hostname="ADMIN" time="0.826">
+  <properties/>
+  <testcase name="getStudentDepartment()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.051"/>
+  <testcase name="checkCourseCatalog()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.052"/>
+  <testcase name="setPassword()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.055"/>
+  <testcase name="getCourseGrade()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.072"/>
+  <testcase name="getStudentGradesForSemester()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.069"/>
+  <testcase name="setPhoneNumber()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.065"/>
+  <testcase name="getContactDetails()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.057"/>
+  <testcase name="getCourseCatalog()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.058"/>
+  <testcase name="setEmail()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.061"/>
+  <testcase name="getCreditsInAllCategories()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.085"/>
+  <testcase name="getUGCurriculum()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.067"/>
+  <testcase name="getBatch()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.064"/>
+  <testcase name="getCurrentAcademicSession()" classname="org.abhijith.dal.PostgresCommonDAOTest" time="0.059"/>
+  <system-out><![CDATA[Database Error. Please try again later
+Database Error. Try again later
+Database Error. Please try again later
+Database Error. Please try again later
+Database Error. Try again later
+Database Error. Please try again later
+Database Error. Please try again later
+Database Error. Please try again later
+Database error. Please try again later
+Database Error. Please try again later 
+Database Error. Please try again later
+Database Error. Try again later
+Database Error. Please try again later
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

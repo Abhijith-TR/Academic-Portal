@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.users.StudentTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2023-04-05T16:34:12" hostname="ADMIN" time="0.396">
+  <properties/>
+  <testcase name="enroll()" classname="org.abhijith.users.StudentTest" time="0.049"/>
+  <testcase name="getCGPA()" classname="org.abhijith.users.StudentTest" time="0.001"/>
+  <testcase name="getSGPA()" classname="org.abhijith.users.StudentTest" time="0.0"/>
+  <testcase name="drop()" classname="org.abhijith.users.StudentTest" time="0.002"/>
+  <testcase name="getRemainingCreditRequirements()" classname="org.abhijith.users.StudentTest" time="0.002"/>
+  <testcase name="getGradesForDegree()" classname="org.abhijith.users.StudentTest" time="0.001"/>
+  <testcase name="getGrades()" classname="org.abhijith.users.StudentTest" time="0.002"/>
+  <testcase name="getAvailableCourses()" classname="org.abhijith.users.StudentTest" time="0.003"/>
+  <testcase name="getBatch()" classname="org.abhijith.users.StudentTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

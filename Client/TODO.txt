@@ -1,1 +1,0 @@
-Ensure that every sql query is doing what it is supposed to be doing

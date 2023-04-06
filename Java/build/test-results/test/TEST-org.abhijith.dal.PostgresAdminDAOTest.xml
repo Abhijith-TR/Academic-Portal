@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.abhijith.dal.PostgresAdminDAOTest" tests="17" skipped="0" failures="0" errors="0" timestamp="2023-04-05T16:33:58" hostname="ADMIN" time="1.55">
+  <properties/>
+  <testcase name="dropCourseFromCatalog()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.234"/>
+  <testcase name="insertFaculty()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.095"/>
+  <testcase name="getGradesOfCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.086"/>
+  <testcase name="resetCoreCoursesList()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.099"/>
+  <testcase name="createBatch()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.071"/>
+  <testcase name="getCoreCourses()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.081"/>
+  <testcase name="findEntryNumber()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.07"/>
+  <testcase name="createNewSession()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.065"/>
+  <testcase name="checkAllPrerequisites()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.183"/>
+  <testcase name="checkIfSessionCompleted()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.075"/>
+  <testcase name="insertCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.083"/>
+  <testcase name="createCurriculum()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.069"/>
+  <testcase name="verifyNoMissingGrades()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.067"/>
+  <testcase name="insertCoreCourse()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.064"/>
+  <testcase name="setSessionEvent()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.054"/>
+  <testcase name="insertStudent()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.071"/>
+  <testcase name="getListOfStudentsInBatch()" classname="org.abhijith.dal.PostgresAdminDAOTest" time="0.063"/>
+  <system-out><![CDATA[Database Error. Please try again later
+Database Error. Please try again later
+Database Error. Please try again later
+Database Error. Please try again later
+Database Error. Something went wrong
+Database Error. Please try again later
+Database Error. Please try again later
+Database error. Please try again later
+Database Error. Please try again later
+Database Error. Please try again later
+Database Error. Please try again later
+Database Error. Something went wrong
+Database error. Please try again later
+Database Error. Please check that all courses exist in the course catalog
+Database Error. Please try again later
+Database Error. Please try again later
+Database Error. Please try again later
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
